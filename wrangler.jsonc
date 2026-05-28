@@ -12,4 +12,7 @@
   "observability": {
     "enabled": true,
   },
+  "secrets": {
+    "required": ["SUPABASE_URL", "SUPABASE_KEY"],
+  },
 }

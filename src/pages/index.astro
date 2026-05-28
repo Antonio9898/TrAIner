@@ -1,8 +1,23 @@
 ---
-import Welcome from "@/components/Welcome.astro";
-import Layout from "@/layouts/Layout.astro";
+import { supabase } from "../db/supabase";
+
+interface Todo {
+  id: string | number;
+  name: string;
+}
+
+const { data, error } = await supabase.from("todos").select("id,name").overrideTypes<Todo[], { merge: false }>();
+const todos = data ?? [];
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+{
+  error ? (
+    <p>{error.message}</p>
+  ) : (
+    <ul>
+      {todos.map((entry) => (
+        <li>{entry.name}</li>
+      ))}
+    </ul>
+  )
+}
