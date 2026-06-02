@@ -315,12 +315,12 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Automated
 
-- [x] 3.1 `npm run lint` completes successfully.
-- [x] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
-- [x] 3.3 `git status --short` shows only expected files changed for this plan's implementation.
+- [x] 3.1 `npm run lint` completes successfully. — 9253695
+- [x] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 9253695
+- [x] 3.3 `git status --short` shows only expected files changed for this plan's implementation. — 9253695
 
 #### Manual
 
-- [x] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to.
-- [x] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
-- [x] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete.
+- [x] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to. — 9253695
+- [x] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — 9253695
+- [x] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete. — 9253695
