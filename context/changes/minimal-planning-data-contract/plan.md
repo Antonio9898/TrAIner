@@ -223,6 +223,17 @@ Verify the schema and types together, then document what downstream slices can a
 
 ---
 
+## Implementation Handoff Notes
+
+Downstream slices can treat `training_intakes`, `training_plans`, `workout_feedback`, and `src/types.ts` as the minimal planning data contract:
+
+- S-01 can persist an authenticated user's goal, compact experience level, health constraints, optional notes, and timestamps in `training_intakes`.
+- S-02 can persist one generated current plan per intake in `training_plans`, including structured JSONB `plan_content` and a required explanation.
+- S-03 can revise the current plan by overwriting the existing `training_plans` row, using `revision_count`, `last_revision_requested_at`, `last_revision_note`, `status`, and `accepted_at` for lifecycle state.
+- S-04 can persist per-workout feedback in `workout_feedback`, tied to the owning user and plan, with non-empty `workout_key` matching `TrainingPlanContent.scheduledWorkouts[].key`.
+
+The contract remains intentionally minimal: no UI, API routes, services, AI integration, plan version history, separate revision table, medical taxonomy, or exercise/set/rep normalization was added.
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -304,12 +315,12 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` completes successfully.
-- [ ] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
-- [ ] 3.3 `git status --short` shows only expected files changed for this plan's implementation.
+- [x] 3.1 `npm run lint` completes successfully.
+- [x] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
+- [x] 3.3 `git status --short` shows only expected files changed for this plan's implementation.
 
 #### Manual
 
-- [ ] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to.
-- [ ] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
-- [ ] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete.
+- [x] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to.
+- [x] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
+- [x] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete.
