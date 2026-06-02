@@ -288,17 +288,17 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Automated
 
-- [ ] 2.1 `src/types.ts` exists and exports all planned type names.
-- [ ] 2.2 `npx astro sync` completes successfully.
-- [ ] 2.3 `npm run lint` completes successfully.
-- [ ] 2.4 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
+- [x] 2.1 `src/types.ts` exists and exports all planned type names.
+- [x] 2.2 `npx astro sync` completes successfully.
+- [x] 2.3 `npm run lint` completes successfully.
+- [x] 2.4 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
 
 #### Manual
 
-- [ ] 2.5 Type review confirms names and values match the migration constraints.
-- [ ] 2.6 Type review confirms no data-access helper or API behavior was added in this phase.
-- [ ] 2.7 Type review confirms plan content remains JSONB-friendly and not over-normalized.
-- [ ] 2.8 Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`.
+- [x] 2.5 Type review confirms names and values match the migration constraints.
+- [x] 2.6 Type review confirms no data-access helper or API behavior was added in this phase.
+- [x] 2.7 Type review confirms plan content remains JSONB-friendly and not over-normalized.
+- [x] 2.8 Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`.
 
 ### Phase 3: Contract Verification and Handoff
 
