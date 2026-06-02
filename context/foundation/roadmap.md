@@ -70,6 +70,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 
 - **Outcome:** (foundation) Granice rekomendacji treningowych sa ustalone tak, zeby pytania o ograniczenia zdrowotne, wyjasnienia planu i poprawki nie brzmialy jak diagnoza ani nie ignorowaly zgloszonych ograniczen.
 - **Change ID:** training-safety-boundaries
+- **Foundation source:** `context/foundation/training-safety-boundaries.md`
 - **PRD refs:** Non-Functional Requirements, Non-Goals, FR-003, FR-004, FR-005, FR-008
 - **Unlocks:** S-01, S-02, S-03
 - **Prerequisites:** -
@@ -85,6 +86,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 
 - **Outcome:** user can log in, enter a training goal, training level, and health constraints.
 - **Change ID:** goal-and-constraints-intake
+- **Safety handoff:** consumes `context/foundation/training-safety-boundaries.md` for the free-text `healthConstraints` prompt, neutral examples, and visible disclaimer guidance.
 - **PRD refs:** US-01, FR-001, FR-002, FR-003
 - **Prerequisites:** F-01, F-02
 - **Parallel with:** -
@@ -97,6 +99,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 
 - **Outcome:** user can receive the first explained training plan matched to goal, level, and constraints.
 - **Change ID:** first-explained-training-plan
+- **Safety handoff:** consumes `context/foundation/training-safety-boundaries.md` for constraint-aware plan-level and workout-level `safetyNotes` without structured risk scoring.
 - **PRD refs:** US-01, FR-004, FR-008
 - **Prerequisites:** F-01, F-02, S-01
 - **Parallel with:** -
@@ -109,6 +112,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 
 - **Outcome:** user can request corrections and accept the final training plan.
 - **Change ID:** plan-revision-and-acceptance
+- **Safety handoff:** consumes `context/foundation/training-safety-boundaries.md` for the reminder-only revision boundary that keeps earlier health constraints in force.
 - **PRD refs:** US-01, FR-005, FR-006, FR-008
 - **Prerequisites:** F-02, S-02
 - **Parallel with:** -
@@ -134,10 +138,10 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
 | F-01 | minimal-planning-data-contract | Define the minimal private planning data contract | yes | Recommended next move; unlocks the full north-star path. |
-| F-02 | training-safety-boundaries | Define training safety and no-diagnosis boundaries | yes | Can run alongside F-01; needed before intake and plan generation. |
-| S-01 | goal-and-constraints-intake | Build goal and constraints intake | no | Wait for F-01 and F-02. |
-| S-02 | first-explained-training-plan | Build the first explained training plan | no | North-star slice; wait for F-01, F-02, and S-01. |
-| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | no | Wait for S-02 and keep F-02 boundaries in force. |
+| F-02 | training-safety-boundaries | Define training safety and no-diagnosis boundaries | yes | Boundary source: `context/foundation/training-safety-boundaries.md`; needed before intake and plan generation. |
+| S-01 | goal-and-constraints-intake | Build goal and constraints intake | no | Wait for F-01 and F-02; consume the safety boundary for intake wording and disclaimer guidance. |
+| S-02 | first-explained-training-plan | Build the first explained training plan | no | North-star slice; wait for F-01, F-02, and S-01; consume the safety boundary for plan `safetyNotes`. |
+| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | no | Wait for S-02 and keep F-02 boundaries in force through reminder-only revision copy. |
 | S-04 | post-workout-feedback | Build post-workout feedback | no | Wait for accepted plan flow from S-03. |
 
 ## Open Roadmap Questions

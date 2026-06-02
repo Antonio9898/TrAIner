@@ -290,15 +290,15 @@ No Supabase migration is part of this change. If a future slice chooses to store
 
 #### Automated
 
-- [ ] 2.1 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` finds the foundation document reference.
-- [ ] 2.2 `rg -n "S-01|S-02|S-03" context/foundation/roadmap.md` still finds all three downstream slices.
-- [ ] 2.3 `git diff --name-only` for this phase shows only foundation/roadmap documentation changes, not code or migrations.
+- [x] 2.1 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` finds the foundation document reference.
+- [x] 2.2 `rg -n "S-01|S-02|S-03" context/foundation/roadmap.md` still finds all three downstream slices.
+- [x] 2.3 `git diff --name-only` for this phase shows only foundation/roadmap documentation changes, not code or migrations.
 
 #### Manual
 
-- [ ] 2.4 Roadmap review confirms F-02 is visible as the safety-boundary source for future intake, first-plan, and revision slices.
-- [ ] 2.5 Roadmap review confirms the dependency order remains `F-02 -> S-01/S-02/S-03`.
-- [ ] 2.6 Roadmap review confirms no new product scope was introduced for trainer/admin roles, medical diagnosis, stored acknowledgements, or runtime blocking.
+- [x] 2.4 Roadmap review confirms F-02 is visible as the safety-boundary source for future intake, first-plan, and revision slices.
+- [x] 2.5 Roadmap review confirms the dependency order remains `F-02 -> S-01/S-02/S-03`.
+- [x] 2.6 Roadmap review confirms no new product scope was introduced for trainer/admin roles, medical diagnosis, stored acknowledgements, or runtime blocking.
 
 ### Phase 3: Contract Review and Handoff
 
