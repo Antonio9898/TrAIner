@@ -273,18 +273,18 @@ No Supabase migration is part of this change. If a future slice chooses to store
 
 #### Automated
 
-- [ ] 1.1 `context/foundation/training-safety-boundaries.md` exists.
-- [ ] 1.2 The document includes references to `healthConstraints`, `safetyNotes`, `S-01`, `S-02`, and `S-03`.
-- [ ] 1.3 `git diff --name-only` for this phase shows no `src/` or `supabase/migrations/` changes.
+- [x] 1.1 `context/foundation/training-safety-boundaries.md` exists.
+- [x] 1.2 The document includes references to `healthConstraints`, `safetyNotes`, `S-01`, `S-02`, and `S-03`.
+- [x] 1.3 `git diff --name-only` for this phase shows no `src/` or `supabase/migrations/` changes.
 
 #### Manual
 
-- [ ] 1.4 Human review confirms the document says TrAIner does not diagnose injuries or replace a doctor, physiotherapist, or medical trainer.
-- [ ] 1.5 Human review confirms the document uses informational warnings only and does not define automatic blockers.
-- [ ] 1.6 Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist.
-- [ ] 1.7 Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment.
-- [ ] 1.8 Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale.
-- [ ] 1.9 Human review confirms the document does not require storing user acknowledgement.
+- [x] 1.4 Human review confirms the document says TrAIner does not diagnose injuries or replace a doctor, physiotherapist, or medical trainer.
+- [x] 1.5 Human review confirms the document uses informational warnings only and does not define automatic blockers.
+- [x] 1.6 Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist.
+- [x] 1.7 Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment.
+- [x] 1.8 Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale.
+- [x] 1.9 Human review confirms the document does not require storing user acknowledgement.
 
 ### Phase 2: Roadmap Handoff
 

@@ -1,7 +1,7 @@
 ---
 change_id: training-safety-boundaries
 title: Training safety boundaries
-status: planned
+status: implementing
 created: 2026-06-03
 updated: 2026-06-03
 archived_at: null
