@@ -64,9 +64,11 @@ Create the minimal database contract for owner-scoped planning data with RLS, co
 
 - `public.training_intakes`: user goal, `experience_level`, health constraints, optional notes, timestamps, and ownership.
 - `public.training_plans`: one current plan per intake, plan status, JSONB plan content, explanation/notes, acceptance timestamp, revision-by-overwrite metadata, timestamps, and ownership.
-- `public.workout_feedback`: one feedback record per performed workout, difficulty/rating fields, optional notes, performed timestamp, and ownership.
+- `public.workout_feedback`: one feedback record per performed workout, stable `workout_key` or `workout_label` that identifies the scheduled workout/day within the plan content, difficulty/rating fields, optional notes, performed timestamp, and ownership.
 
 Each table must include `user_id uuid not null references auth.users(id) on delete cascade`, primary keys, `created_at`, `updated_at`, and owner-scoped foreign keys where child rows point to parent rows.
+
+`training_plans` must enforce the current-plan invariant with a unique constraint or unique index on `(user_id, intake_id)`, so one intake cannot accumulate multiple current plan rows.
 
 #### 2. RLS Policies
 
@@ -88,6 +90,7 @@ Each table must include `user_id uuid not null references auth.users(id) on dele
 - `training_plans.status` supports current-plan lifecycle values such as `draft` and `accepted`.
 - Required text fields reject empty strings after trimming.
 - JSONB plan content is required and must be a JSON object.
+- `workout_feedback` includes a non-empty stable workout/day reference aligned with scheduled entries in `training_plans.plan_content`.
 - Feedback rating fields stay within their documented numeric range.
 
 ### Success Criteria:
@@ -98,10 +101,13 @@ Each table must include `user_id uuid not null references auth.users(id) on dele
 - Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available.
 - RLS is enabled on all new planning tables.
 - No new `anon` policies exist for planning tables.
+- A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`.
 
 #### Manual Verification:
 
 - Schema review confirms each child table cannot reference another user's parent row.
+- Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses.
+- Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content.
 - Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps.
 - Schema review confirms revision support is overwrite-based, not version-history-based.
 
@@ -140,7 +146,7 @@ The types should use app-facing camelCase property names while preserving clear 
 
 **Intent**: Keep plan content flexible enough for AI output while still making the first explained plan usable by S-02.
 
-**Contract**: Define a minimal JSON-compatible `TrainingPlanContent` shape with plan overview, scheduled training days, exercise entries, progression guidance, safety notes, and optional metadata. Do not encode a fully normalized exercise database in TypeScript.
+**Contract**: Define a minimal JSON-compatible `TrainingPlanContent` shape with plan overview, scheduled training days, stable workout/day keys or labels, exercise entries, progression guidance, safety notes, and optional metadata. Do not encode a fully normalized exercise database in TypeScript.
 
 #### 3. Feedback and Intake Shape
 
@@ -148,7 +154,7 @@ The types should use app-facing camelCase property names while preserving clear 
 
 **Intent**: Match the decisions that intake uses minimal structured fields and feedback is stored per performed workout.
 
-**Contract**: Define intake fields for goal, experience level, health constraints, optional notes, and timestamps. Define feedback fields for plan linkage, performed timestamp, simple rating/difficulty values, optional notes, and timestamps.
+**Contract**: Define intake fields for goal, experience level, health constraints, optional notes, and timestamps. Define feedback fields for plan linkage, stable workout/day key or label, performed timestamp, simple rating/difficulty values, optional notes, and timestamps.
 
 ### Success Criteria:
 
@@ -164,6 +170,7 @@ The types should use app-facing camelCase property names while preserving clear 
 - Type review confirms names and values match the migration constraints.
 - Type review confirms no data-access helper or API behavior was added in this phase.
 - Type review confirms plan content remains JSONB-friendly and not over-normalized.
+- Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase. Phase blocks use plain bullets - the corresponding `- [ ]` checkboxes for these items live in the `## Progress` section at the bottom of the plan.
 
@@ -196,7 +203,7 @@ Verify the schema and types together, then document what downstream slices can a
 - S-01 can store goal, experience level, health constraints, and notes.
 - S-02 can store one generated plan with explanation and structured JSONB content.
 - S-03 can update/accept the current plan through overwrite semantics.
-- S-04 can store one feedback record per performed workout.
+- S-04 can store one feedback record per performed workout and identify which scheduled workout/day it refers to.
 
 ### Success Criteria:
 
@@ -208,7 +215,7 @@ Verify the schema and types together, then document what downstream slices can a
 
 #### Manual Verification:
 
-- Human confirms the contract is sufficient for S-01 through S-04.
+- Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to.
 - Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
 - Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete.
 
@@ -267,12 +274,15 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 - [ ] 1.2 Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available.
 - [ ] 1.3 RLS is enabled on all new planning tables.
 - [ ] 1.4 No new `anon` policies exist for planning tables.
+- [ ] 1.8 A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`.
 
 #### Manual
 
 - [ ] 1.5 Schema review confirms each child table cannot reference another user's parent row.
 - [ ] 1.6 Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps.
 - [ ] 1.7 Schema review confirms revision support is overwrite-based, not version-history-based.
+- [ ] 1.9 Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses.
+- [ ] 1.10 Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content.
 
 ### Phase 2: Shared TypeScript Domain Types
 
@@ -288,6 +298,7 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 - [ ] 2.5 Type review confirms names and values match the migration constraints.
 - [ ] 2.6 Type review confirms no data-access helper or API behavior was added in this phase.
 - [ ] 2.7 Type review confirms plan content remains JSONB-friendly and not over-normalized.
+- [ ] 2.8 Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`.
 
 ### Phase 3: Contract Verification and Handoff
 
@@ -299,6 +310,6 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Manual
 
-- [ ] 3.4 Human confirms the contract is sufficient for S-01 through S-04.
+- [ ] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to.
 - [ ] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
 - [ ] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete.
