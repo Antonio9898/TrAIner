@@ -270,19 +270,19 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Automated
 
-- [ ] 1.1 Migration file exists under `supabase/migrations/` with the required timestamp naming format.
-- [ ] 1.2 Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available.
-- [ ] 1.3 RLS is enabled on all new planning tables.
-- [ ] 1.4 No new `anon` policies exist for planning tables.
-- [ ] 1.8 A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`.
+- [x] 1.1 Migration file exists under `supabase/migrations/` with the required timestamp naming format.
+- [x] 1.2 Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available.
+- [x] 1.3 RLS is enabled on all new planning tables.
+- [x] 1.4 No new `anon` policies exist for planning tables.
+- [x] 1.8 A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`.
 
 #### Manual
 
-- [ ] 1.5 Schema review confirms each child table cannot reference another user's parent row.
-- [ ] 1.6 Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps.
-- [ ] 1.7 Schema review confirms revision support is overwrite-based, not version-history-based.
-- [ ] 1.9 Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses.
-- [ ] 1.10 Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content.
+- [x] 1.5 Schema review confirms each child table cannot reference another user's parent row.
+- [x] 1.6 Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps.
+- [x] 1.7 Schema review confirms revision support is overwrite-based, not version-history-based.
+- [x] 1.9 Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses.
+- [x] 1.10 Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content.
 
 ### Phase 2: Shared TypeScript Domain Types
 

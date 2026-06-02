@@ -1,7 +1,7 @@
 ---
 change_id: minimal-planning-data-contract
 title: Minimal planning data contract
-status: planned
+status: implementing
 created: 2026-06-02
 updated: 2026-06-02
 archived_at: null
