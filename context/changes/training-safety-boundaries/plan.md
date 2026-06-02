@@ -304,12 +304,12 @@ No Supabase migration is part of this change. If a future slice chooses to store
 
 #### Automated
 
-- [x] 3.1 `test -f context/foundation/training-safety-boundaries.md` succeeds.
-- [x] 3.2 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` succeeds.
-- [x] 3.3 `git diff --name-only` shows only expected files changed for this doc-only implementation.
+- [x] 3.1 `test -f context/foundation/training-safety-boundaries.md` succeeds. — de46a0e
+- [x] 3.2 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` succeeds. — de46a0e
+- [x] 3.3 `git diff --name-only` shows only expected files changed for this doc-only implementation. — de46a0e
 
 #### Manual
 
-- [x] 3.4 Human confirms the foundation document is sufficient for `S-01`, `S-02`, and `S-03` planning.
-- [x] 3.5 Human confirms the document matches the eight planning decisions captured in this plan.
-- [x] 3.6 Human confirms the explicit out-of-scope list still matches the intended MVP boundary.
+- [x] 3.4 Human confirms the foundation document is sufficient for `S-01`, `S-02`, and `S-03` planning. — de46a0e
+- [x] 3.5 Human confirms the document matches the eight planning decisions captured in this plan. — de46a0e
+- [x] 3.6 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — de46a0e
