@@ -77,11 +77,12 @@ Create the durable foundation document that describes how TrAIner talks about he
 - Intake question guidance: one free-text constraints prompt with neutral examples.
 - Informational warning behavior: show warnings and professional-care guidance, but do not block plan generation in this change.
 - Generated plan requirements: use existing plan-level and workout-level `safetyNotes` to mention constraints.
+- Explanation guidance: explanations should describe training-fit rationale, mention relevant constraints when relevant, avoid diagnosis or safety guarantees, and defer medical questions to professionals.
 - Revision behavior: remind users that requested changes should respect previously provided constraints.
 - Privacy boundary: health constraints are private user data and must not be shared with other users.
 - Explicit non-goals: medical diagnosis, medical advice, injury taxonomy, stored acknowledgement, risk scoring, red-flag blocking, trainer/admin flows.
 - Downstream consumption notes for `S-01`, `S-02`, and `S-03`.
-- Source notes for the public-health references used as warning-language background.
+- Source notes for the public-health references used as warning-language background. Record `checked_at: 2026-06-03`, note that NIDDK pages are background-only because they are not updated regularly, and do not derive medical rules from these sources.
 
 Do not add executable code or schema in this phase.
 
@@ -99,6 +100,7 @@ Do not add executable code or schema in this phase.
 - Human review confirms the document uses informational warnings only and does not define automatic blockers.
 - Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist.
 - Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment.
+- Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale.
 - Human review confirms the document does not require storing user acknowledgement.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase. Phase blocks use plain bullets - the corresponding `- [ ]` checkboxes for these items live in the `## Progress` section at the bottom of the plan.
@@ -119,7 +121,7 @@ Make the foundation boundary visible at the roadmap level so future slice planni
 
 **Intent**: Show that the F-02 foundation contract is available once implemented and point future work to the safety boundary document.
 
-**Contract**: Update the roadmap's F-02 references so they point to `context/foundation/training-safety-boundaries.md`. After implementation, the F-02 status should no longer read like an unimplemented ready item. The update should preserve the existing dependency graph: `S-01`, `S-02`, and `S-03` still depend on F-02.
+**Contract**: Update the roadmap's F-02 references so they point to `context/foundation/training-safety-boundaries.md`. Keep the roadmap's existing status vocabulary consistent: do not invent a one-off F-02 status unless the same roadmap convention is updated consistently for other implemented foundation slices. The update should preserve the existing dependency graph: `S-01`, `S-02`, and `S-03` still depend on F-02.
 
 #### 2. Downstream Slice Notes
 
@@ -281,7 +283,8 @@ No Supabase migration is part of this change. If a future slice chooses to store
 - [ ] 1.5 Human review confirms the document uses informational warnings only and does not define automatic blockers.
 - [ ] 1.6 Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist.
 - [ ] 1.7 Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment.
-- [ ] 1.8 Human review confirms the document does not require storing user acknowledgement.
+- [ ] 1.8 Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale.
+- [ ] 1.9 Human review confirms the document does not require storing user acknowledgement.
 
 ### Phase 2: Roadmap Handoff
 
