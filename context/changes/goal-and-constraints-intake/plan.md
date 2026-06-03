@@ -365,16 +365,16 @@ No migration is planned. S-01 uses the existing `training_intakes` table and exi
 
 #### Automated
 
-- [x] 3.1 `npx astro sync` completes successfully.
-- [x] 3.2 `npm run lint` completes successfully.
-- [x] 3.3 `npm run build` completes successfully with the existing Supabase environment requirements satisfied.
-- [x] 3.4 `git status --short` shows only expected files changed for this implementation.
+- [x] 3.1 `npx astro sync` completes successfully. — 860b64a
+- [x] 3.2 `npm run lint` completes successfully. — 860b64a
+- [x] 3.3 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 860b64a
+- [x] 3.4 `git status --short` shows only expected files changed for this implementation. — 860b64a
 
 #### Manual
 
-- [x] 3.5 Signed-in user can create an intake and see the saved dashboard summary.
-- [x] 3.6 Signed-in user can edit the latest pre-plan intake without creating duplicate pre-plan rows.
-- [x] 3.7 Empty required fields and invalid experience values are rejected with clear user-facing messages.
-- [x] 3.8 Unauthenticated page access redirects to sign-in.
-- [x] 3.9 Server-side errors do not include submitted goal, health constraints, or notes in URL params.
-- [x] 3.10 The final UI preserves F-02 safety boundaries: no diagnosis, no medical checklist, no acknowledgement storage, and no runtime blocking.
+- [x] 3.5 Signed-in user can create an intake and see the saved dashboard summary. — 860b64a
+- [x] 3.6 Signed-in user can edit the latest pre-plan intake without creating duplicate pre-plan rows. — 860b64a
+- [x] 3.7 Empty required fields and invalid experience values are rejected with clear user-facing messages. — 860b64a
+- [x] 3.8 Unauthenticated page access redirects to sign-in. — 860b64a
+- [x] 3.9 Server-side errors do not include submitted goal, health constraints, or notes in URL params. — 860b64a
+- [x] 3.10 The final UI preserves F-02 safety boundaries: no diagnosis, no medical checklist, no acknowledgement storage, and no runtime blocking. — 860b64a
