@@ -346,20 +346,20 @@ No migration is planned. S-01 uses the existing `training_intakes` table and exi
 
 #### Automated
 
-- [ ] 2.1 `src/pages/dashboard/intake.astro` exists and renders the intake form island.
-- [ ] 2.2 `src/components/intake/GoalAndConstraintsForm.tsx` exists and posts to `/api/training-intakes`.
-- [ ] 2.3 The form includes goal, experience level, health constraints, no-known-constraints option, optional notes, disclaimer, server error display, and pending submit state.
-- [ ] 2.4 Client validation prevents empty goal and empty health constraints before native submit.
-- [ ] 2.5 The route path remains under `/dashboard`, so existing middleware protection applies.
+- [x] 2.1 `src/pages/dashboard/intake.astro` exists and renders the intake form island.
+- [x] 2.2 `src/components/intake/GoalAndConstraintsForm.tsx` exists and posts to `/api/training-intakes`.
+- [x] 2.3 The form includes goal, experience level, health constraints, no-known-constraints option, optional notes, disclaimer, server error display, and pending submit state.
+- [x] 2.4 Client validation prevents empty goal and empty health constraints before native submit.
+- [x] 2.5 The route path remains under `/dashboard`, so existing middleware protection applies.
 
 #### Manual
 
-- [ ] 2.6 A signed-in user can open `/dashboard/intake`.
-- [ ] 2.7 An unauthenticated user who opens `/dashboard/intake` is redirected to sign in by middleware.
-- [ ] 2.8 The form is usable on mobile and desktop without overlapping text or broken controls.
-- [ ] 2.9 The health constraints prompt is free text with neutral examples, not a medical checklist or diagnosis flow.
-- [ ] 2.10 The disclaimer is visible and does not ask for stored acknowledgement.
-- [ ] 2.11 Selecting "No known constraints" results in the exact saved value `no known constraints`.
+- [x] 2.6 A signed-in user can open `/dashboard/intake`.
+- [x] 2.7 An unauthenticated user who opens `/dashboard/intake` is redirected to sign in by middleware.
+- [x] 2.8 The form is usable on mobile and desktop without overlapping text or broken controls.
+- [x] 2.9 The health constraints prompt is free text with neutral examples, not a medical checklist or diagnosis flow.
+- [x] 2.10 The disclaimer is visible and does not ask for stored acknowledgement.
+- [x] 2.11 Selecting "No known constraints" results in the exact saved value `no known constraints`.
 
 ### Phase 3: Dashboard Summary and Verification
 
