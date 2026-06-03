@@ -329,18 +329,18 @@ No migration is planned. S-01 uses the existing `training_intakes` table and exi
 
 #### Automated
 
-- [ ] 1.1 `zod` is present in `package.json` and `package-lock.json`.
-- [ ] 1.2 `src/lib/services/training-intakes.ts` exists and exports validation plus read/save helpers.
-- [ ] 1.3 `src/pages/api/training-intakes.ts` exists, exports `const prerender = false`, and supports POST.
-- [ ] 1.4 The API route uses the Supabase SSR client from `src/lib/supabase.ts`, not `src/db/supabase.js`.
-- [ ] 1.5 The save path updates the latest intake when no plan exists and inserts a new intake when the latest intake already has a plan.
+- [x] 1.1 `zod` is present in `package.json` and `package-lock.json`.
+- [x] 1.2 `src/lib/services/training-intakes.ts` exists and exports validation plus read/save helpers.
+- [x] 1.3 `src/pages/api/training-intakes.ts` exists, exports `const prerender = false`, and supports POST.
+- [x] 1.4 The API route uses the Supabase SSR client from `src/lib/supabase.ts`, not `src/db/supabase.js`.
+- [x] 1.5 The save path updates the latest intake when no plan exists and inserts a new intake when the latest intake already has a plan.
 
 #### Manual
 
-- [ ] 1.6 Review confirms server validation rejects empty `goal`, invalid `experienceLevel`, empty `healthConstraints`, and blank-only `notes`.
-- [ ] 1.7 Review confirms unauthenticated or unconfigured Supabase cases redirect with generic safe errors.
-- [ ] 1.8 Review confirms no submitted free-text health data is added to query params or logs by the planned code path.
-- [ ] 1.9 Review confirms no migration or RLS change was introduced.
+- [x] 1.6 Review confirms server validation rejects empty `goal`, invalid `experienceLevel`, empty `healthConstraints`, and blank-only `notes`.
+- [x] 1.7 Review confirms unauthenticated or unconfigured Supabase cases redirect with generic safe errors.
+- [x] 1.8 Review confirms no submitted free-text health data is added to query params or logs by the planned code path.
+- [x] 1.9 Review confirms no migration or RLS change was introduced.
 
 ### Phase 2: Protected Intake UI
 

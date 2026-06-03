@@ -1,7 +1,7 @@
 ---
 change_id: goal-and-constraints-intake
 title: Goal and constraints intake
-status: planned
+status: implementing
 created: 2026-06-03
 updated: 2026-06-03
 archived_at: null
