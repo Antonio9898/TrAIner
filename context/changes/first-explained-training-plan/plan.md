@@ -568,19 +568,19 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [ ] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers.
-- [ ] 2.2 The service reads and writes through the caller-provided Supabase SSR client.
-- [ ] 2.3 The service validates model output with Zod before insert.
-- [ ] 2.4 The service enforces 2-5 scheduled workouts for S-02.
-- [ ] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`.
-- [ ] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs.
+- [x] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers.
+- [x] 2.2 The service reads and writes through the caller-provided Supabase SSR client.
+- [x] 2.3 The service validates model output with Zod before insert.
+- [x] 2.4 The service enforces 2-5 scheduled workouts for S-02.
+- [x] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`.
+- [x] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs.
 
 #### Manual
 
-- [ ] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row.
-- [ ] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary.
-- [ ] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks.
-- [ ] 2.10 Review confirms no migration was introduced.
+- [x] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row.
+- [x] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary.
+- [x] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks.
+- [x] 2.10 Review confirms no migration was introduced.
 
 ### Phase 3: Generation Route
 
