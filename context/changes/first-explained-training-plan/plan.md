@@ -552,17 +552,17 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 1.1 `astro.config.mjs` declares server-only OpenRouter env fields.
-- [x] 1.2 `.env.example` documents required OpenRouter setup.
-- [x] 1.3 `wrangler.jsonc` includes `OPENROUTER_API_KEY` in required secrets.
-- [x] 1.4 `src/lib/openrouter.ts` exists and does not expose API keys to client-side code.
-- [x] 1.5 `src/lib/openrouter.ts` uses direct `fetch`, non-streaming chat completions, JSON schema response format, fixed title attribution, optional referer, and stable user id.
+- [x] 1.1 `astro.config.mjs` declares server-only OpenRouter env fields. — 729539b
+- [x] 1.2 `.env.example` documents required OpenRouter setup. — 729539b
+- [x] 1.3 `wrangler.jsonc` includes `OPENROUTER_API_KEY` in required secrets. — 729539b
+- [x] 1.4 `src/lib/openrouter.ts` exists and does not expose API keys to client-side code. — 729539b
+- [x] 1.5 `src/lib/openrouter.ts` uses direct `fetch`, non-streaming chat completions, JSON schema response format, fixed title attribution, optional referer, and stable user id. — 729539b
 
 #### Manual
 
-- [x] 1.6 Review confirms no OpenRouter secret, prompt text, or raw provider response is logged or placed in URLs.
-- [x] 1.7 Review confirms `OPENROUTER_MODEL` is required and no fallback/default model is embedded in code.
-- [x] 1.8 Review confirms OpenRouter errors are safe for route-level user messages.
+- [x] 1.6 Review confirms no OpenRouter secret, prompt text, or raw provider response is logged or placed in URLs. — 729539b
+- [x] 1.7 Review confirms `OPENROUTER_MODEL` is required and no fallback/default model is embedded in code. — 729539b
+- [x] 1.8 Review confirms OpenRouter errors are safe for route-level user messages. — 729539b
 
 ### Phase 2: Training Plan Generation Service
 
