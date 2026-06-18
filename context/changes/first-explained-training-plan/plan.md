@@ -625,17 +625,17 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 5.1 `npx astro sync` completes successfully.
-- [x] 5.2 `npm run lint` completes successfully.
-- [x] 5.3 `npm run build` completes successfully with required env configured.
-- [x] 5.4 `git status --short` shows only expected files changed for this implementation.
+- [x] 5.1 `npx astro sync` completes successfully. — 06a9bdd
+- [x] 5.2 `npm run lint` completes successfully. — 06a9bdd
+- [x] 5.3 `npm run build` completes successfully with required env configured. — 06a9bdd
+- [x] 5.4 `git status --short` shows only expected files changed for this implementation. — 06a9bdd
 
 #### Manual
 
-- [x] 5.5 Signed-in user can generate the first explained plan from a saved intake.
-- [x] 5.6 Generated plan is stored as a `draft` row for the correct owner and intake.
-- [x] 5.7 Stored plan appears inline on the dashboard with explanation and safety notes.
-- [x] 5.8 Invalid model output stores nothing and returns a safe error.
-- [x] 5.9 Repeated click behavior does not create duplicate plan rows.
-- [x] 5.10 No prompt text, health constraints, notes, raw model output, or provider errors appear in URLs or logs.
-- [x] 5.11 Human confirms the implementation stays within S-02 scope and does not introduce S-03/S-04 behavior.
+- [x] 5.5 Signed-in user can generate the first explained plan from a saved intake. — 06a9bdd
+- [x] 5.6 Generated plan is stored as a `draft` row for the correct owner and intake. — 06a9bdd
+- [x] 5.7 Stored plan appears inline on the dashboard with explanation and safety notes. — 06a9bdd
+- [x] 5.8 Invalid model output stores nothing and returns a safe error. — 06a9bdd
+- [x] 5.9 Repeated click behavior does not create duplicate plan rows. — 06a9bdd
+- [x] 5.10 No prompt text, health constraints, notes, raw model output, or provider errors appear in URLs or logs. — 06a9bdd
+- [x] 5.11 Human confirms the implementation stays within S-02 scope and does not introduce S-03/S-04 behavior. — 06a9bdd
