@@ -586,18 +586,18 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [ ] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST.
-- [ ] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client.
-- [ ] 3.3 The route reads the latest editable intake before calling generation.
-- [ ] 3.4 The route redirects with safe success/error flags only.
-- [ ] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params.
+- [x] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST.
+- [x] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client.
+- [x] 3.3 The route reads the latest editable intake before calling generation.
+- [x] 3.4 The route redirects with safe success/error flags only.
+- [x] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params.
 
 #### Manual
 
-- [ ] 3.6 Review confirms unauthenticated requests cannot generate plans.
-- [ ] 3.7 Review confirms a user with no intake gets a safe dashboard error.
-- [ ] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02.
-- [ ] 3.9 Review confirms missing OpenRouter config does not attempt a provider call.
+- [x] 3.6 Review confirms unauthenticated requests cannot generate plans.
+- [x] 3.7 Review confirms a user with no intake gets a safe dashboard error.
+- [x] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02.
+- [x] 3.9 Review confirms missing OpenRouter config does not attempt a provider call.
 
 ### Phase 4: Dashboard Generate and View UI
 
