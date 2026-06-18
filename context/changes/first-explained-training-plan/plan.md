@@ -603,23 +603,23 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper.
-- [x] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan.
-- [x] 4.3 The dashboard shows the full stored plan inline after generation.
-- [x] 4.4 The generate button has client-side double-submit prevention.
-- [x] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience.
-- [x] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard.
+- [x] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper. — a482e09
+- [x] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan. — a482e09
+- [x] 4.3 The dashboard shows the full stored plan inline after generation. — a482e09
+- [x] 4.4 The generate button has client-side double-submit prevention. — a482e09
+- [x] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience. — a482e09
+- [x] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard. — a482e09
 
 #### Manual
 
-- [x] 4.7 A signed-in user with no intake sees the existing start-intake path.
-- [x] 4.8 A signed-in user with an editable intake can trigger generation.
-- [x] 4.9 During submit, the UI prevents obvious repeated clicks.
-- [x] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline.
-- [x] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake.
-- [x] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL.
-- [x] 4.13 The UI remains usable on mobile and desktop without overlapping text.
-- [x] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement.
+- [x] 4.7 A signed-in user with no intake sees the existing start-intake path. — a482e09
+- [x] 4.8 A signed-in user with an editable intake can trigger generation. — a482e09
+- [x] 4.9 During submit, the UI prevents obvious repeated clicks. — a482e09
+- [x] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline. — a482e09
+- [x] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake. — a482e09
+- [x] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL. — a482e09
+- [x] 4.13 The UI remains usable on mobile and desktop without overlapping text. — a482e09
+- [x] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement. — a482e09
 
 ### Phase 5: Verification and Handoff
 
