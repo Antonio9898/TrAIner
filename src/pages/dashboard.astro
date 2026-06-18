@@ -38,6 +38,7 @@ const savedIntake = Astro.url.searchParams.get("saved") === "intake";
 const generatedPlan = Astro.url.searchParams.get("generated") === "plan";
 const generationErrorCode = Astro.url.searchParams.get("error");
 const generationErrorMessages: Record<string, string> = {
+  "request-not-allowed": "We could not verify this request. Please try again from the dashboard.",
   "supabase-not-configured": "Plan generation is unavailable because Supabase is not configured.",
   "signin-required": "Please sign in before generating a plan.",
   "missing-intake": "Save an intake before generating a plan.",

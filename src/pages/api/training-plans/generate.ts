@@ -14,6 +14,7 @@ export const prerender = false;
 const DASHBOARD_ROUTE = "/dashboard";
 
 type GenerationErrorCode =
+  | "request-not-allowed"
   | "supabase-not-configured"
   | "signin-required"
   | "missing-intake"
@@ -23,6 +24,10 @@ type GenerationErrorCode =
   | "save-failed";
 
 export const POST: APIRoute = async (context) => {
+  if (!isSameOriginRequest(context.request)) {
+    return redirectWithError(context, "request-not-allowed");
+  }
+
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
     return redirectWithError(context, "supabase-not-configured");
@@ -62,6 +67,21 @@ export const POST: APIRoute = async (context) => {
 
 function redirectWithError(context: APIContext, code: GenerationErrorCode) {
   return context.redirect(`${DASHBOARD_ROUTE}?error=${code}`);
+}
+
+function isSameOriginRequest(request: Request): boolean {
+  const requestOrigin = new URL(request.url).origin;
+  const origin = request.headers.get("Origin");
+
+  if (!origin) {
+    return false;
+  }
+
+  try {
+    return new URL(origin).origin === requestOrigin;
+  } catch {
+    return false;
+  }
 }
 
 async function getAuthenticatedUser(supabase: NonNullable<ReturnType<typeof createClient>>) {

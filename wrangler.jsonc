@@ -13,6 +13,6 @@
     "enabled": true,
   },
   "secrets": {
-    "required": ["SUPABASE_URL", "SUPABASE_KEY", "OPENROUTER_API_KEY"],
+    "required": ["SUPABASE_URL", "SUPABASE_KEY", "OPENROUTER_API_KEY", "OPENROUTER_MODEL"],
   },
 }
