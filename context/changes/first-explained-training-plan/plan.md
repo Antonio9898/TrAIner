@@ -568,19 +568,19 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers.
-- [x] 2.2 The service reads and writes through the caller-provided Supabase SSR client.
-- [x] 2.3 The service validates model output with Zod before insert.
-- [x] 2.4 The service enforces 2-5 scheduled workouts for S-02.
-- [x] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`.
-- [x] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs.
+- [x] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers. — bf3217d
+- [x] 2.2 The service reads and writes through the caller-provided Supabase SSR client. — bf3217d
+- [x] 2.3 The service validates model output with Zod before insert. — bf3217d
+- [x] 2.4 The service enforces 2-5 scheduled workouts for S-02. — bf3217d
+- [x] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`. — bf3217d
+- [x] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs. — bf3217d
 
 #### Manual
 
-- [x] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row.
-- [x] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary.
-- [x] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks.
-- [x] 2.10 Review confirms no migration was introduced.
+- [x] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row. — bf3217d
+- [x] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary. — bf3217d
+- [x] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks. — bf3217d
+- [x] 2.10 Review confirms no migration was introduced. — bf3217d
 
 ### Phase 3: Generation Route
 
