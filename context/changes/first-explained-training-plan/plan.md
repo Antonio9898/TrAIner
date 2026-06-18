@@ -586,40 +586,40 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST.
-- [x] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client.
-- [x] 3.3 The route reads the latest editable intake before calling generation.
-- [x] 3.4 The route redirects with safe success/error flags only.
-- [x] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params.
+- [x] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST. — 32588e5
+- [x] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client. — 32588e5
+- [x] 3.3 The route reads the latest editable intake before calling generation. — 32588e5
+- [x] 3.4 The route redirects with safe success/error flags only. — 32588e5
+- [x] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params. — 32588e5
 
 #### Manual
 
-- [x] 3.6 Review confirms unauthenticated requests cannot generate plans.
-- [x] 3.7 Review confirms a user with no intake gets a safe dashboard error.
-- [x] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02.
-- [x] 3.9 Review confirms missing OpenRouter config does not attempt a provider call.
+- [x] 3.6 Review confirms unauthenticated requests cannot generate plans. — 32588e5
+- [x] 3.7 Review confirms a user with no intake gets a safe dashboard error. — 32588e5
+- [x] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02. — 32588e5
+- [x] 3.9 Review confirms missing OpenRouter config does not attempt a provider call. — 32588e5
 
 ### Phase 4: Dashboard Generate and View UI
 
 #### Automated
 
-- [ ] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper.
-- [ ] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan.
-- [ ] 4.3 The dashboard shows the full stored plan inline after generation.
-- [ ] 4.4 The generate button has client-side double-submit prevention.
-- [ ] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience.
-- [ ] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard.
+- [x] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper.
+- [x] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan.
+- [x] 4.3 The dashboard shows the full stored plan inline after generation.
+- [x] 4.4 The generate button has client-side double-submit prevention.
+- [x] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience.
+- [x] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard.
 
 #### Manual
 
-- [ ] 4.7 A signed-in user with no intake sees the existing start-intake path.
-- [ ] 4.8 A signed-in user with an editable intake can trigger generation.
-- [ ] 4.9 During submit, the UI prevents obvious repeated clicks.
-- [ ] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline.
-- [ ] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake.
-- [ ] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL.
-- [ ] 4.13 The UI remains usable on mobile and desktop without overlapping text.
-- [ ] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement.
+- [x] 4.7 A signed-in user with no intake sees the existing start-intake path.
+- [x] 4.8 A signed-in user with an editable intake can trigger generation.
+- [x] 4.9 During submit, the UI prevents obvious repeated clicks.
+- [x] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline.
+- [x] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake.
+- [x] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL.
+- [x] 4.13 The UI remains usable on mobile and desktop without overlapping text.
+- [x] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement.
 
 ### Phase 5: Verification and Handoff
 
