@@ -1,7 +1,8 @@
 ---
 project: TrAIner
-version: 1
-status: draft
+version: 2
+status: active
+updated: 2026-07-06
 main_goal: speed
 top_blocker: capacity
 ---
@@ -24,11 +25,11 @@ TrAIner ma pomoc osobie trenujacej lub zaczynajacej trening silowy ulozyc plan p
 
 | ID | Change ID | Outcome (user can ...) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
-| F-01 | minimal-planning-data-contract | (foundation) minimalny prywatny kontrakt danych dla celu, ankiety, planu i feedbacku jest gotowy do uzycia przez pionowe slice'y | - | Access Control, Business Logic, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007 | ready |
-| F-02 | training-safety-boundaries | (foundation) granice rekomendacji treningowych sa opisane tak, zeby planowanie nie diagnozowalo kontuzji i nie zastepowalo specjalisty | - | Non-Functional Requirements, Non-Goals, FR-003, FR-004, FR-005, FR-008 | ready |
-| S-01 | goal-and-constraints-intake | user can log in, enter a training goal, training level, and health constraints | F-01, F-02 | US-01, FR-001, FR-002, FR-003 | proposed |
-| S-02 | first-explained-training-plan | user can receive the first explained training plan matched to goal, level, and constraints | F-01, F-02, S-01 | US-01, FR-004, FR-008 | proposed |
-| S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | proposed |
+| F-01 | minimal-planning-data-contract | (foundation) minimalny prywatny kontrakt danych dla celu, ankiety, planu i feedbacku jest gotowy do uzycia przez pionowe slice'y | - | Access Control, Business Logic, FR-002, FR-003, FR-004, FR-005, FR-006, FR-007 | implemented |
+| F-02 | training-safety-boundaries | (foundation) granice rekomendacji treningowych sa opisane tak, zeby planowanie nie diagnozowalo kontuzji i nie zastepowalo specjalisty | - | Non-Functional Requirements, Non-Goals, FR-003, FR-004, FR-005, FR-008 | implemented |
+| S-01 | goal-and-constraints-intake | user can log in, enter a training goal, training level, and health constraints | F-01, F-02 | US-01, FR-001, FR-002, FR-003 | implemented |
+| S-02 | first-explained-training-plan | user can receive the first explained training plan matched to goal, level, and constraints | F-01, F-02, S-01 | US-01, FR-004, FR-008 | implemented |
+| S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | ready |
 | S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | proposed |
 
 ## Streams
@@ -44,9 +45,9 @@ Navigation aid - groups items that share a Prerequisites chain. Canonical orderi
 
 What's already in place in the codebase (auto-researched). Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** present - server-rendered app shell, routed pages, and interactive auth forms are present (`astro.config.mjs`, `src/pages/index.astro`, `src/components/auth/SignInForm.tsx`).
-- **Backend / API:** partial - auth endpoints exist, but there is no training intake, planning, revision, or feedback API yet (`src/pages/api/auth/signin.ts`, `src/pages/api/auth/signup.ts`).
-- **Data:** partial - data tooling and a starter/example database change exist, but no private training goal, intake, plan, revision, or feedback contract exists yet (`supabase/`).
+- **Frontend:** present - server-rendered app shell, auth forms, goal-and-constraints intake, and first-plan generation and display are present (`src/pages/dashboard.astro`, `src/pages/dashboard/intake.astro`).
+- **Backend / API:** partial - auth, training intake, and first-plan generation endpoints exist; plan revision, acceptance, and workout feedback endpoints remain (`src/pages/api/training-intakes.ts`, `src/pages/api/training-plans/generate.ts`).
+- **Data:** present for the planned MVP - private training intake, plan revision/acceptance fields, and workout feedback tables exist with RLS (`supabase/migrations/20260602233915_create_planning_contract.sql`).
 - **Auth:** present - cookie-based session client, protected-route middleware, auth pages, and sign-in/sign-up/sign-out routes are present (`src/lib/supabase.ts`, `src/middleware.ts`, `src/pages/auth/signin.astro`).
 - **Deploy / infra:** present - production build target, deploy config, and CI build checks are present (`astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`).
 - **Observability:** partial - platform-level observability is enabled, but product-flow logging or error telemetry for planning is not yet defined (`wrangler.jsonc`).
@@ -64,7 +65,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Jesli kontrakt bedzie zbyt szeroki, roadmapa zmieni sie w pozioma przebudowe danych; jesli bedzie zbyt waski, pierwszy plan i feedback nie beda mialy gdzie zapisac prywatnego kontekstu uzytkownika.
-- **Status:** ready
+- **Status:** implemented
 
 ### F-02: Training safety boundaries
 
@@ -78,7 +79,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Bez tych granic najwczesniejszy plan moze byc szybki, ale niezgodny z guardrailami PRD; zbyt szerokie granice moga z kolei zablokowac prosty MVP.
-- **Status:** ready
+- **Status:** implemented
 
 ## Slices
 
@@ -93,7 +94,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Ten slice musi zebrac minimum kontekstu potrzebnego do pierwszego planu, ale nie moze sugerowac diagnozy kontuzji ani nadmiernie wydluzac wejscia do produktu.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-02: First explained training plan
 
@@ -106,7 +107,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** To jest najwczesniejszy sprawdzian produktu: jesli plan nie odnosi sie do celu, poziomu i ograniczen z intake'u, pozniejsze poprawki i feedback nie maja sensu.
-- **Status:** proposed
+- **Status:** implemented
 
 ### S-03: Plan revision and acceptance
 
@@ -119,7 +120,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Poprawki musza zachowac te same ograniczenia bezpieczenstwa co pierwszy plan; inaczej uzytkownik moze obejsc guardraile w rozmowie o zmianach.
-- **Status:** proposed
+- **Status:** ready
 
 ### S-04: Post-workout feedback
 
@@ -137,11 +138,11 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
-| F-01 | minimal-planning-data-contract | Define the minimal private planning data contract | yes | Recommended next move; unlocks the full north-star path. |
-| F-02 | training-safety-boundaries | Define training safety and no-diagnosis boundaries | yes | Boundary source: `context/foundation/training-safety-boundaries.md`; needed before intake and plan generation. |
-| S-01 | goal-and-constraints-intake | Build goal and constraints intake | no | Wait for F-01 and F-02; consume the safety boundary for intake wording and disclaimer guidance. |
-| S-02 | first-explained-training-plan | Build the first explained training plan | no | North-star slice; wait for F-01, F-02, and S-01; consume the safety boundary for plan `safetyNotes`. |
-| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | no | Wait for S-02 and keep F-02 boundaries in force through reminder-only revision copy. |
+| F-01 | minimal-planning-data-contract | Define the minimal private planning data contract | no | Implemented; data contract is available to the remaining slices. |
+| F-02 | training-safety-boundaries | Define training safety and no-diagnosis boundaries | no | Implemented; keep these boundaries in force for revisions. |
+| S-01 | goal-and-constraints-intake | Build goal and constraints intake | no | Implemented; authenticated users can save and edit intake before plan generation. |
+| S-02 | first-explained-training-plan | Build the first explained training plan | no | Implemented; the north-star flow is present. |
+| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | yes | Recommended next move; all prerequisites are implemented. |
 | S-04 | post-workout-feedback | Build post-workout feedback | no | Wait for accepted plan flow from S-03. |
 
 ## Open Roadmap Questions
@@ -154,3 +155,8 @@ Brak otwartych pytan roadmapowych. PRD wskazuje: "Brak otwartych pytan."
 - **Trainer, admin, or shared-plan roles** - Why parked: PRD Access Control limits MVP to one flat authenticated-user role and explicitly excludes trainer roles, admin panel, and shared plans.
 
 ## Done
+
+- **F-01: Minimal planning data contract** - implemented 2026-06-03 (`context/changes/minimal-planning-data-contract/change.md`).
+- **F-02: Training safety boundaries** - implemented 2026-06-03 (`context/changes/training-safety-boundaries/change.md`).
+- **S-01: Goal and constraints intake** - implemented 2026-06-03 (`context/changes/goal-and-constraints-intake/change.md`).
+- **S-02: First explained training plan** - implemented 2026-06-18 (`context/changes/first-explained-training-plan/change.md`).
