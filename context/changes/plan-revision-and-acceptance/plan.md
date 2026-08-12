@@ -520,21 +520,21 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field.
-- [x] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters.
-- [x] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action.
-- [x] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance.
-- [x] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership.
-- [x] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced.
+- [x] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field. — 2eb4e6b
+- [x] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters. — 2eb4e6b
+- [x] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action. — 2eb4e6b
+- [x] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance. — 2eb4e6b
+- [x] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership. — 2eb4e6b
+- [x] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced. — 2eb4e6b
 
 #### Manual
 
-- [x] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it.
-- [x] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft.
-- [x] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version.
-- [x] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan.
-- [x] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls.
-- [x] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts.
+- [x] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it. — 2eb4e6b
+- [x] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft. — 2eb4e6b
+- [x] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version. — 2eb4e6b
+- [x] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan. — 2eb4e6b
+- [x] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls. — 2eb4e6b
+- [x] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts. — 2eb4e6b
 
 ### Phase 5: Verification and Handoff
 
