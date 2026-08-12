@@ -1,4 +1,5 @@
 ---
+import PlanRevisionForm from "@/components/plans/PlanRevisionForm";
 import Layout from "@/layouts/Layout.astro";
 import { isTrainingIntakeEditable, readLatestTrainingIntake } from "@/lib/services/training-intakes";
 import { readTrainingPlanForIntake } from "@/lib/services/training-plans";
@@ -35,26 +36,36 @@ if (supabase && user) {
 }
 
 const savedIntake = Astro.url.searchParams.get("saved") === "intake";
-const generatedPlan = Astro.url.searchParams.get("generated") === "plan";
-const generationErrorCode = Astro.url.searchParams.get("error");
-const generationErrorMessages: Record<string, string> = {
+const legacyGeneratedPlan = Astro.url.searchParams.get("generated") === "plan";
+const legacyGenerationError = Astro.url.searchParams.get("error");
+const planAction = Astro.url.searchParams.get("planAction") ?? (legacyGeneratedPlan ? "generated" : null);
+const planErrorCode = Astro.url.searchParams.get("planError") ?? legacyGenerationError;
+const planActionMessages: Record<string, string> = {
+  generated: storedPlan
+    ? "Plan generated. Your draft is ready below."
+    : "Plan generation finished. Refresh the dashboard if the draft is not visible.",
+  revised: "Plan revised. Review the complete replacement draft below before accepting it.",
+  accepted: "Plan accepted. This is now the plan you intend to follow.",
+};
+const planErrorMessages: Record<string, string> = {
   "request-not-allowed": "We could not verify this request. Please try again from the dashboard.",
-  "supabase-not-configured": "Plan generation is unavailable because Supabase is not configured.",
-  "signin-required": "Please sign in before generating a plan.",
+  "supabase-not-configured": "Plan actions are unavailable because Supabase is not configured.",
+  "signin-required": "Please sign in before changing a plan.",
   "missing-intake": "Save an intake before generating a plan.",
   "intake-already-planned": "This intake already has a plan.",
   "openrouter-not-configured": "Plan generation is not configured yet.",
   "invalid-generation": "We could not generate a valid plan. Please try again.",
-  "save-failed": "We could not save your generated plan. Please try again.",
+  "invalid-request": "The plan request was invalid. Refresh the dashboard and try again.",
+  "invalid-revision": "We could not create a valid revised plan. Your current plan was not changed.",
+  "plan-conflict": "This plan changed in another tab. Refresh the dashboard and try again.",
+  "save-failed": "We could not save the plan change. Your current plan was not changed.",
 };
-const generationError = generationErrorCode
-  ? (generationErrorMessages[generationErrorCode] ?? "We could not generate a plan. Please try again.")
-  : null;
-const generationSuccess = generatedPlan
-  ? storedPlan
-    ? "Plan generated. Your draft is ready below."
-    : "Plan generation finished. Refresh the dashboard if the draft is not visible."
-  : null;
+const planError = planErrorCode
+  ? (planErrorMessages[planErrorCode] ?? "We could not complete that plan action. Please try again.")
+  : planAction && !planActionMessages[planAction]
+    ? "We could not confirm that plan action. Please try again."
+    : null;
+const planSuccess = planAction && planActionMessages[planAction] ? planActionMessages[planAction] : null;
 const updatedAt = latestIntake
   ? new Intl.DateTimeFormat("en-US", {
       dateStyle: "medium",
@@ -67,6 +78,13 @@ const intakeLinkLabel = latestIntake ? (latestIntakeEditable ? "Edit intake" : "
 function formatPlanDate(value: string): string {
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
+  }).format(new Date(value));
+}
+
+function formatPlanDateTime(value: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
   }).format(new Date(value));
 }
 
@@ -131,17 +149,20 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
       }
 
       {
-        generationSuccess && (
-          <p class="rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-50">
-            {generationSuccess}
+        planSuccess && (
+          <p
+            class="rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-50"
+            role="status"
+          >
+            {planSuccess}
           </p>
         )
       }
 
       {
-        generationError && (
-          <p class="rounded-lg border border-rose-300/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-50">
-            {generationError}
+        planError && (
+          <p class="rounded-lg border border-rose-300/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-50" role="alert">
+            {planError}
           </p>
         )
       }
@@ -161,18 +182,137 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
               <section class="rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
                 <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p class="text-sm text-blue-100/65">Draft plan</p>
-                    <h2 class="mt-1 text-2xl font-semibold text-white">First explained plan</h2>
+                    <p class="text-sm text-blue-100/65">
+                      {storedPlan.status === "accepted" ? "Accepted plan" : "Plan under review"}
+                    </p>
+                    <h2 class="mt-1 text-2xl font-semibold text-white">
+                      {storedPlan.status === "accepted"
+                        ? "Accepted training plan"
+                        : storedPlan.revisionCount > 0
+                          ? "Revised draft plan"
+                          : "First explained plan"}
+                    </h2>
                     <p class="mt-2 text-sm leading-6 break-words text-blue-100/75">
-                      Created {formatPlanDate(storedPlan.createdAt)} from your latest saved intake.
+                      Created {formatPlanDate(storedPlan.createdAt)} · Updated{" "}
+                      {formatPlanDateTime(storedPlan.updatedAt)}
+                    </p>
+                    <p class="mt-1 text-sm leading-6 break-words text-blue-100/75">
+                      {storedPlan.revisionCount === 0
+                        ? "Original version"
+                        : `${storedPlan.revisionCount} complete ${storedPlan.revisionCount === 1 ? "revision" : "revisions"}`}
+                      {storedPlan.lastRevisionRequestedAt &&
+                        ` · Last revised ${formatPlanDateTime(storedPlan.lastRevisionRequestedAt)}`}
                     </p>
                   </div>
-                  <p class="w-fit rounded-full border border-cyan-200/30 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-50 uppercase">
+                  <p
+                    class:list={[
+                      "w-fit rounded-full border px-3 py-1 text-xs font-semibold uppercase",
+                      storedPlan.status === "accepted"
+                        ? "border-emerald-200/30 bg-emerald-300/10 text-emerald-50"
+                        : "border-cyan-200/30 bg-cyan-300/10 text-cyan-50",
+                    ]}
+                  >
                     {storedPlan.status}
                   </p>
                 </div>
 
                 <div class="space-y-6">
+                  <details
+                    class="group rounded-lg border border-cyan-200/20 bg-slate-950/20 p-4 sm:p-5"
+                    open={Boolean(planError)}
+                  >
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+                      <span>
+                        <span class="block text-xs font-semibold text-cyan-100/70 uppercase">Review actions</span>
+                        <span class="mt-1 block text-xl font-semibold text-white">Revise or accept this plan</span>
+                      </span>
+                      <span
+                        class="shrink-0 text-xl text-cyan-100 transition-transform group-open:rotate-180"
+                        aria-hidden="true"
+                      >
+                        ⌄
+                      </span>
+                    </summary>
+
+                    <div class="mt-5">
+                      <p class="mb-5 text-sm leading-6 break-words text-blue-100/75">
+                        Enter your requested correction below. Accept a draft only when it is the version you intend to
+                        follow; acceptance is not medical clearance or a safety guarantee.
+                      </p>
+
+                      <div class="grid gap-5 xl:grid-cols-2">
+                        <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+                          <h3 class="text-base font-semibold text-white">Request a revision</h3>
+                          <p class="mt-1 text-sm leading-6 text-blue-100/70">
+                            Describe one correction and review the durable health constraints used for the replacement.
+                          </p>
+                          <div class="mt-4">
+                            <PlanRevisionForm
+                              client:load
+                              planId={storedPlan.id}
+                              expectedUpdatedAt={storedPlan.updatedAt}
+                              initialHealthConstraints={latestIntake?.healthConstraints ?? ""}
+                              accepted={storedPlan.status === "accepted"}
+                            />
+                          </div>
+                        </div>
+
+                        <div class="h-fit rounded-lg border border-white/10 bg-white/5 p-4">
+                          {storedPlan.status === "draft" ? (
+                            <form
+                              method="POST"
+                              action="/api/training-plans/accept"
+                              class="space-y-4"
+                              data-plan-native-form
+                            >
+                              <input type="hidden" name="planId" value={storedPlan.id} />
+                              <input type="hidden" name="expectedUpdatedAt" value={storedPlan.updatedAt} />
+                              <div>
+                                <h3 class="text-base font-semibold text-white">Accept this draft</h3>
+                                <p class="mt-1 text-sm leading-6 break-words text-blue-100/70">
+                                  Mark this reviewed version as the plan you intend to follow. You can still request a
+                                  later revision, which will reopen it as a draft.
+                                </p>
+                              </div>
+                              <button
+                                type="submit"
+                                data-plan-submit
+                                data-loading-label="Accepting plan..."
+                                class="w-full rounded-lg bg-emerald-300 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-200 focus-visible:ring-2 focus-visible:ring-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+                              >
+                                Accept this plan
+                              </button>
+                            </form>
+                          ) : (
+                            <div>
+                              <h3 class="text-base font-semibold text-white">Plan accepted</h3>
+                              <p class="mt-1 text-sm leading-6 break-words text-blue-100/70">
+                                Accepted {formatPlanDateTime(storedPlan.acceptedAt)}. This records the version you
+                                intend to follow; it does not guarantee safety or replace professional guidance.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </details>
+
+                  {storedPlan.lastRevisionNote && (
+                    <section class="rounded-lg border border-cyan-200/20 bg-cyan-300/10 px-4 py-3">
+                      <p class="text-xs font-semibold text-cyan-50/75 uppercase">Latest revision request</p>
+                      <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-cyan-50/90">
+                        {storedPlan.lastRevisionNote}
+                      </p>
+                    </section>
+                  )}
+                  {storedPlan.status === "draft" && storedPlan.lastRevisionSummary && (
+                    <section class="rounded-lg border border-amber-300/25 bg-amber-300/10 px-4 py-3">
+                      <p class="text-xs font-semibold text-amber-50/80 uppercase">What changed</p>
+                      <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-amber-50/90">
+                        {storedPlan.lastRevisionSummary}
+                      </p>
+                    </section>
+                  )}
                   <section class="space-y-2">
                     <p class="text-xs font-semibold text-blue-100/50 uppercase">Why this plan</p>
                     <p class="text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/90">
@@ -377,7 +517,8 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                     <p class="mt-1 text-sm leading-6 text-white">{experienceLabels[latestIntake.experienceLevel]}</p>
                   </div>
                   <p class="rounded-lg border border-blue-200/15 bg-blue-300/10 px-3 py-2 text-sm leading-6 text-blue-50/80">
-                    This intake now has a draft plan. A new intake can start a separate first-plan flow.
+                    This intake now shapes the current {storedPlan.status} plan. Update its health constraints through
+                    the revision form so plan and source context stay aligned.
                   </p>
                   <a
                     href="/dashboard/intake"
@@ -396,7 +537,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                     method="POST"
                     action="/api/training-plans/generate"
                     class="mt-4 space-y-4"
-                    data-plan-generate-form
+                    data-plan-native-form
                   >
                     <p class="text-sm leading-6 break-words text-blue-100/75">
                       Generate a one-week draft plan matched to your saved goal, experience level, and constraints.
@@ -433,7 +574,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 </Layout>
 
 <script>
-  document.querySelectorAll("[data-plan-generate-form]").forEach((form) => {
+  document.querySelectorAll("[data-plan-native-form]").forEach((form) => {
     form.addEventListener("submit", () => {
       const button = form.querySelector("[data-plan-submit]");
 

@@ -503,38 +503,38 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers.
-- [x] 3.2 Generation, revision, and acceptance use the shared same-origin helper.
-- [x] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client.
-- [x] 3.4 Form data is parsed by Zod-backed service contracts before action calls.
-- [x] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes.
+- [x] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers. — c53b1b1
+- [x] 3.2 Generation, revision, and acceptance use the shared same-origin helper. — c53b1b1
+- [x] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client. — c53b1b1
+- [x] 3.4 Form data is parsed by Zod-backed service contracts before action calls. — c53b1b1
+- [x] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes. — c53b1b1
 
 #### Manual
 
-- [x] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan.
-- [x] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter.
-- [x] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail.
-- [x] 3.9 Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft.
+- [x] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan. — c53b1b1
+- [x] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter. — c53b1b1
+- [x] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail. — c53b1b1
+- [x] 3.9 Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft. — c53b1b1
 
 ### Phase 4: Dashboard Revision and Acceptance Experience
 
 #### Automated
 
-- [ ] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field.
-- [ ] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters.
-- [ ] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action.
-- [ ] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance.
-- [ ] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership.
-- [ ] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced.
+- [x] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field.
+- [x] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters.
+- [x] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action.
+- [x] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance.
+- [x] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership.
+- [x] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced.
 
 #### Manual
 
-- [ ] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it.
-- [ ] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft.
-- [ ] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version.
-- [ ] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan.
-- [ ] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls.
-- [ ] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts.
+- [x] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it.
+- [x] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft.
+- [x] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version.
+- [x] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan.
+- [x] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls.
+- [x] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts.
 
 ### Phase 5: Verification and Handoff
 

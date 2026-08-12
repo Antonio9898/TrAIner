@@ -58,6 +58,7 @@ interface TrainingPlanBase {
   revisionCount: number;
   lastRevisionRequestedAt: string | null;
   lastRevisionNote: string | null;
+  lastRevisionSummary: string | null;
   createdAt: string;
   updatedAt: string;
 }
