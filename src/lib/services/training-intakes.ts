@@ -74,6 +74,27 @@ export async function readLatestTrainingIntake(
   return row ? mapTrainingIntakeRow(row) : null;
 }
 
+export async function readTrainingIntake(
+  supabase: SupabaseSsrClient,
+  userId: string,
+  intakeId: string,
+): Promise<TrainingIntake | null> {
+  const { data, error } = await supabase
+    .from("training_intakes")
+    .select(INTAKE_COLUMNS)
+    .eq("user_id", userId)
+    .eq("id", intakeId)
+    .limit(1)
+    .maybeSingle()
+    .overrideTypes<TrainingIntakeRow, { merge: false }>();
+
+  if (error) {
+    throw new Error(`Failed to read training intake: ${error.message}`);
+  }
+
+  return data ? mapTrainingIntakeRow(data) : null;
+}
+
 export async function readLatestEditableTrainingIntake(
   supabase: SupabaseSsrClient,
   userId: string,

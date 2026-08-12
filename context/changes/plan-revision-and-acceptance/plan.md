@@ -468,36 +468,36 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 1.1 The timestamped migration creates both `public.revise_training_plan` and `public.accept_training_plan`.
-- [x] 1.2 `npx supabase db reset` applies the full migration chain when local Supabase/Docker is available.
-- [x] 1.3 Static inspection confirms both functions use `SECURITY INVOKER`, an empty `search_path`, fully qualified objects, and explicit owner/snapshot checks.
-- [x] 1.4 Static inspection confirms `PUBLIC` and `anon` execution are revoked and only `authenticated` receives `EXECUTE`.
-- [x] 1.5 The migration does not add or alter planning tables, RLS policies, status values, or feedback columns.
+- [x] 1.1 The timestamped migration creates both `public.revise_training_plan` and `public.accept_training_plan`. — bea188b
+- [x] 1.2 `npx supabase db reset` applies the full migration chain when local Supabase/Docker is available. — bea188b
+- [x] 1.3 Static inspection confirms both functions use `SECURITY INVOKER`, an empty `search_path`, fully qualified objects, and explicit owner/snapshot checks. — bea188b
+- [x] 1.4 Static inspection confirms `PUBLIC` and `anon` execution are revoked and only `authenticated` receives `EXECUTE`. — bea188b
+- [x] 1.5 The migration does not add or alter planning tables, RLS policies, status values, or feedback columns. — bea188b
 
 #### Manual
 
-- [x] 1.6 SQL review confirms revision updates intake and plan in one transaction and returns no partial state on failure.
-- [x] 1.7 SQL review confirms a stale or foreign target changes no row and does not disclose ownership.
-- [x] 1.8 SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an old snapshot.
-- [x] 1.9 SQL review confirms revision reopens accepted plans and leaves all workout feedback untouched.
+- [x] 1.6 SQL review confirms revision updates intake and plan in one transaction and returns no partial state on failure. — bea188b
+- [x] 1.7 SQL review confirms a stale or foreign target changes no row and does not disclose ownership. — bea188b
+- [x] 1.8 SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an old snapshot. — bea188b
+- [x] 1.9 SQL review confirms revision reopens accepted plans and leaves all workout feedback untouched. — bea188b
 
 ### Phase 2: Revision and Acceptance Service Logic
 
 #### Automated
 
-- [ ] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected.
-- [ ] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema.
-- [ ] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup.
-- [ ] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC.
-- [ ] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call.
-- [ ] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads.
+- [x] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected.
+- [x] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema.
+- [x] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup.
+- [x] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC.
+- [x] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call.
+- [x] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads.
 
 #### Manual
 
-- [ ] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary.
-- [ ] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged.
-- [ ] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata.
-- [ ] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success.
+- [x] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary.
+- [x] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged.
+- [x] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata.
+- [x] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success.
 
 ### Phase 3: Authenticated Plan Action Routes
 
