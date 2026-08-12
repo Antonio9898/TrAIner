@@ -485,36 +485,36 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected.
-- [x] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema.
-- [x] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup.
-- [x] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC.
-- [x] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call.
-- [x] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads.
+- [x] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected. — 43451ce
+- [x] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema. — 43451ce
+- [x] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup. — 43451ce
+- [x] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC. — 43451ce
+- [x] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call. — 43451ce
+- [x] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads. — 43451ce
 
 #### Manual
 
-- [x] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary.
-- [x] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged.
-- [x] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata.
-- [x] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success.
+- [x] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary. — 43451ce
+- [x] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged. — 43451ce
+- [x] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata. — 43451ce
+- [x] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success. — 43451ce
 
 ### Phase 3: Authenticated Plan Action Routes
 
 #### Automated
 
-- [ ] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers.
-- [ ] 3.2 Generation, revision, and acceptance use the shared same-origin helper.
-- [ ] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client.
-- [ ] 3.4 Form data is parsed by Zod-backed service contracts before action calls.
-- [ ] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes.
+- [x] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers.
+- [x] 3.2 Generation, revision, and acceptance use the shared same-origin helper.
+- [x] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client.
+- [x] 3.4 Form data is parsed by Zod-backed service contracts before action calls.
+- [x] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes.
 
 #### Manual
 
-- [ ] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan.
-- [ ] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter.
-- [ ] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail.
-- [ ] 3.9 Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft.
+- [x] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan.
+- [x] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter.
+- [x] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail.
+- [x] 3.9 Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft.
 
 ### Phase 4: Dashboard Revision and Acceptance Experience
 

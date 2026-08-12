@@ -1,27 +1,29 @@
 import type { APIContext, APIRoute } from "astro";
 import { OpenRouterConfigurationError, OpenRouterGenerationError } from "@/lib/openrouter";
 import { isSameOriginRequest } from "@/lib/request-security";
-import { isTrainingIntakeEditable, readLatestTrainingIntake } from "@/lib/services/training-intakes";
 import {
-  generateDraftTrainingPlanForIntake,
+  parseTrainingPlanRevisionFormData,
+  reviseTrainingPlan,
+  TrainingPlanConflictError,
   TrainingPlanGenerationValidationError,
+  TrainingPlanInvalidRequestError,
   TrainingPlanPersistenceError,
+  type TrainingPlanRevisionInput,
 } from "@/lib/services/training-plans";
 import { createClient } from "@/lib/supabase";
-import type { TrainingIntake } from "@/types";
 
 export const prerender = false;
 
 const DASHBOARD_ROUTE = "/dashboard";
 
-type GenerationErrorCode =
+type RevisionErrorCode =
   | "request-not-allowed"
   | "supabase-not-configured"
   | "signin-required"
-  | "missing-intake"
-  | "intake-already-planned"
+  | "invalid-request"
   | "openrouter-not-configured"
-  | "invalid-generation"
+  | "invalid-revision"
+  | "plan-conflict"
   | "save-failed";
 
 export const POST: APIRoute = async (context) => {
@@ -39,34 +41,24 @@ export const POST: APIRoute = async (context) => {
     return redirectWithError(context, "signin-required");
   }
 
-  let latestIntake: TrainingIntake | null = null;
-  let latestIntakeEditable = false;
-
+  let input: TrainingPlanRevisionInput;
   try {
-    latestIntake = await readLatestTrainingIntake(supabase, user.id);
-    latestIntakeEditable = latestIntake ? await isTrainingIntakeEditable(supabase, user.id, latestIntake.id) : false;
+    const formData = await context.request.formData();
+    input = parseTrainingPlanRevisionFormData(formData);
   } catch {
-    return redirectWithError(context, "save-failed");
-  }
-
-  if (!latestIntake) {
-    return redirectWithError(context, "missing-intake");
-  }
-
-  if (!latestIntakeEditable) {
-    return redirectWithError(context, "intake-already-planned");
+    return redirectWithError(context, "invalid-request");
   }
 
   try {
-    await generateDraftTrainingPlanForIntake(supabase, user.id, latestIntake);
+    await reviseTrainingPlan(supabase, user.id, input);
   } catch (error) {
-    return redirectWithError(context, mapGenerationError(error));
+    return redirectWithError(context, mapRevisionError(error));
   }
 
-  return context.redirect(`${DASHBOARD_ROUTE}?planAction=generated`);
+  return context.redirect(`${DASHBOARD_ROUTE}?planAction=revised`);
 };
 
-function redirectWithError(context: APIContext, code: GenerationErrorCode) {
+function redirectWithError(context: APIContext, code: RevisionErrorCode) {
   return context.redirect(`${DASHBOARD_ROUTE}?planError=${code}`);
 }
 
@@ -80,18 +72,26 @@ async function getAuthenticatedUser(supabase: NonNullable<ReturnType<typeof crea
   return user;
 }
 
-function mapGenerationError(error: unknown): GenerationErrorCode {
+function mapRevisionError(error: unknown): RevisionErrorCode {
+  if (error instanceof TrainingPlanInvalidRequestError) {
+    return "invalid-request";
+  }
+
   if (error instanceof OpenRouterConfigurationError) {
     return "openrouter-not-configured";
   }
 
   if (error instanceof OpenRouterGenerationError || error instanceof TrainingPlanGenerationValidationError) {
-    return "invalid-generation";
+    return "invalid-revision";
+  }
+
+  if (error instanceof TrainingPlanConflictError) {
+    return "plan-conflict";
   }
 
   if (error instanceof TrainingPlanPersistenceError) {
     return "save-failed";
   }
 
-  return "invalid-generation";
+  return "invalid-revision";
 }

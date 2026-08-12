@@ -400,7 +400,7 @@ export async function reviseTrainingPlan(
   const validatedInput = parsePlanActionInput(trainingPlanRevisionSchema, input);
   const currentPlan = await readTrainingPlan(supabase, userId, validatedInput.planId);
 
-  if (!currentPlan || currentPlan.updatedAt !== validatedInput.expectedUpdatedAt) {
+  if (currentPlan?.updatedAt !== validatedInput.expectedUpdatedAt) {
     throw new TrainingPlanConflictError();
   }
 
@@ -429,7 +429,7 @@ export async function reviseTrainingPlan(
   });
   const generatedPlan = parseGeneratedTrainingPlanPayload(assistantContent);
 
-  const { data, error } = await supabase
+  const { data, error } = (await supabase
     .rpc("revise_training_plan", {
       p_plan_id: validatedInput.planId,
       p_expected_updated_at: validatedInput.expectedUpdatedAt,
@@ -438,7 +438,10 @@ export async function reviseTrainingPlan(
       p_plan_content: generatedPlan.planContent,
       p_explanation: generatedPlan.explanation,
     })
-    .overrideTypes<TrainingPlanRow[], { merge: false }>();
+    .overrideTypes<TrainingPlanRow[], { merge: false }>()) as {
+    data: TrainingPlanRow[] | null;
+    error: SupabaseErrorLike | null;
+  };
 
   if (error) {
     throw new TrainingPlanPersistenceError();
@@ -458,12 +461,15 @@ export async function acceptTrainingPlan(
   input: TrainingPlanAcceptanceInput,
 ): Promise<TrainingPlan> {
   const validatedInput = parsePlanActionInput(trainingPlanAcceptanceSchema, input);
-  const { data, error } = await supabase
+  const { data, error } = (await supabase
     .rpc("accept_training_plan", {
       p_plan_id: validatedInput.planId,
       p_expected_updated_at: validatedInput.expectedUpdatedAt,
     })
-    .overrideTypes<TrainingPlanRow[], { merge: false }>();
+    .overrideTypes<TrainingPlanRow[], { merge: false }>()) as {
+    data: TrainingPlanRow[] | null;
+    error: SupabaseErrorLike | null;
+  };
 
   if (error) {
     throw new TrainingPlanPersistenceError();
