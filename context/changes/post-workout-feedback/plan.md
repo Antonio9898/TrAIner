@@ -378,17 +378,17 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [ ] 1.1 Timestamped migration adds, backfills, and constrains the submission token without deleting feedback.
-- [ ] 1.2 `npx supabase db reset` applies the full migration chain.
-- [ ] 1.3 Schema inspection confirms token uniqueness without workout/date uniqueness.
-- [ ] 1.4 Privilege inspection confirms owner SELECT and RPC-only mutation.
-- [ ] 1.5 Function inspection confirms the exclusive least-privilege contract.
+- [x] 1.1 Timestamped migration adds, backfills, and constrains the submission token without deleting feedback.
+- [x] 1.2 `npx supabase db reset` applies the full migration chain.
+- [x] 1.3 Schema inspection confirms token uniqueness without workout/date uniqueness.
+- [x] 1.4 Privilege inspection confirms owner SELECT and RPC-only mutation.
+- [x] 1.5 Function inspection confirms the exclusive least-privilege contract.
 
 #### Manual
 
-- [ ] 1.6 Plan revision and feedback submission serialize through conflicting locks.
-- [ ] 1.7 First insert snapshots the current label and exact replay creates no duplicate.
-- [ ] 1.8 Historical rows are unchanged and direct owner mutation cannot bypass append-only behavior.
+- [x] 1.6 Plan revision and feedback submission serialize through conflicting locks.
+- [x] 1.7 First insert snapshots the current label and exact replay creates no duplicate.
+- [x] 1.8 Historical rows are unchanged and direct owner mutation cannot bypass append-only behavior.
 
 ### Phase 2: Feedback Domain Service
 
