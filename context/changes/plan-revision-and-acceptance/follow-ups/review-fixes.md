@@ -6,8 +6,8 @@
 - [x] Revoke and rotate the exposed OpenRouter API key — user-confirmed after triage.
 - [x] Configure the replacement `OPENROUTER_API_KEY` secret in Cloudflare — user-confirmed after triage.
 - [ ] Review provider access logs for unexpected use.
-- [ ] Confirm whether any committed Supabase value is privileged; rotate it if so.
-- [ ] Decide whether to purge the credential-bearing commits from shared Git history and coordinate the required force-push with all repository users.
+- [x] Confirm the committed Supabase value has publishable-key format; no privileged Supabase credential was identified in the reviewed files.
+- [x] Purge both credential-bearing paths from rewritten Git history and force-update `origin/main` with an explicit lease.
 
 ## F3 — Revision-summary plan drift
 
