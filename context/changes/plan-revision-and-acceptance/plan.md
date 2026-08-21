@@ -540,17 +540,17 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 5.1 `npx supabase db reset` completes when local Supabase/Docker is available.
-- [x] 5.2 `npx astro sync` completes successfully.
-- [x] 5.3 `npm run lint` completes successfully.
-- [x] 5.4 `npm run build` completes successfully with required environment values.
-- [x] 5.5 `git status --short` shows only files expected by this implementation.
+- [x] 5.1 `npx supabase db reset` completes when local Supabase/Docker is available. — fdccf45
+- [x] 5.2 `npx astro sync` completes successfully. — fdccf45
+- [x] 5.3 `npm run lint` completes successfully. — fdccf45
+- [x] 5.4 `npm run build` completes successfully with required environment values. — fdccf45
+- [x] 5.5 `git status --short` shows only files expected by this implementation. — fdccf45
 
 #### Manual
 
-- [x] 5.6 The full draft revision, acceptance, accepted-plan reopening, and re-acceptance loop works for the owner.
-- [x] 5.7 Generation, validation, database, stale-snapshot, and duplicate-submit scenarios preserve atomic state and show safe feedback.
-- [x] 5.8 Existing workout feedback remains unchanged and attached after plan content changes.
-- [x] 5.9 No private intake/revision text, prompt, raw output, provider detail, or database detail appears in URLs or logs.
-- [x] 5.10 Mobile/desktop and keyboard review confirms usable forms, plan content, pending states, status messaging, and safety copy.
-- [x] 5.11 Human confirms S-03 does not add version history, chat, feedback editing, medical gates, or test infrastructure.
+- [x] 5.6 The full draft revision, acceptance, accepted-plan reopening, and re-acceptance loop works for the owner. — fdccf45
+- [x] 5.7 Generation, validation, database, stale-snapshot, and duplicate-submit scenarios preserve atomic state and show safe feedback. — fdccf45
+- [x] 5.8 Existing workout feedback remains unchanged and attached after plan content changes. — fdccf45
+- [x] 5.9 No private intake/revision text, prompt, raw output, provider detail, or database detail appears in URLs or logs. — fdccf45
+- [x] 5.10 Mobile/desktop and keyboard review confirms usable forms, plan content, pending states, status messaging, and safety copy. — fdccf45
+- [x] 5.11 Human confirms S-03 does not add version history, chat, feedback editing, medical gates, or test infrastructure. — fdccf45

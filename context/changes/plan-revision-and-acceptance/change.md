@@ -1,9 +1,9 @@
 ---
 change_id: plan-revision-and-acceptance
 title: Plan revision and acceptance
-status: implementing
+status: implemented
 created: 2026-08-12
-updated: 2026-08-13
+updated: 2026-08-21
 archived_at: null
 ---
 
