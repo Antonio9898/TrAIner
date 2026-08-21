@@ -2,11 +2,11 @@ globalThis.process ??= {};
 globalThis.process.env ??= {};
 import { c as createComponent } from "./astro-component_D6sliZai.mjs";
 import { V as renderTemplate, C as maybeRenderHead } from "./runtime_GlVtDbC7.mjs";
-import { a as reactExports, r as renderComponent } from "./worker-entry_DEz_L5c8.mjs";
-import { $ as $$Layout } from "./Layout_BRge9u11.mjs";
-import { c as createLucideIcon, j as jsxRuntimeExports } from "./button_BQAh045K.mjs";
-import { F as FormField, M as Mail, P as PasswordToggle, L as Lock } from "./PasswordToggle_mrkXIPrW.mjs";
-import { S as ServerError, a as SubmitButton } from "./ServerError_DJBSbsUg.mjs";
+import { a as reactExports, r as renderComponent } from "./worker-entry_BgfgFATI.mjs";
+import { $ as $$Layout } from "./Layout_BL_q2_6n.mjs";
+import { c as createLucideIcon, j as jsxRuntimeExports } from "./button_CY8vI-lv.mjs";
+import { F as FormField, M as Mail, P as PasswordToggle, L as Lock } from "./PasswordToggle_CcyLIyrT.mjs";
+import { S as ServerError, a as SubmitButton } from "./ServerError_D-R1WWoQ.mjs";
 const __iconNode = [
   ["path", { d: "m10 17 5-5-5-5", key: "1bsop3" }],
   ["path", { d: "M15 12H3", key: "6jk70r" }],
@@ -93,8 +93,8 @@ const $$Signin = createComponent(($$result, $$props, $$slots) => {
 Sign in
 </h1> ${renderComponent($$result2, "SignInForm", SignInForm, { "serverError": error, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/auth/SignInForm", "client:component-export": "default" })} <p class="mt-4 text-center text-sm text-blue-100/60">
 Don't have an account? <a href="/auth/signup" class="text-purple-300 hover:underline">Sign up</a> </p> </div> </div> ` })}`;
-}, "/home/antek/TrAIner/src/pages/auth/signin.astro", void 0);
-const $$file = "/home/antek/TrAIner/src/pages/auth/signin.astro";
+}, "/Users/antek/projekty/TrAIner/src/pages/auth/signin.astro", void 0);
+const $$file = "/Users/antek/projekty/TrAIner/src/pages/auth/signin.astro";
 const $$url = "/auth/signin";
 const _page = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,

@@ -2,7 +2,7 @@ globalThis.process ??= {};
 globalThis.process.env ??= {};
 import { env } from "cloudflare:workers";
 import { a as AstroError, b4 as NoImageMetadata, b5 as FailedToFetchRemoteImageDimensions, b6 as RemoteImageNotAllowed, aW as joinPaths, b7 as ExpectedImage, b8 as isRemotePath, b9 as LocalImageUsedWrongly, ba as MissingImageDimension, bb as UnsupportedImageFormat, bc as IncompatibleDescriptorOptions, bd as UnsupportedImageConversion, be as ExpectedImageOptions, bf as ExpectedNotESMImage, bg as InvalidImageService, bh as ImageMissingAlt, C as maybeRenderHead, a6 as addAttribute, V as renderTemplate, bi as FontFamilyNotFound, bj as unescapeHTML, bk as MissingGetFontFileRequestUrl } from "./runtime_GlVtDbC7.mjs";
-import { i as isRemoteAllowed, s as spreadAttributes } from "./worker-entry_DEz_L5c8.mjs";
+import { i as isRemoteAllowed, s as spreadAttributes } from "./worker-entry_BgfgFATI.mjs";
 import { c as createComponent } from "./astro-component_D6sliZai.mjs";
 const VALID_SUPPORTED_FORMATS = [
   "jpeg",
@@ -1484,7 +1484,7 @@ async function getConfiguredImageService() {
   if (!globalThis?.astroAsset?.imageService) {
     const { default: service } = await import(
       // @ts-expect-error
-      "./image-service-workerd_DZJ8PJuK.mjs"
+      "./image-service-workerd_BzCJbTXl.mjs"
     ).catch((e) => {
       const error = new AstroError(InvalidImageService);
       error.cause = e;
@@ -1696,7 +1696,7 @@ const $$Image = createComponent(async ($$result, $$props, $$slots) => {
   }
   const { class: className, ...attributes } = { ...additionalAttributes, ...image.attributes };
   return renderTemplate`${maybeRenderHead()}<img${addAttribute(image.src, "src")}${spreadAttributes(attributes)}${addAttribute(className, "class")}>`;
-}, "/home/antek/TrAIner/node_modules/astro/components/Image.astro", void 0);
+}, "/Users/antek/projekty/TrAIner/node_modules/astro/components/Image.astro", void 0);
 const mimes = {
   "3g2": "video/3gpp2",
   "3gp": "video/3gpp",
@@ -2217,7 +2217,7 @@ const $$Picture = createComponent(async ($$result, $$props, $$slots) => {
     const srcsetAttribute = props.densities || !props.densities && !props.widths && !useResponsive ? `${image.src}${image.srcSet.values.length > 0 ? ", " + image.srcSet.attribute : ""}` : image.srcSet.attribute;
     return renderTemplate`<source${addAttribute(srcsetAttribute, "srcset")}${addAttribute(lookup(image.options.format ?? image.src) ?? `image/${image.options.format}`, "type")}${spreadAttributes(sourceAdditionalAttributes)}>`;
   })}  <img${addAttribute(fallbackImage.src, "src")}${spreadAttributes(attributes)}${addAttribute(className, "class")}> </picture>`;
-}, "/home/antek/TrAIner/node_modules/astro/components/Picture.astro", void 0);
+}, "/Users/antek/projekty/TrAIner/node_modules/astro/components/Picture.astro", void 0);
 const componentDataByCssVariable = /* @__PURE__ */ new Map([]);
 function filterPreloads(data, preload) {
   if (!preload) {
@@ -2266,7 +2266,7 @@ const $$Font = createComponent(($$result, $$props, $$slots) => {
   }
   const filteredPreloadData = filterPreloads(data.preloads, preload);
   return renderTemplate`<style>${unescapeHTML(data.css)}</style>${filteredPreloadData?.map(({ url, type }) => renderTemplate`<link rel="preload"${addAttribute(url, "href")} as="font"${addAttribute(`font/${type}`, "type")} crossorigin>`)}`;
-}, "/home/antek/TrAIner/node_modules/astro/components/Font.astro", void 0);
+}, "/Users/antek/projekty/TrAIner/node_modules/astro/components/Font.astro", void 0);
 class SsrRuntimeFontFileUrlResolver {
   #urls;
   constructor({

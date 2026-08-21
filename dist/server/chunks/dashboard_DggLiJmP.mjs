@@ -2,10 +2,10 @@ globalThis.process ??= {};
 globalThis.process.env ??= {};
 import { c as createComponent } from "./astro-component_D6sliZai.mjs";
 import { W as createRenderInstruction, V as renderTemplate, C as maybeRenderHead, a6 as addAttribute } from "./runtime_GlVtDbC7.mjs";
-import { a as reactExports, r as renderComponent } from "./worker-entry_DEz_L5c8.mjs";
-import { c as createLucideIcon, j as jsxRuntimeExports, a as cn, B as Button, C as CircleAlert } from "./button_BQAh045K.mjs";
-import { H as HeartPulse } from "./heart-pulse_CkBmOy8U.mjs";
-import { $ as $$Layout } from "./Layout_BRge9u11.mjs";
+import { a as reactExports, r as renderComponent } from "./worker-entry_BgfgFATI.mjs";
+import { c as createLucideIcon, j as jsxRuntimeExports, a as cn, B as Button, C as CircleAlert } from "./button_CY8vI-lv.mjs";
+import { H as HeartPulse } from "./heart-pulse_BzErN1rT.mjs";
+import { $ as $$Layout } from "./Layout_BL_q2_6n.mjs";
 import { r as readLatestTrainingIntake, i as isTrainingIntakeEditable } from "./training-intakes_CFXRwAHz.mjs";
 import { h as readTrainingPlanForIntake } from "./training-plans_C07szfLP.mjs";
 import { c as createClient } from "./supabase_CLmnuVoO.mjs";
@@ -295,9 +295,9 @@ Save an editable intake before generating your first explained plan.
 </p>`} </section>`} <section class="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6"> <p class="text-sm font-semibold text-amber-50">Training boundary</p> <p class="mt-2 text-sm leading-6 break-words text-amber-50/90">
 TrAIner can help adapt a training plan to the constraints you provide, but it does not diagnose injuries
               or replace advice from a doctor, physiotherapist, or medical trainer.
-</p> </section> </aside> </div> </div> </main> ` })} ${renderScript($$result, "/home/antek/TrAIner/src/pages/dashboard.astro?astro&type=script&index=0&lang.ts")}`;
-}, "/home/antek/TrAIner/src/pages/dashboard.astro", void 0);
-const $$file = "/home/antek/TrAIner/src/pages/dashboard.astro";
+</p> </section> </aside> </div> </div> </main> ` })} ${renderScript($$result, "/Users/antek/projekty/TrAIner/src/pages/dashboard.astro?astro&type=script&index=0&lang.ts")}`;
+}, "/Users/antek/projekty/TrAIner/src/pages/dashboard.astro", void 0);
+const $$file = "/Users/antek/projekty/TrAIner/src/pages/dashboard.astro";
 const $$url = "/dashboard";
 const _page = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,

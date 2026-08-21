@@ -2,11 +2,11 @@ globalThis.process ??= {};
 globalThis.process.env ??= {};
 import { c as createComponent } from "./astro-component_D6sliZai.mjs";
 import { V as renderTemplate, C as maybeRenderHead } from "./runtime_GlVtDbC7.mjs";
-import { a as reactExports, r as renderComponent } from "./worker-entry_DEz_L5c8.mjs";
-import { c as createLucideIcon, j as jsxRuntimeExports, a as cn, C as CircleAlert } from "./button_BQAh045K.mjs";
-import { S as ServerError, a as SubmitButton } from "./ServerError_DJBSbsUg.mjs";
-import { H as HeartPulse } from "./heart-pulse_CkBmOy8U.mjs";
-import { $ as $$Layout } from "./Layout_BRge9u11.mjs";
+import { a as reactExports, r as renderComponent } from "./worker-entry_BgfgFATI.mjs";
+import { c as createLucideIcon, j as jsxRuntimeExports, a as cn, C as CircleAlert } from "./button_CY8vI-lv.mjs";
+import { S as ServerError, a as SubmitButton } from "./ServerError_D-R1WWoQ.mjs";
+import { H as HeartPulse } from "./heart-pulse_BzErN1rT.mjs";
+import { $ as $$Layout } from "./Layout_BL_q2_6n.mjs";
 import { a as readLatestEditableTrainingIntake } from "./training-intakes_CFXRwAHz.mjs";
 import { c as createClient } from "./supabase_CLmnuVoO.mjs";
 const __iconNode$4 = [
@@ -276,8 +276,8 @@ Back to dashboard
 </a> <section class="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-8"> <div class="mb-6"> <p class="mb-2 text-sm text-blue-100/65">${user?.email}</p> <h1 class="text-3xl font-bold text-white">Training intake</h1> <p class="mt-2 max-w-2xl text-sm leading-6 text-blue-100/75">
 Share the goal, experience level, and constraints that should shape your first training plan.
 </p> </div> ${renderComponent($$result2, "GoalAndConstraintsForm", GoalAndConstraintsForm, { "initialIntake": latestEditableIntake, "serverError": serverError, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/intake/GoalAndConstraintsForm", "client:component-export": "default" })} </section> </div> </main> ` })}`;
-}, "/home/antek/TrAIner/src/pages/dashboard/intake.astro", void 0);
-const $$file = "/home/antek/TrAIner/src/pages/dashboard/intake.astro";
+}, "/Users/antek/projekty/TrAIner/src/pages/dashboard/intake.astro", void 0);
+const $$file = "/Users/antek/projekty/TrAIner/src/pages/dashboard/intake.astro";
 const $$url = "/dashboard/intake";
 const _page = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,

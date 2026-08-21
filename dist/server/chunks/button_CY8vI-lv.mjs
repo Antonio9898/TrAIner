@@ -1,6 +1,6 @@
 globalThis.process ??= {};
 globalThis.process.env ??= {};
-import { a as reactExports, R as React } from "./worker-entry_DEz_L5c8.mjs";
+import { a as reactExports, R as React } from "./worker-entry_BgfgFATI.mjs";
 import { H as clsx } from "./runtime_GlVtDbC7.mjs";
 var jsxRuntime = { exports: {} };
 var reactJsxRuntime_production = {};

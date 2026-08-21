@@ -2,11 +2,11 @@ globalThis.process ??= {};
 globalThis.process.env ??= {};
 import { c as createComponent } from "./astro-component_D6sliZai.mjs";
 import { V as renderTemplate, C as maybeRenderHead } from "./runtime_GlVtDbC7.mjs";
-import { a as reactExports, r as renderComponent } from "./worker-entry_DEz_L5c8.mjs";
-import { $ as $$Layout } from "./Layout_BRge9u11.mjs";
-import { c as createLucideIcon, j as jsxRuntimeExports } from "./button_BQAh045K.mjs";
-import { F as FormField, M as Mail, P as PasswordToggle, L as Lock } from "./PasswordToggle_mrkXIPrW.mjs";
-import { S as ServerError, a as SubmitButton } from "./ServerError_DJBSbsUg.mjs";
+import { a as reactExports, r as renderComponent } from "./worker-entry_BgfgFATI.mjs";
+import { $ as $$Layout } from "./Layout_BL_q2_6n.mjs";
+import { c as createLucideIcon, j as jsxRuntimeExports } from "./button_CY8vI-lv.mjs";
+import { F as FormField, M as Mail, P as PasswordToggle, L as Lock } from "./PasswordToggle_CcyLIyrT.mjs";
+import { S as ServerError, a as SubmitButton } from "./ServerError_D-R1WWoQ.mjs";
 const __iconNode = [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
@@ -137,8 +137,8 @@ const $$Signup = createComponent(($$result, $$props, $$slots) => {
 Sign up
 </h1> ${renderComponent($$result2, "SignUpForm", SignUpForm, { "serverError": error, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/auth/SignUpForm", "client:component-export": "default" })} <p class="mt-4 text-center text-sm text-blue-100/60">
 Already have an account? <a href="/auth/signin" class="text-purple-300 hover:underline">Sign in</a> </p> </div> </div> ` })}`;
-}, "/home/antek/TrAIner/src/pages/auth/signup.astro", void 0);
-const $$file = "/home/antek/TrAIner/src/pages/auth/signup.astro";
+}, "/Users/antek/projekty/TrAIner/src/pages/auth/signup.astro", void 0);
+const $$file = "/Users/antek/projekty/TrAIner/src/pages/auth/signup.astro";
 const $$url = "/auth/signup";
 const _page = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,

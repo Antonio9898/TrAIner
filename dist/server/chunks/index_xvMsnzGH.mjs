@@ -12,8 +12,8 @@ const $$Index = createComponent(async ($$result, $$props, $$slots) => {
   const { data, error } = await supabase.from("todos").select("id,name").overrideTypes();
   const todos = data ?? [];
   return renderTemplate`${error ? renderTemplate`${maybeRenderHead()}<p>${error.message}</p>` : renderTemplate`<ul>${todos.map((entry) => renderTemplate`<li>${entry.name}</li>`)}</ul>`}`;
-}, "/home/antek/TrAIner/src/pages/index.astro", void 0);
-const $$file = "/home/antek/TrAIner/src/pages/index.astro";
+}, "/Users/antek/projekty/TrAIner/src/pages/index.astro", void 0);
+const $$file = "/Users/antek/projekty/TrAIner/src/pages/index.astro";
 const $$url = "";
 const _page = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
