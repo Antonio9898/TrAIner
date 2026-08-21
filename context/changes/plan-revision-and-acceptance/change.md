@@ -13,14 +13,14 @@ archived_at: null
 
 ## Scope Reconciliation
 
-Implementation review treats these as the S-03 feature commits: `bea188b`, `43451ce`, `c53b1b1`, `2eb4e6b`, `fdccf45`.
+Implementation review treats these as the S-03 feature commits: `138ed54`, `b454816`, `35ec6a3`, `ffeec44`, `9806f45`.
 
 The following interval changes are excluded from S-03 and require independent ownership or cleanup:
 
-- `1b86991` — root redirect and generated build updates.
-- `79366a3` — local environment and Wrangler state.
-- `2a9905e` — generated Astro/build output and ignore changes.
-- `a9a2022` — `.agents` toolkit installation.
+- `d85df19` — root redirect and generated build updates.
+- `821567d` — local environment and Wrangler state.
+- `c2e1c2a` — generated Astro/build output and ignore changes.
+- `90d48a9` — `.agents` toolkit installation.
 - Supabase local configuration changes not required by the lifecycle feature.
 
 Generated files and credentials are handled separately by implementation-review findings F1 and F6.

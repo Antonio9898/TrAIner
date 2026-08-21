@@ -329,52 +329,52 @@ No migration is planned. S-01 uses the existing `training_intakes` table and exi
 
 #### Automated
 
-- [x] 1.1 `zod` is present in `package.json` and `package-lock.json`. — f314231
-- [x] 1.2 `src/lib/services/training-intakes.ts` exists and exports validation plus read/save helpers. — f314231
-- [x] 1.3 `src/pages/api/training-intakes.ts` exists, exports `const prerender = false`, and supports POST. — f314231
-- [x] 1.4 The API route uses the Supabase SSR client from `src/lib/supabase.ts`, not `src/db/supabase.js`. — f314231
-- [x] 1.5 The save path updates the latest intake when no plan exists and inserts a new intake when the latest intake already has a plan. — f314231
+- [x] 1.1 `zod` is present in `package.json` and `package-lock.json`. — 034700d
+- [x] 1.2 `src/lib/services/training-intakes.ts` exists and exports validation plus read/save helpers. — 034700d
+- [x] 1.3 `src/pages/api/training-intakes.ts` exists, exports `const prerender = false`, and supports POST. — 034700d
+- [x] 1.4 The API route uses the Supabase SSR client from `src/lib/supabase.ts`, not `src/db/supabase.js`. — 034700d
+- [x] 1.5 The save path updates the latest intake when no plan exists and inserts a new intake when the latest intake already has a plan. — 034700d
 
 #### Manual
 
-- [x] 1.6 Review confirms server validation rejects empty `goal`, invalid `experienceLevel`, empty `healthConstraints`, and blank-only `notes`. — f314231
-- [x] 1.7 Review confirms unauthenticated or unconfigured Supabase cases redirect with generic safe errors. — f314231
-- [x] 1.8 Review confirms no submitted free-text health data is added to query params or logs by the planned code path. — f314231
-- [x] 1.9 Review confirms no migration or RLS change was introduced. — f314231
+- [x] 1.6 Review confirms server validation rejects empty `goal`, invalid `experienceLevel`, empty `healthConstraints`, and blank-only `notes`. — 034700d
+- [x] 1.7 Review confirms unauthenticated or unconfigured Supabase cases redirect with generic safe errors. — 034700d
+- [x] 1.8 Review confirms no submitted free-text health data is added to query params or logs by the planned code path. — 034700d
+- [x] 1.9 Review confirms no migration or RLS change was introduced. — 034700d
 
 ### Phase 2: Protected Intake UI
 
 #### Automated
 
-- [x] 2.1 `src/pages/dashboard/intake.astro` exists and renders the intake form island. — ab95a3c
-- [x] 2.2 `src/components/intake/GoalAndConstraintsForm.tsx` exists and posts to `/api/training-intakes`. — ab95a3c
-- [x] 2.3 The form includes goal, experience level, health constraints, no-known-constraints option, optional notes, disclaimer, server error display, and pending submit state. — ab95a3c
-- [x] 2.4 Client validation prevents empty goal and empty health constraints before native submit. — ab95a3c
-- [x] 2.5 The route path remains under `/dashboard`, so existing middleware protection applies. — ab95a3c
+- [x] 2.1 `src/pages/dashboard/intake.astro` exists and renders the intake form island. — a332e37
+- [x] 2.2 `src/components/intake/GoalAndConstraintsForm.tsx` exists and posts to `/api/training-intakes`. — a332e37
+- [x] 2.3 The form includes goal, experience level, health constraints, no-known-constraints option, optional notes, disclaimer, server error display, and pending submit state. — a332e37
+- [x] 2.4 Client validation prevents empty goal and empty health constraints before native submit. — a332e37
+- [x] 2.5 The route path remains under `/dashboard`, so existing middleware protection applies. — a332e37
 
 #### Manual
 
-- [x] 2.6 A signed-in user can open `/dashboard/intake`. — ab95a3c
-- [x] 2.7 An unauthenticated user who opens `/dashboard/intake` is redirected to sign in by middleware. — ab95a3c
-- [x] 2.8 The form is usable on mobile and desktop without overlapping text or broken controls. — ab95a3c
-- [x] 2.9 The health constraints prompt is free text with neutral examples, not a medical checklist or diagnosis flow. — ab95a3c
-- [x] 2.10 The disclaimer is visible and does not ask for stored acknowledgement. — ab95a3c
-- [x] 2.11 Selecting "No known constraints" results in the exact saved value `no known constraints`. — ab95a3c
+- [x] 2.6 A signed-in user can open `/dashboard/intake`. — a332e37
+- [x] 2.7 An unauthenticated user who opens `/dashboard/intake` is redirected to sign in by middleware. — a332e37
+- [x] 2.8 The form is usable on mobile and desktop without overlapping text or broken controls. — a332e37
+- [x] 2.9 The health constraints prompt is free text with neutral examples, not a medical checklist or diagnosis flow. — a332e37
+- [x] 2.10 The disclaimer is visible and does not ask for stored acknowledgement. — a332e37
+- [x] 2.11 Selecting "No known constraints" results in the exact saved value `no known constraints`. — a332e37
 
 ### Phase 3: Dashboard Summary and Verification
 
 #### Automated
 
-- [x] 3.1 `npx astro sync` completes successfully. — 860b64a
-- [x] 3.2 `npm run lint` completes successfully. — 860b64a
-- [x] 3.3 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 860b64a
-- [x] 3.4 `git status --short` shows only expected files changed for this implementation. — 860b64a
+- [x] 3.1 `npx astro sync` completes successfully. — 55da62d
+- [x] 3.2 `npm run lint` completes successfully. — 55da62d
+- [x] 3.3 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 55da62d
+- [x] 3.4 `git status --short` shows only expected files changed for this implementation. — 55da62d
 
 #### Manual
 
-- [x] 3.5 Signed-in user can create an intake and see the saved dashboard summary. — 860b64a
-- [x] 3.6 Signed-in user can edit the latest pre-plan intake without creating duplicate pre-plan rows. — 860b64a
-- [x] 3.7 Empty required fields and invalid experience values are rejected with clear user-facing messages. — 860b64a
-- [x] 3.8 Unauthenticated page access redirects to sign-in. — 860b64a
-- [x] 3.9 Server-side errors do not include submitted goal, health constraints, or notes in URL params. — 860b64a
-- [x] 3.10 The final UI preserves F-02 safety boundaries: no diagnosis, no medical checklist, no acknowledgement storage, and no runtime blocking. — 860b64a
+- [x] 3.5 Signed-in user can create an intake and see the saved dashboard summary. — 55da62d
+- [x] 3.6 Signed-in user can edit the latest pre-plan intake without creating duplicate pre-plan rows. — 55da62d
+- [x] 3.7 Empty required fields and invalid experience values are rejected with clear user-facing messages. — 55da62d
+- [x] 3.8 Unauthenticated page access redirects to sign-in. — 55da62d
+- [x] 3.9 Server-side errors do not include submitted goal, health constraints, or notes in URL params. — 55da62d
+- [x] 3.10 The final UI preserves F-02 safety boundaries: no diagnosis, no medical checklist, no acknowledgement storage, and no runtime blocking. — 55da62d

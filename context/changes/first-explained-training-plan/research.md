@@ -1,7 +1,7 @@
 ---
 date: 2026-06-17T18:11:31+02:00
 researcher: Codex
-git_commit: 537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2
+git_commit: 4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048
 branch: main
 repository: TrAIner
 topic: "OpenRouter integration for first explained training plan"
@@ -15,7 +15,7 @@ last_updated_by: Codex
 
 **Date**: 2026-06-17T18:11:31+02:00
 **Researcher**: Codex
-**Git Commit**: 537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2
+**Git Commit**: 4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048
 **Branch**: main
 **Repository**: TrAIner
 
@@ -37,22 +37,22 @@ The safety boundary is non-negotiable: generated plans may include practical pla
 
 ### Current Application Baseline
 
-- The app is Astro SSR on Cloudflare Workers, with server env schema already configured for Supabase secrets in `astro.config.mjs` ([astro.config.mjs:17](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/astro.config.mjs#L17)).
-- Supabase auth is server-side and cookie-based through `createClient(requestHeaders, cookies)` ([src/lib/supabase.ts:5](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/lib/supabase.ts#L5)).
-- Middleware protects `/dashboard` and attaches `context.locals.user`, so a generation route/page under the dashboard flow can use the existing auth model ([src/middleware.ts:4](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/middleware.ts#L4)).
-- The current API route pattern is native POST, `prerender = false`, Supabase SSR client, auth check, service call, and redirect with safe query parameters ([src/pages/api/training-intakes.ts:9](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/pages/api/training-intakes.ts#L9)).
-- The dashboard currently loads the latest intake and determines whether it is editable before a plan exists ([src/pages/dashboard.astro:23](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/pages/dashboard.astro#L23)).
-- The dashboard still shows S-02 as a placeholder rather than a real generation/view flow ([src/pages/dashboard.astro:166](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/pages/dashboard.astro#L166)).
+- The app is Astro SSR on Cloudflare Workers, with server env schema already configured for Supabase secrets in `astro.config.mjs` ([astro.config.mjs:17](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/astro.config.mjs#L17)).
+- Supabase auth is server-side and cookie-based through `createClient(requestHeaders, cookies)` ([src/lib/supabase.ts:5](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/lib/supabase.ts#L5)).
+- Middleware protects `/dashboard` and attaches `context.locals.user`, so a generation route/page under the dashboard flow can use the existing auth model ([src/middleware.ts:4](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/middleware.ts#L4)).
+- The current API route pattern is native POST, `prerender = false`, Supabase SSR client, auth check, service call, and redirect with safe query parameters ([src/pages/api/training-intakes.ts:9](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/pages/api/training-intakes.ts#L9)).
+- The dashboard currently loads the latest intake and determines whether it is editable before a plan exists ([src/pages/dashboard.astro:23](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/pages/dashboard.astro#L23)).
+- The dashboard still shows S-02 as a placeholder rather than a real generation/view flow ([src/pages/dashboard.astro:166](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/pages/dashboard.astro#L166)).
 
 ### Existing Planning Data Contract
 
-- `TrainingPlanContent` already contains the MVP generated-plan shape: `overview`, `scheduledWorkouts`, `progressionGuidance`, `safetyNotes`, and optional `metadata` ([src/types.ts:32](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/types.ts#L32)).
-- Scheduled workouts already support workout-level `safetyNotes`, stable `key`, label, focus, exercises, and instructions ([src/types.ts:22](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/types.ts#L22)).
-- Exercise entries are intentionally minimal and flexible, which fits LLM output better than a normalized exercise database for the MVP ([src/types.ts:12](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/src/types.ts#L12)).
-- `training_plans` already stores `plan_content jsonb`, required `explanation`, status, revision metadata, and timestamps ([supabase/migrations/20260602233915_create_planning_contract.sql:36](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/supabase/migrations/20260602233915_create_planning_contract.sql#L36)).
-- The database enforces one current plan per intake with `training_plans_one_current_plan_per_intake unique (user_id, intake_id)` ([supabase/migrations/20260602233915_create_planning_contract.sql:52](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/supabase/migrations/20260602233915_create_planning_contract.sql#L52)).
-- The owner-scoped FK prevents a user from linking a plan to another user's intake ([supabase/migrations/20260602233915_create_planning_contract.sql:53](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/supabase/migrations/20260602233915_create_planning_contract.sql#L53)).
-- RLS policies already allow authenticated users to select/insert/update/delete only their own plans ([supabase/migrations/20260602233915_create_planning_contract.sql:167](https://github.com/Antonio9898/TrAIner/blob/537e4e3c1b2b30432e4b5dcf2fa7d4eed29434d2/supabase/migrations/20260602233915_create_planning_contract.sql#L167)).
+- `TrainingPlanContent` already contains the MVP generated-plan shape: `overview`, `scheduledWorkouts`, `progressionGuidance`, `safetyNotes`, and optional `metadata` ([src/types.ts:32](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/types.ts#L32)).
+- Scheduled workouts already support workout-level `safetyNotes`, stable `key`, label, focus, exercises, and instructions ([src/types.ts:22](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/types.ts#L22)).
+- Exercise entries are intentionally minimal and flexible, which fits LLM output better than a normalized exercise database for the MVP ([src/types.ts:12](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/src/types.ts#L12)).
+- `training_plans` already stores `plan_content jsonb`, required `explanation`, status, revision metadata, and timestamps ([supabase/migrations/20260602233915_create_planning_contract.sql:36](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/supabase/migrations/20260602233915_create_planning_contract.sql#L36)).
+- The database enforces one current plan per intake with `training_plans_one_current_plan_per_intake unique (user_id, intake_id)` ([supabase/migrations/20260602233915_create_planning_contract.sql:52](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/supabase/migrations/20260602233915_create_planning_contract.sql#L52)).
+- The owner-scoped FK prevents a user from linking a plan to another user's intake ([supabase/migrations/20260602233915_create_planning_contract.sql:53](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/supabase/migrations/20260602233915_create_planning_contract.sql#L53)).
+- RLS policies already allow authenticated users to select/insert/update/delete only their own plans ([supabase/migrations/20260602233915_create_planning_contract.sql:167](https://github.com/Antonio9898/TrAIner/blob/4cee9b0e6817e0dd1acd5d181ade7f1cf18c9048/supabase/migrations/20260602233915_create_planning_contract.sql#L167)).
 
 ### OpenRouter Contract
 

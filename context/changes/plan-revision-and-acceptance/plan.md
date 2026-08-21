@@ -124,7 +124,7 @@ The function must reject blank revision notes/constraints/explanations and non-o
 
 - SQL review confirms revision updates intake and plan in one transaction and returns no partial state on failure.
 - SQL review confirms a stale or foreign target changes no row and does not disclose ownership.
-- SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an old snapshot.
+- SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an new snapshot.
 - SQL review confirms revision reopens accepted plans and leaves all workout feedback untouched.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase. Phase blocks use plain bullets; the corresponding `- [ ]` checkboxes live in `## Progress`.
@@ -265,7 +265,7 @@ Map failures to enumerated `planError` codes for request-not-allowed, Supabase n
 - Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan.
 - Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter.
 - URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail.
-- Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft.
+- Duplicate acceptance resolves as success, while an new acceptance form cannot accept a newer revised draft.
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -485,89 +485,89 @@ Applying the migration grants authenticated users only function execution in add
 
 #### Automated
 
-- [x] 1.1 The timestamped migration creates both `public.revise_training_plan` and `public.accept_training_plan`. — bea188b
-- [x] 1.2 `npx supabase db reset` applies the full migration chain when local Supabase/Docker is available. — bea188b
-- [x] 1.3 Static inspection confirms both functions use `SECURITY INVOKER`, an empty `search_path`, fully qualified objects, and explicit owner/snapshot checks. — bea188b
-- [x] 1.4 Static inspection confirms `PUBLIC` and `anon` execution are revoked and only `authenticated` receives `EXECUTE`. — bea188b
-- [x] 1.5 The migration does not add or alter planning tables, RLS policies, status values, or feedback columns. — bea188b
+- [x] 1.1 The timestamped migration creates both `public.revise_training_plan` and `public.accept_training_plan`. — 138ed54
+- [x] 1.2 `npx supabase db reset` applies the full migration chain when local Supabase/Docker is available. — 138ed54
+- [x] 1.3 Static inspection confirms both functions use `SECURITY INVOKER`, an empty `search_path`, fully qualified objects, and explicit owner/snapshot checks. — 138ed54
+- [x] 1.4 Static inspection confirms `PUBLIC` and `anon` execution are revoked and only `authenticated` receives `EXECUTE`. — 138ed54
+- [x] 1.5 The migration does not add or alter planning tables, RLS policies, status values, or feedback columns. — 138ed54
 
 #### Manual
 
-- [x] 1.6 SQL review confirms revision updates intake and plan in one transaction and returns no partial state on failure. — bea188b
-- [x] 1.7 SQL review confirms a stale or foreign target changes no row and does not disclose ownership. — bea188b
-- [x] 1.8 SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an old snapshot. — bea188b
-- [x] 1.9 SQL review confirms revision reopens accepted plans and leaves all workout feedback untouched. — bea188b
+- [x] 1.6 SQL review confirms revision updates intake and plan in one transaction and returns no partial state on failure. — 138ed54
+- [x] 1.7 SQL review confirms a stale or foreign target changes no row and does not disclose ownership. — 138ed54
+- [x] 1.8 SQL review confirms acceptance is idempotent for an already accepted row but cannot accept a newer draft with an new snapshot. — 138ed54
+- [x] 1.9 SQL review confirms revision reopens accepted plans and leaves all workout feedback untouched. — 138ed54
 
 ### Phase 2: Revision and Acceptance Service Logic
 
 #### Automated
 
-- [x] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected. — 43451ce
-- [x] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema. — 43451ce
-- [x] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup. — 43451ce
-- [x] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC. — 43451ce
-- [x] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call. — 43451ce
-- [x] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads. — 43451ce
+- [x] 2.1 Revision and acceptance form parsers reject malformed IDs/timestamps and blank inputs before side effects; revision notes over 2,000 characters are rejected. — b454816
+- [x] 2.2 First generation and revision share the same strict complete-plan parser and OpenRouter response schema. — b454816
+- [x] 2.3 Revision reads by explicit owner/plan/intake identity and does not rely on the latest intake lookup. — b454816
+- [x] 2.4 Revision performs a preflight snapshot check, validates provider output, and persists only through `revise_training_plan` RPC. — b454816
+- [x] 2.5 Acceptance persists only through `accept_training_plan` RPC and makes no provider call. — b454816
+- [x] 2.6 Service error classes distinguish invalid request, generation/validation failure, conflict, and persistence failure without exposing private payloads. — b454816
 
 #### Manual
 
-- [x] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary. — 43451ce
-- [x] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged. — 43451ce
-- [x] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata. — 43451ce
-- [x] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success. — 43451ce
+- [x] 2.7 Review confirms a correction request cannot override saved/submitted constraints or the F-02 no-diagnosis boundary. — b454816
+- [x] 2.8 Review confirms invalid provider output and RPC conflicts leave intake, plan, metadata, status, and feedback unchanged. — b454816
+- [x] 2.9 Review confirms revising an accepted plan returns a draft with cleared `acceptedAt` and incremented revision metadata. — b454816
+- [x] 2.10 Review confirms accepting a draft sets `acceptedAt`, while accepting an accepted plan is an idempotent success. — b454816
 
 ### Phase 3: Authenticated Plan Action Routes
 
 #### Automated
 
-- [x] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers. — c53b1b1
-- [x] 3.2 Generation, revision, and acceptance use the shared same-origin helper. — c53b1b1
-- [x] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client. — c53b1b1
-- [x] 3.4 Form data is parsed by Zod-backed service contracts before action calls. — c53b1b1
-- [x] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes. — c53b1b1
+- [x] 3.1 Both new API files export `prerender = false` and uppercase `POST` handlers. — 35ec6a3
+- [x] 3.2 Generation, revision, and acceptance use the shared same-origin helper. — 35ec6a3
+- [x] 3.3 Both routes use the cookie-based Supabase SSR client and explicit authenticated user id; neither uses a service-role client. — 35ec6a3
+- [x] 3.4 Form data is parsed by Zod-backed service contracts before action calls. — 35ec6a3
+- [x] 3.5 Success and failure redirects contain only enumerated `planAction`/`planError` codes. — 35ec6a3
 
 #### Manual
 
-- [x] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan. — c53b1b1
-- [x] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter. — c53b1b1
-- [x] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail. — c53b1b1
-- [x] 3.9 Duplicate acceptance resolves as success, while an old acceptance form cannot accept a newer revised draft. — c53b1b1
+- [x] 3.6 Unauthenticated, cross-origin, unconfigured, invalid, foreign, and stale requests cannot mutate a plan. — 35ec6a3
+- [x] 3.7 Revision maps model/config/output failures to generic user-facing codes while acceptance never invokes OpenRouter. — 35ec6a3
+- [x] 3.8 URL and logging review finds no revision note, health constraint, plan content, prompt, raw output, or provider/database error detail. — 35ec6a3
+- [x] 3.9 Duplicate acceptance resolves as success, while an new acceptance form cannot accept a newer revised draft. — 35ec6a3
 
 ### Phase 4: Dashboard Revision and Acceptance Experience
 
 #### Automated
 
-- [x] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field. — 2eb4e6b
-- [x] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters. — 2eb4e6b
-- [x] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action. — 2eb4e6b
-- [x] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance. — 2eb4e6b
-- [x] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership. — 2eb4e6b
-- [x] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced. — 2eb4e6b
+- [x] 4.1 The revision island posts explicit plan/snapshot identity and includes one correction field plus a separate prefilled constraints field. — ffeec44
+- [x] 4.2 Client validation blocks blank revision/constraint values and correction requests over 2,000 characters. — ffeec44
+- [x] 4.3 The dashboard renders draft versus accepted state, revision metadata, safe action banners, and the appropriate acceptance action. — ffeec44
+- [x] 4.4 Draft and accepted plans both expose revision, while only drafts expose acceptance. — ffeec44
+- [x] 4.5 Revision and acceptance submits show pending/disabled states without duplicate handler ownership. — ffeec44
+- [x] 4.6 User-provided and generated text retains responsive wrapping and no raw JSON is introduced. — ffeec44
 
 #### Manual
 
-- [x] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it. — 2eb4e6b
-- [x] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft. — 2eb4e6b
-- [x] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version. — 2eb4e6b
-- [x] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan. — 2eb4e6b
-- [x] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls. — 2eb4e6b
-- [x] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts. — 2eb4e6b
+- [x] 4.7 A user can revise a draft, see the complete replacement, review updated rationale/safety notes, and then accept it. — ffeec44
+- [x] 4.8 A user can revise an accepted plan, including changing constraints, and see it reopen as a draft. — ffeec44
+- [x] 4.9 The UI clearly warns that prior workout feedback remains attached and may describe an earlier plan version. — ffeec44
+- [x] 4.10 Stale-tab conflicts show a refresh-and-retry message and do not silently replace the visible plan. — ffeec44
+- [x] 4.11 Safety copy remains reminder-only, visible, non-diagnostic, and free of acknowledgement or blocking controls. — ffeec44
+- [x] 4.12 The full review flow is keyboard-usable and readable on current mobile and desktop layouts. — ffeec44
 
 ### Phase 5: Verification and Handoff
 
 #### Automated
 
-- [x] 5.1 `npx supabase db reset` completes when local Supabase/Docker is available. — fdccf45
-- [x] 5.2 `npx astro sync` completes successfully. — fdccf45
-- [x] 5.3 `npm run lint` completes successfully. — fdccf45
-- [x] 5.4 `npm run build` completes successfully with required environment values. — fdccf45
-- [x] 5.5 `git status --short` shows only files expected by this implementation. — fdccf45
+- [x] 5.1 `npx supabase db reset` completes when local Supabase/Docker is available. — 9806f45
+- [x] 5.2 `npx astro sync` completes successfully. — 9806f45
+- [x] 5.3 `npm run lint` completes successfully. — 9806f45
+- [x] 5.4 `npm run build` completes successfully with required environment values. — 9806f45
+- [x] 5.5 `git status --short` shows only files expected by this implementation. — 9806f45
 
 #### Manual
 
-- [x] 5.6 The full draft revision, acceptance, accepted-plan reopening, and re-acceptance loop works for the owner. — fdccf45
-- [x] 5.7 Generation, validation, database, stale-snapshot, and duplicate-submit scenarios preserve atomic state and show safe feedback. — fdccf45
-- [x] 5.8 Existing workout feedback remains unchanged and attached after plan content changes. — fdccf45
-- [x] 5.9 No private intake/revision text, prompt, raw output, provider detail, or database detail appears in URLs or logs. — fdccf45
-- [x] 5.10 Mobile/desktop and keyboard review confirms usable forms, plan content, pending states, status messaging, and safety copy. — fdccf45
-- [x] 5.11 Human confirms S-03 does not add version history, chat, feedback editing, medical gates, or test infrastructure. — fdccf45
+- [x] 5.6 The full draft revision, acceptance, accepted-plan reopening, and re-acceptance loop works for the owner. — 9806f45
+- [x] 5.7 Generation, validation, database, stale-snapshot, and duplicate-submit scenarios preserve atomic state and show safe feedback. — 9806f45
+- [x] 5.8 Existing workout feedback remains unchanged and attached after plan content changes. — 9806f45
+- [x] 5.9 No private intake/revision text, prompt, raw output, provider detail, or database detail appears in URLs or logs. — 9806f45
+- [x] 5.10 Mobile/desktop and keyboard review confirms usable forms, plan content, pending states, status messaging, and safety copy. — 9806f45
+- [x] 5.11 Human confirms S-03 does not add version history, chat, feedback editing, medical gates, or test infrastructure. — 9806f45

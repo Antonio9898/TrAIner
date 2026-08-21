@@ -552,90 +552,90 @@ If implementation discovers a real schema gap, stop and revise this plan before 
 
 #### Automated
 
-- [x] 1.1 `astro.config.mjs` declares server-only OpenRouter env fields. — 729539b
-- [x] 1.2 `.env.example` documents required OpenRouter setup. — 729539b
-- [x] 1.3 `wrangler.jsonc` includes `OPENROUTER_API_KEY` in required secrets. — 729539b
-- [x] 1.4 `src/lib/openrouter.ts` exists and does not expose API keys to client-side code. — 729539b
-- [x] 1.5 `src/lib/openrouter.ts` uses direct `fetch`, non-streaming chat completions, JSON schema response format, fixed title attribution, optional referer, and stable user id. — 729539b
+- [x] 1.1 `astro.config.mjs` declares server-only OpenRouter env fields. — 78c4e8d
+- [x] 1.2 `.env.example` documents required OpenRouter setup. — 78c4e8d
+- [x] 1.3 `wrangler.jsonc` includes `OPENROUTER_API_KEY` in required secrets. — 78c4e8d
+- [x] 1.4 `src/lib/openrouter.ts` exists and does not expose API keys to client-side code. — 78c4e8d
+- [x] 1.5 `src/lib/openrouter.ts` uses direct `fetch`, non-streaming chat completions, JSON schema response format, fixed title attribution, optional referer, and stable user id. — 78c4e8d
 
 #### Manual
 
-- [x] 1.6 Review confirms no OpenRouter secret, prompt text, or raw provider response is logged or placed in URLs. — 729539b
-- [x] 1.7 Review confirms `OPENROUTER_MODEL` is required and no fallback/default model is embedded in code. — 729539b
-- [x] 1.8 Review confirms OpenRouter errors are safe for route-level user messages. — 729539b
+- [x] 1.6 Review confirms no OpenRouter secret, prompt text, or raw provider response is logged or placed in URLs. — 78c4e8d
+- [x] 1.7 Review confirms `OPENROUTER_MODEL` is required and no fallback/default model is embedded in code. — 78c4e8d
+- [x] 1.8 Review confirms OpenRouter errors are safe for route-level user messages. — 78c4e8d
 
 ### Phase 2: Training Plan Generation Service
 
 #### Automated
 
-- [x] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers. — bf3217d
-- [x] 2.2 The service reads and writes through the caller-provided Supabase SSR client. — bf3217d
-- [x] 2.3 The service validates model output with Zod before insert. — bf3217d
-- [x] 2.4 The service enforces 2-5 scheduled workouts for S-02. — bf3217d
-- [x] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`. — bf3217d
-- [x] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs. — bf3217d
+- [x] 2.1 `src/lib/services/training-plans.ts` exists and exports read/map/generate helpers. — 80cb9ac
+- [x] 2.2 The service reads and writes through the caller-provided Supabase SSR client. — 80cb9ac
+- [x] 2.3 The service validates model output with Zod before insert. — 80cb9ac
+- [x] 2.4 The service enforces 2-5 scheduled workouts for S-02. — 80cb9ac
+- [x] 2.5 The service inserts draft plans with `accepted_at` omitted or null-compatible and `notes: null`. — 80cb9ac
+- [x] 2.6 The service does not write raw prompts, raw model responses, or private intake text to logs. — 80cb9ac
 
 #### Manual
 
-- [x] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row. — bf3217d
-- [x] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary. — bf3217d
-- [x] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks. — bf3217d
-- [x] 2.10 Review confirms no migration was introduced. — bf3217d
+- [x] 2.7 Review confirms invalid JSON or schema-invalid output cannot create a `training_plans` row. — 80cb9ac
+- [x] 2.8 Review confirms the prompt preserves the F-02 no-diagnosis and no-clearance boundary. — 80cb9ac
+- [x] 2.9 Review confirms generation freezes the intake by creating the plan row that S-01 editability already checks. — 80cb9ac
+- [x] 2.10 Review confirms no migration was introduced. — 80cb9ac
 
 ### Phase 3: Generation Route
 
 #### Automated
 
-- [x] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST. — 32588e5
-- [x] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client. — 32588e5
-- [x] 3.3 The route reads the latest editable intake before calling generation. — 32588e5
-- [x] 3.4 The route redirects with safe success/error flags only. — 32588e5
-- [x] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params. — 32588e5
+- [x] 3.1 `src/pages/api/training-plans/generate.ts` exists, exports `const prerender = false`, and supports POST. — d6f5e73
+- [x] 3.2 The route uses `src/lib/supabase.ts` SSR client and never uses a service-role client. — d6f5e73
+- [x] 3.3 The route reads the latest editable intake before calling generation. — d6f5e73
+- [x] 3.4 The route redirects with safe success/error flags only. — d6f5e73
+- [x] 3.5 The route does not place private intake text, prompts, raw output, or provider errors in query params. — d6f5e73
 
 #### Manual
 
-- [x] 3.6 Review confirms unauthenticated requests cannot generate plans. — 32588e5
-- [x] 3.7 Review confirms a user with no intake gets a safe dashboard error. — 32588e5
-- [x] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02. — 32588e5
-- [x] 3.9 Review confirms missing OpenRouter config does not attempt a provider call. — 32588e5
+- [x] 3.6 Review confirms unauthenticated requests cannot generate plans. — d6f5e73
+- [x] 3.7 Review confirms a user with no intake gets a safe dashboard error. — d6f5e73
+- [x] 3.8 Review confirms a planned intake cannot trigger overwrite/regeneration in S-02. — d6f5e73
+- [x] 3.9 Review confirms missing OpenRouter config does not attempt a provider call. — d6f5e73
 
 ### Phase 4: Dashboard Generate and View UI
 
 #### Automated
 
-- [x] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper. — a482e09
-- [x] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan. — a482e09
-- [x] 4.3 The dashboard shows the full stored plan inline after generation. — a482e09
-- [x] 4.4 The generate button has client-side double-submit prevention. — a482e09
-- [x] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience. — a482e09
-- [x] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard. — a482e09
+- [x] 4.1 `src/pages/dashboard.astro` imports and uses the training-plan service read helper. — 5b19f5f
+- [x] 4.2 The dashboard shows a generate form only for a latest editable intake without a stored plan. — 5b19f5f
+- [x] 4.3 The dashboard shows the full stored plan inline after generation. — 5b19f5f
+- [x] 4.4 The generate button has client-side double-submit prevention. — 5b19f5f
+- [x] 4.5 The dashboard does not render raw JSON dumps as the primary plan experience. — 5b19f5f
+- [x] 4.6 Long generated text uses wrapping styles consistent with the existing dashboard. — 5b19f5f
 
 #### Manual
 
-- [x] 4.7 A signed-in user with no intake sees the existing start-intake path. — a482e09
-- [x] 4.8 A signed-in user with an editable intake can trigger generation. — a482e09
-- [x] 4.9 During submit, the UI prevents obvious repeated clicks. — a482e09
-- [x] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline. — a482e09
-- [x] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake. — a482e09
-- [x] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL. — a482e09
-- [x] 4.13 The UI remains usable on mobile and desktop without overlapping text. — a482e09
-- [x] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement. — a482e09
+- [x] 4.7 A signed-in user with no intake sees the existing start-intake path. — 5b19f5f
+- [x] 4.8 A signed-in user with an editable intake can trigger generation. — 5b19f5f
+- [x] 4.9 During submit, the UI prevents obvious repeated clicks. — 5b19f5f
+- [x] 4.10 After successful generation, the dashboard shows explanation, overview, workouts, progression, and safety notes inline. — 5b19f5f
+- [x] 4.11 After a stored plan exists, the dashboard no longer offers first-plan generation for that intake. — 5b19f5f
+- [x] 4.12 On generation failure, the dashboard shows a generic safe error and no private text appears in the URL. — 5b19f5f
+- [x] 4.13 The UI remains usable on mobile and desktop without overlapping text. — 5b19f5f
+- [x] 4.14 The final UI preserves F-02 boundaries: no diagnosis, no medical checklist, no risk scoring, no clearance language, and no stored acknowledgement. — 5b19f5f
 
 ### Phase 5: Verification and Handoff
 
 #### Automated
 
-- [x] 5.1 `npx astro sync` completes successfully. — 06a9bdd
-- [x] 5.2 `npm run lint` completes successfully. — 06a9bdd
-- [x] 5.3 `npm run build` completes successfully with required env configured. — 06a9bdd
-- [x] 5.4 `git status --short` shows only expected files changed for this implementation. — 06a9bdd
+- [x] 5.1 `npx astro sync` completes successfully. — 136d4ca
+- [x] 5.2 `npm run lint` completes successfully. — 136d4ca
+- [x] 5.3 `npm run build` completes successfully with required env configured. — 136d4ca
+- [x] 5.4 `git status --short` shows only expected files changed for this implementation. — 136d4ca
 
 #### Manual
 
-- [x] 5.5 Signed-in user can generate the first explained plan from a saved intake. — 06a9bdd
-- [x] 5.6 Generated plan is stored as a `draft` row for the correct owner and intake. — 06a9bdd
-- [x] 5.7 Stored plan appears inline on the dashboard with explanation and safety notes. — 06a9bdd
-- [x] 5.8 Invalid model output stores nothing and returns a safe error. — 06a9bdd
-- [x] 5.9 Repeated click behavior does not create duplicate plan rows. — 06a9bdd
-- [x] 5.10 No prompt text, health constraints, notes, raw model output, or provider errors appear in URLs or logs. — 06a9bdd
-- [x] 5.11 Human confirms the implementation stays within S-02 scope and does not introduce S-03/S-04 behavior. — 06a9bdd
+- [x] 5.5 Signed-in user can generate the first explained plan from a saved intake. — 136d4ca
+- [x] 5.6 Generated plan is stored as a `draft` row for the correct owner and intake. — 136d4ca
+- [x] 5.7 Stored plan appears inline on the dashboard with explanation and safety notes. — 136d4ca
+- [x] 5.8 Invalid model output stores nothing and returns a safe error. — 136d4ca
+- [x] 5.9 Repeated click behavior does not create duplicate plan rows. — 136d4ca
+- [x] 5.10 No prompt text, health constraints, notes, raw model output, or provider errors appear in URLs or logs. — 136d4ca
+- [x] 5.11 Human confirms the implementation stays within S-02 scope and does not introduce S-03/S-04 behavior. — 136d4ca

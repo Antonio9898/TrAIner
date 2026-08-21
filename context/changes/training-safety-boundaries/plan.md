@@ -273,43 +273,43 @@ No Supabase migration is part of this change. If a future slice chooses to store
 
 #### Automated
 
-- [x] 1.1 `context/foundation/training-safety-boundaries.md` exists. — c1bf27b
-- [x] 1.2 The document includes references to `healthConstraints`, `safetyNotes`, `S-01`, `S-02`, and `S-03`. — c1bf27b
-- [x] 1.3 `git diff --name-only` for this phase shows no `src/` or `supabase/migrations/` changes. — c1bf27b
+- [x] 1.1 `context/foundation/training-safety-boundaries.md` exists. — ddcc40a
+- [x] 1.2 The document includes references to `healthConstraints`, `safetyNotes`, `S-01`, `S-02`, and `S-03`. — ddcc40a
+- [x] 1.3 `git diff --name-only` for this phase shows no `src/` or `supabase/migrations/` changes. — ddcc40a
 
 #### Manual
 
-- [x] 1.4 Human review confirms the document says TrAIner does not diagnose injuries or replace a doctor, physiotherapist, or medical trainer. — c1bf27b
-- [x] 1.5 Human review confirms the document uses informational warnings only and does not define automatic blockers. — c1bf27b
-- [x] 1.6 Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist. — c1bf27b
-- [x] 1.7 Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment. — c1bf27b
-- [x] 1.8 Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale. — c1bf27b
-- [x] 1.9 Human review confirms the document does not require storing user acknowledgement. — c1bf27b
+- [x] 1.4 Human review confirms the document says TrAIner does not diagnose injuries or replace a doctor, physiotherapist, or medical trainer. — ddcc40a
+- [x] 1.5 Human review confirms the document uses informational warnings only and does not define automatic blockers. — ddcc40a
+- [x] 1.6 Human review confirms the intake guidance uses free text with neutral examples, not a medical checklist. — ddcc40a
+- [x] 1.7 Human review confirms generated-plan guidance is limited to `safetyNotes`, not full structured risk assessment. — ddcc40a
+- [x] 1.8 Human review confirms explanation guidance avoids diagnosis or safety guarantees while describing training-fit rationale. — ddcc40a
+- [x] 1.9 Human review confirms the document does not require storing user acknowledgement. — ddcc40a
 
 ### Phase 2: Roadmap Handoff
 
 #### Automated
 
-- [x] 2.1 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` finds the foundation document reference. — d35c7e0
-- [x] 2.2 `rg -n "S-01|S-02|S-03" context/foundation/roadmap.md` still finds all three downstream slices. — d35c7e0
-- [x] 2.3 `git diff --name-only` for this phase shows only foundation/roadmap documentation changes, not code or migrations. — d35c7e0
+- [x] 2.1 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` finds the foundation document reference. — 98d8701
+- [x] 2.2 `rg -n "S-01|S-02|S-03" context/foundation/roadmap.md` still finds all three downstream slices. — 98d8701
+- [x] 2.3 `git diff --name-only` for this phase shows only foundation/roadmap documentation changes, not code or migrations. — 98d8701
 
 #### Manual
 
-- [x] 2.4 Roadmap review confirms F-02 is visible as the safety-boundary source for future intake, first-plan, and revision slices. — d35c7e0
-- [x] 2.5 Roadmap review confirms the dependency order remains `F-02 -> S-01/S-02/S-03`. — d35c7e0
-- [x] 2.6 Roadmap review confirms no new product scope was introduced for trainer/admin roles, medical diagnosis, stored acknowledgements, or runtime blocking. — d35c7e0
+- [x] 2.4 Roadmap review confirms F-02 is visible as the safety-boundary source for future intake, first-plan, and revision slices. — 98d8701
+- [x] 2.5 Roadmap review confirms the dependency order remains `F-02 -> S-01/S-02/S-03`. — 98d8701
+- [x] 2.6 Roadmap review confirms no new product scope was introduced for trainer/admin roles, medical diagnosis, stored acknowledgements, or runtime blocking. — 98d8701
 
 ### Phase 3: Contract Review and Handoff
 
 #### Automated
 
-- [x] 3.1 `test -f context/foundation/training-safety-boundaries.md` succeeds. — de46a0e
-- [x] 3.2 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` succeeds. — de46a0e
-- [x] 3.3 `git diff --name-only` shows only expected files changed for this doc-only implementation. — de46a0e
+- [x] 3.1 `test -f context/foundation/training-safety-boundaries.md` succeeds. — 0ce03a0
+- [x] 3.2 `rg -n "training-safety-boundaries.md" context/foundation/roadmap.md` succeeds. — 0ce03a0
+- [x] 3.3 `git diff --name-only` shows only expected files changed for this doc-only implementation. — 0ce03a0
 
 #### Manual
 
-- [x] 3.4 Human confirms the foundation document is sufficient for `S-01`, `S-02`, and `S-03` planning. — de46a0e
-- [x] 3.5 Human confirms the document matches the eight planning decisions captured in this plan. — de46a0e
-- [x] 3.6 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — de46a0e
+- [x] 3.4 Human confirms the foundation document is sufficient for `S-01`, `S-02`, and `S-03` planning. — 0ce03a0
+- [x] 3.5 Human confirms the document matches the eight planning decisions captured in this plan. — 0ce03a0
+- [x] 3.6 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — 0ce03a0

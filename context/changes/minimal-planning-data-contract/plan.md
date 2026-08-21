@@ -281,46 +281,46 @@ This is a forward-only Supabase migration. Worker rollback does not roll back Su
 
 #### Automated
 
-- [x] 1.1 Migration file exists under `supabase/migrations/` with the required timestamp naming format. — f7ddb8c
-- [x] 1.2 Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available. — f7ddb8c
-- [x] 1.3 RLS is enabled on all new planning tables. — f7ddb8c
-- [x] 1.4 No new `anon` policies exist for planning tables. — f7ddb8c
-- [x] 1.8 A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`. — f7ddb8c
+- [x] 1.1 Migration file exists under `supabase/migrations/` with the required timestamp naming format. — 9596f34
+- [x] 1.2 Local migration applies cleanly with `npx supabase db reset` when local Supabase/Docker is available. — 9596f34
+- [x] 1.3 RLS is enabled on all new planning tables. — 9596f34
+- [x] 1.4 No new `anon` policies exist for planning tables. — 9596f34
+- [x] 1.8 A unique constraint or unique index enforces one `training_plans` row per `(user_id, intake_id)`. — 9596f34
 
 #### Manual
 
-- [x] 1.5 Schema review confirms each child table cannot reference another user's parent row. — f7ddb8c
-- [x] 1.6 Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps. — f7ddb8c
-- [x] 1.7 Schema review confirms revision support is overwrite-based, not version-history-based. — f7ddb8c
-- [x] 1.9 Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses. — f7ddb8c
-- [x] 1.10 Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content. — f7ddb8c
+- [x] 1.5 Schema review confirms each child table cannot reference another user's parent row. — 9596f34
+- [x] 1.6 Schema review confirms the contract is still minimal and does not normalize exercises/sets/reps. — 9596f34
+- [x] 1.7 Schema review confirms revision support is overwrite-based, not version-history-based. — 9596f34
+- [x] 1.9 Schema review confirms every planning-table policy for `select`, `insert`, `update`, and `delete` is scoped with `auth.uid() = user_id` in the appropriate `using` and `with check` clauses. — 9596f34
+- [x] 1.10 Schema review confirms `workout_feedback` has a non-empty stable workout/day reference that can be matched to the plan content. — 9596f34
 
 ### Phase 2: Shared TypeScript Domain Types
 
 #### Automated
 
-- [x] 2.1 `src/types.ts` exists and exports all planned type names. — d061b54
-- [x] 2.2 `npx astro sync` completes successfully. — d061b54
-- [x] 2.3 `npm run lint` completes successfully. — d061b54
-- [x] 2.4 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — d061b54
+- [x] 2.1 `src/types.ts` exists and exports all planned type names. — 5328a33
+- [x] 2.2 `npx astro sync` completes successfully. — 5328a33
+- [x] 2.3 `npm run lint` completes successfully. — 5328a33
+- [x] 2.4 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 5328a33
 
 #### Manual
 
-- [x] 2.5 Type review confirms names and values match the migration constraints. — d061b54
-- [x] 2.6 Type review confirms no data-access helper or API behavior was added in this phase. — d061b54
-- [x] 2.7 Type review confirms plan content remains JSONB-friendly and not over-normalized. — d061b54
-- [x] 2.8 Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`. — d061b54
+- [x] 2.5 Type review confirms names and values match the migration constraints. — 5328a33
+- [x] 2.6 Type review confirms no data-access helper or API behavior was added in this phase. — 5328a33
+- [x] 2.7 Type review confirms plan content remains JSONB-friendly and not over-normalized. — 5328a33
+- [x] 2.8 Type review confirms feedback's stable workout/day reference aligns with scheduled entries in `TrainingPlanContent`. — 5328a33
 
 ### Phase 3: Contract Verification and Handoff
 
 #### Automated
 
-- [x] 3.1 `npm run lint` completes successfully. — 9253695
-- [x] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 9253695
-- [x] 3.3 `git status --short` shows only expected files changed for this plan's implementation. — 9253695
+- [x] 3.1 `npm run lint` completes successfully. — 30756ad
+- [x] 3.2 `npm run build` completes successfully with the existing Supabase environment requirements satisfied. — 30756ad
+- [x] 3.3 `git status --short` shows only expected files changed for this plan's implementation. — 30756ad
 
 #### Manual
 
-- [x] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to. — 9253695
-- [x] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — 9253695
-- [x] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete. — 9253695
+- [x] 3.4 Human confirms the contract is sufficient for S-01 through S-04, including S-04 identifying which scheduled workout/day each feedback record refers to. — 30756ad
+- [x] 3.5 Human confirms the explicit out-of-scope list still matches the intended MVP boundary. — 30756ad
+- [x] 3.6 Human confirms any Supabase migration is acceptable as a forward-only database change before implementation is considered complete. — 30756ad
