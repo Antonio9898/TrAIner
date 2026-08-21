@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const MAX_REVISION_NOTE_LENGTH = 2_000;
+const characterCountFormatter = new Intl.NumberFormat("en-US");
 
 interface PlanRevisionFormProps {
   planId: string;
@@ -41,7 +42,7 @@ export default function PlanRevisionForm({
     if (!revisionNote.trim()) {
       next.revisionNote = "Describe the correction you want";
     } else if (revisionNote.trim().length > MAX_REVISION_NOTE_LENGTH) {
-      next.revisionNote = `Correction requests must be ${MAX_REVISION_NOTE_LENGTH.toLocaleString()} characters or fewer`;
+      next.revisionNote = `Correction requests must be ${characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} characters or fewer`;
     }
 
     if (!healthConstraints.trim()) {
@@ -93,7 +94,8 @@ export default function PlanRevisionForm({
           <FieldError id="revisionNote-error" message={errors.revisionNote} />
         ) : (
           <p id="revisionNote-hint" className="mt-1 text-xs text-blue-100/60">
-            {revisionNote.length.toLocaleString()} / {MAX_REVISION_NOTE_LENGTH.toLocaleString()} characters
+            {characterCountFormatter.format(revisionNote.length)} /{" "}
+            {characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} characters
           </p>
         )}
       </div>
