@@ -2,7 +2,7 @@
 project: TrAIner
 version: 2
 status: active
-updated: 2026-08-12
+updated: 2026-08-21
 main_goal: speed
 top_blocker: capacity
 ---
@@ -30,7 +30,7 @@ TrAIner ma pomoc osobie trenujacej lub zaczynajacej trening silowy ulozyc plan p
 | S-01 | goal-and-constraints-intake | user can log in, enter a training goal, training level, and health constraints | F-01, F-02 | US-01, FR-001, FR-002, FR-003 | implemented |
 | S-02 | first-explained-training-plan | user can receive the first explained training plan matched to goal, level, and constraints | F-01, F-02, S-01 | US-01, FR-004, FR-008 | implemented |
 | S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | done |
-| S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | proposed |
+| S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | planning |
 
 ## Streams
 
@@ -132,7 +132,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Feedback jest czescia pelnego MVP, ale powinien wejsc dopiero po zaakceptowanym planie, bo inaczej produkt zbiera sygnaly bez jasnego planu odniesienia.
-- **Status:** proposed
+- **Status:** planning
 
 ## Backlog Handoff
 
