@@ -400,6 +400,21 @@ Run the existing repository checks plus a risk-focused manual matrix for atomici
 
 ---
 
+## Accepted Implementation Addendum — Revision Summary
+
+**Accepted**: 2026-08-21
+
+Implementation may persist a model-generated `last_revision_summary` for the latest successful revision.
+
+- A follow-up migration adds the nullable column with a 600-character limit.
+- The revision RPC accepts and stores the validated summary atomically.
+- Revision responses extend the shared complete-plan payload with `revisionSummary`; the nested plan contract remains shared.
+- The dashboard may display the summary as “What changed”.
+- No revision history or prior summaries are retained.
+- Rollback requires removing the UI/service field, restoring the previous RPC signature, and dropping the column and constraint.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -439,7 +454,9 @@ Send only the current intake context, current complete plan, and one bounded cor
 
 ## Migration Notes
 
-The migration is additive and introduces functions only. It does not rewrite existing rows, change status vocabulary, or add columns. Rollback consists of dropping the exact two function signatures; rolling back application code without dropping the functions is safe because no existing path calls them.
+The initial lifecycle migration is additive and introduces functions only. The accepted revision-summary addendum adds a follow-up migration with one nullable column and replaces the revision function signature to accept the validated summary. Neither migration rewrites existing rows or changes the status vocabulary.
+
+Rollback of the addendum requires removing the summary UI/service field, restoring the previous revision function signature, and dropping the summary constraint and column. Rolling back the remaining application code without dropping the lifecycle functions is safe because no pre-S-03 path calls them.
 
 Applying the migration grants authenticated users only function execution in addition to their existing table privileges and RLS policies. If a local reset is unavailable, the SQL still requires manual review of function ownership, `SECURITY INVOKER`, empty `search_path`, grants, row locking, snapshot comparison, and all-or-nothing update order before remote application.
 

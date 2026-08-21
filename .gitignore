@@ -3,6 +3,11 @@
 # dependencies
 node_modules/
 
+# generated application and runtime state
+.astro/
+dist/
+.wrangler/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
