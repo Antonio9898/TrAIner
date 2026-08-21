@@ -29,7 +29,7 @@ TrAIner ma pomoc osobie trenujacej lub zaczynajacej trening silowy ulozyc plan p
 | F-02 | training-safety-boundaries | (foundation) granice rekomendacji treningowych sa opisane tak, zeby planowanie nie diagnozowalo kontuzji i nie zastepowalo specjalisty | - | Non-Functional Requirements, Non-Goals, FR-003, FR-004, FR-005, FR-008 | implemented |
 | S-01 | goal-and-constraints-intake | user can log in, enter a training goal, training level, and health constraints | F-01, F-02 | US-01, FR-001, FR-002, FR-003 | implemented |
 | S-02 | first-explained-training-plan | user can receive the first explained training plan matched to goal, level, and constraints | F-01, F-02, S-01 | US-01, FR-004, FR-008 | implemented |
-| S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | in-progress |
+| S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | done |
 | S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | proposed |
 
 ## Streams
@@ -120,7 +120,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Poprawki musza zachowac te same ograniczenia bezpieczenstwa co pierwszy plan; inaczej uzytkownik moze obejsc guardraile w rozmowie o zmianach.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-04: Post-workout feedback
 
@@ -160,3 +160,4 @@ Brak otwartych pytan roadmapowych. PRD wskazuje: "Brak otwartych pytan."
 - **F-02: Training safety boundaries** - implemented 2026-06-03 (`context/changes/training-safety-boundaries/change.md`).
 - **S-01: Goal and constraints intake** - implemented 2026-06-03 (`context/changes/goal-and-constraints-intake/change.md`).
 - **S-02: First explained training plan** - implemented 2026-06-18 (`context/changes/first-explained-training-plan/change.md`).
+- **S-03: user can request corrections and accept the final training plan.** — Archived 2026-08-21 → `context/archive/2026-08-12-plan-revision-and-acceptance/`. Lesson: —.

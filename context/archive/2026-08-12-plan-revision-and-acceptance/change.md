@@ -1,10 +1,10 @@
 ---
 change_id: plan-revision-and-acceptance
 title: Plan revision and acceptance
-status: impl_reviewed
+status: archived
 created: 2026-08-12
 updated: 2026-08-21
-archived_at: null
+archived_at: 2026-08-21T14:17:21Z
 ---
 
 ## Notes
