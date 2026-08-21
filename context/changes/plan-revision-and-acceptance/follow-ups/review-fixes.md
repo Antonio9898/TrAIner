@@ -3,8 +3,8 @@
 ## F1 — Credential exposure containment
 
 - [x] Remove `.env.local` and `dist/server/.dev.vars` from Git tracking without deleting the local files.
-- [ ] Revoke and rotate the exposed OpenRouter API key.
-- **Decision**: Deferred during implementation-review triage; credential risk remains active.
+- [x] Revoke and rotate the exposed OpenRouter API key — user-confirmed after triage.
+- [x] Configure the replacement `OPENROUTER_API_KEY` secret in Cloudflare — user-confirmed after triage.
 - [ ] Review provider access logs for unexpected use.
 - [ ] Confirm whether any committed Supabase value is privileged; rotate it if so.
 - [ ] Decide whether to purge the credential-bearing commits from shared Git history and coordinate the required force-push with all repository users.

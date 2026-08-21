@@ -5,20 +5,20 @@
 - **Plan**: `context/changes/plan-revision-and-acceptance/plan.md`
 - **Scope**: Phases 1–5 of 5
 - **Date**: 2026-08-21
-- **Verdict**: REJECTED
-- **Triage**: COMPLETE — 3 fixed, 1 partially fixed/deferred, 3 skipped
+- **Verdict**: NEEDS ATTENTION
+- **Triage**: COMPLETE — 3 fixed, 1 partially fixed/contained, 3 skipped
 - **Findings**: 1 critical, 5 warnings, 1 observation
 
 ## Verdicts
 
 | Dimension           | Verdict |
 | ------------------- | ------- |
-| Plan Adherence      | FAIL    |
-| Scope Discipline    | WARNING |
-| Safety & Quality    | FAIL    |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | WARNING |
 | Architecture        | FAIL    |
 | Pattern Consistency | PASS    |
-| Success Criteria    | FAIL    |
+| Success Criteria    | WARNING |
 
 ## Verification
 
@@ -44,7 +44,7 @@
   - Tradeoff: Requires coordinated credential rollout and, if history is rewritten, coordination with every clone and deployment source.
   - Confidence: HIGH — the files contain non-placeholder values and their introducing commits are on `origin/main`.
   - Blind spot: Provider access logs and downstream copies were not available, so unauthorized use cannot be ruled out here.
-- **Decision**: PARTIALLY FIXED / DEFERRED — `.env.local` and `dist/server/.dev.vars` were removed from Git tracking while preserved locally and ignored. The user deferred OpenRouter revocation/rotation and shared-history cleanup; the exposed credential risk remains active.
+- **Decision**: PARTIALLY FIXED / CONTAINED — `.env.local` and `dist/server/.dev.vars` were removed from Git tracking while preserved locally and ignored. The user confirmed that the exposed OpenRouter key was rotated and the replacement secret was configured in Cloudflare. Shared-history cleanup remains pending.
 
 ### F2 — Authenticated owners can bypass lifecycle RPC invariants
 
@@ -130,7 +130,7 @@
 ## Triage Summary
 
 - **Fixed**: F3 (Fix A), F5, F6
-- **Partially fixed / deferred**: F1 — files untracked; credential rotation and history cleanup remain pending
+- **Partially fixed / contained**: F1 — files untracked and credential rotated; shared-history cleanup remains pending
 - **Skipped**: F2, F4, F7
 - **Accepted as rules**: None
-- **Final verdict**: REJECTED — the critical credential exposure remains active until the OpenRouter key is revoked and rotated
+- **Final verdict**: NEEDS ATTENTION — the credential incident is contained, but history cleanup and the skipped architecture/cost findings remain unresolved
