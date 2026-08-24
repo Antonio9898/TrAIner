@@ -394,33 +394,33 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [x] 2.1 Zod rejects malformed identities, tokens, dates, zones, ratings, and oversized notes before RPC invocation.
-- [x] 2.2 Empty optional satisfaction and notes normalize to null.
-- [x] 2.3 Submission uses only the RPC and maps one row or a sanitized error.
-- [x] 2.4 History reads are exact, deterministic, and limited to 50 rows.
-- [x] 2.5 `npx astro sync` and `npm run lint` pass.
+- [x] 2.1 Zod rejects malformed identities, tokens, dates, zones, ratings, and oversized notes before RPC invocation. — e981f85
+- [x] 2.2 Empty optional satisfaction and notes normalize to null. — e981f85
+- [x] 2.3 Submission uses only the RPC and maps one row or a sanitized error. — e981f85
+- [x] 2.4 History reads are exact, deterministic, and limited to 50 rows. — e981f85
+- [x] 2.5 `npx astro sync` and `npm run lint` pass. — e981f85
 
 #### Manual
 
-- [x] 2.6 Persistence trusts no client label or user ID.
-- [x] 2.7 Feedback does not enter OpenRouter or plan-revision inputs.
-- [x] 2.8 Removed-key history uses stored snapshots.
+- [x] 2.6 Persistence trusts no client label or user ID. — e981f85
+- [x] 2.7 Feedback does not enter OpenRouter or plan-revision inputs. — e981f85
+- [x] 2.8 Removed-key history uses stored snapshots. — e981f85
 
 ### Phase 3: Authenticated Feedback Endpoint
 
 #### Automated
 
-- [ ] 3.1 Dynamic route exports `prerender = false` and uppercase `POST`.
-- [ ] 3.2 Same-origin and authentication checks precede submission.
-- [ ] 3.3 Canonical plan/workout identity comes from decoded route parameters.
-- [ ] 3.4 Redirects contain only enumerated codes and encoded canonical identity.
-- [ ] 3.5 `npm run lint` passes.
+- [x] 3.1 Dynamic route exports `prerender = false` and uppercase `POST`.
+- [x] 3.2 Same-origin and authentication checks precede submission.
+- [x] 3.3 Canonical plan/workout identity comes from decoded route parameters.
+- [x] 3.4 Redirects contain only enumerated codes and encoded canonical identity.
+- [x] 3.5 `npm run lint` passes.
 
 #### Manual
 
-- [ ] 3.6 Invalid and unavailable submissions create no row and disclose no ownership.
-- [ ] 3.7 URLs and logs contain no private form or database details.
-- [ ] 3.8 Success and known failure messages are safe and understandable.
+- [x] 3.6 Invalid and unavailable submissions create no row and disclose no ownership.
+- [x] 3.7 URLs and logs contain no private form or database details.
+- [x] 3.8 Success and known failure messages are safe and understandable.
 
 ### Phase 4: Dedicated Feedback Experience
 
