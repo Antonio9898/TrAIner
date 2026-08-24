@@ -444,18 +444,18 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [x] 5.1 `npx supabase db reset` completes successfully.
-- [x] 5.2 `npx astro sync` completes successfully.
-- [x] 5.3 `npm run lint` completes successfully.
-- [x] 5.4 `npm run build` completes successfully with required environment values.
-- [x] 5.5 Final privilege and function grants match the exclusive submission contract.
-- [x] 5.6 `git status --short` contains only expected paths.
+- [x] 5.1 `npx supabase db reset` completes successfully. — e8c3fcb
+- [x] 5.2 `npx astro sync` completes successfully. — e8c3fcb
+- [x] 5.3 `npm run lint` completes successfully. — e8c3fcb
+- [x] 5.4 `npm run build` completes successfully with required environment values. — e8c3fcb
+- [x] 5.5 Final privilege and function grants match the exclusive submission contract. — e8c3fcb
+- [x] 5.6 `git status --short` contains only expected paths. — e8c3fcb
 
 #### Manual
 
-- [x] 5.7 Idempotency and legitimate-repeat scenarios match the selected behavior.
-- [x] 5.8 Date and time-zone cases preserve the selected calendar day.
-- [x] 5.9 Submission and revision races preserve accepted/current-key invariants.
-- [x] 5.10 Feedback survives revision and re-acceptance behavior is correct.
-- [x] 5.11 Cross-user and direct mutation attempts are denied without disclosure.
-- [x] 5.12 Owner flow, accessibility, responsive layout, and safe messaging are recorded in `verification.md`.
+- [x] 5.7 Idempotency and legitimate-repeat scenarios match the selected behavior. — e8c3fcb
+- [x] 5.8 Date and time-zone cases preserve the selected calendar day. — e8c3fcb
+- [x] 5.9 Submission and revision races preserve accepted/current-key invariants. — e8c3fcb
+- [x] 5.10 Feedback survives revision and re-acceptance behavior is correct. — e8c3fcb
+- [x] 5.11 Cross-user and direct mutation attempts are denied without disclosure. — e8c3fcb
+- [x] 5.12 Owner flow, accessibility, responsive layout, and safe messaging are recorded in `verification.md`. — e8c3fcb
