@@ -378,33 +378,33 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [x] 1.1 Timestamped migration adds, backfills, and constrains the submission token without deleting feedback.
-- [x] 1.2 `npx supabase db reset` applies the full migration chain.
-- [x] 1.3 Schema inspection confirms token uniqueness without workout/date uniqueness.
-- [x] 1.4 Privilege inspection confirms owner SELECT and RPC-only mutation.
-- [x] 1.5 Function inspection confirms the exclusive least-privilege contract.
+- [x] 1.1 Timestamped migration adds, backfills, and constrains the submission token without deleting feedback. — 0fcd593
+- [x] 1.2 `npx supabase db reset` applies the full migration chain. — 0fcd593
+- [x] 1.3 Schema inspection confirms token uniqueness without workout/date uniqueness. — 0fcd593
+- [x] 1.4 Privilege inspection confirms owner SELECT and RPC-only mutation. — 0fcd593
+- [x] 1.5 Function inspection confirms the exclusive least-privilege contract. — 0fcd593
 
 #### Manual
 
-- [x] 1.6 Plan revision and feedback submission serialize through conflicting locks.
-- [x] 1.7 First insert snapshots the current label and exact replay creates no duplicate.
-- [x] 1.8 Historical rows are unchanged and direct owner mutation cannot bypass append-only behavior.
+- [x] 1.6 Plan revision and feedback submission serialize through conflicting locks. — 0fcd593
+- [x] 1.7 First insert snapshots the current label and exact replay creates no duplicate. — 0fcd593
+- [x] 1.8 Historical rows are unchanged and direct owner mutation cannot bypass append-only behavior. — 0fcd593
 
 ### Phase 2: Feedback Domain Service
 
 #### Automated
 
-- [ ] 2.1 Zod rejects malformed identities, tokens, dates, zones, ratings, and oversized notes before RPC invocation.
-- [ ] 2.2 Empty optional satisfaction and notes normalize to null.
-- [ ] 2.3 Submission uses only the RPC and maps one row or a sanitized error.
-- [ ] 2.4 History reads are exact, deterministic, and limited to 50 rows.
-- [ ] 2.5 `npx astro sync` and `npm run lint` pass.
+- [x] 2.1 Zod rejects malformed identities, tokens, dates, zones, ratings, and oversized notes before RPC invocation.
+- [x] 2.2 Empty optional satisfaction and notes normalize to null.
+- [x] 2.3 Submission uses only the RPC and maps one row or a sanitized error.
+- [x] 2.4 History reads are exact, deterministic, and limited to 50 rows.
+- [x] 2.5 `npx astro sync` and `npm run lint` pass.
 
 #### Manual
 
-- [ ] 2.6 Persistence trusts no client label or user ID.
-- [ ] 2.7 Feedback does not enter OpenRouter or plan-revision inputs.
-- [ ] 2.8 Removed-key history uses stored snapshots.
+- [x] 2.6 Persistence trusts no client label or user ID.
+- [x] 2.7 Feedback does not enter OpenRouter or plan-revision inputs.
+- [x] 2.8 Removed-key history uses stored snapshots.
 
 ### Phase 3: Authenticated Feedback Endpoint
 
