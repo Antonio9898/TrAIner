@@ -426,36 +426,36 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [x] 4.1 Accepted cards expose feedback links and draft cards do not.
-- [x] 4.2 Dedicated page gates submission independently from history reads.
-- [x] 4.3 Form exposes the selected fields, stable token, local date, and IANA zone.
-- [x] 4.4 Client bounds and pending behavior match server contracts.
-- [x] 4.5 Text remains responsive and no raw JSON is rendered.
-- [x] 4.6 `npx astro sync`, `npm run lint`, and `npm run build` pass.
+- [x] 4.1 Accepted cards expose feedback links and draft cards do not. — e85dce5
+- [x] 4.2 Dedicated page gates submission independently from history reads. — e85dce5
+- [x] 4.3 Form exposes the selected fields, stable token, local date, and IANA zone. — e85dce5
+- [x] 4.4 Client bounds and pending behavior match server contracts. — e85dce5
+- [x] 4.5 Text remains responsive and no raw JSON is rendered. — e85dce5
+- [x] 4.6 `npx astro sync`, `npm run lint`, and `npm run build` pass. — e85dce5
 
 #### Manual
 
-- [x] 4.7 Rating, date, notes, submit, and navigation controls are keyboard-usable.
-- [x] 4.8 Mobile and desktop layouts keep context, validation, and history readable.
-- [x] 4.9 Draft and removed-key pages preserve history while blocking submission.
-- [x] 4.10 Revised same-key history explains that older entries may describe earlier content.
+- [x] 4.7 Rating, date, notes, submit, and navigation controls are keyboard-usable. — e85dce5
+- [x] 4.8 Mobile and desktop layouts keep context, validation, and history readable. — e85dce5
+- [x] 4.9 Draft and removed-key pages preserve history while blocking submission. — e85dce5
+- [x] 4.10 Revised same-key history explains that older entries may describe earlier content. — e85dce5
 
 ### Phase 5: Verification and Handoff
 
 #### Automated
 
-- [ ] 5.1 `npx supabase db reset` completes successfully.
-- [ ] 5.2 `npx astro sync` completes successfully.
-- [ ] 5.3 `npm run lint` completes successfully.
-- [ ] 5.4 `npm run build` completes successfully with required environment values.
-- [ ] 5.5 Final privilege and function grants match the exclusive submission contract.
-- [ ] 5.6 `git status --short` contains only expected paths.
+- [x] 5.1 `npx supabase db reset` completes successfully.
+- [x] 5.2 `npx astro sync` completes successfully.
+- [x] 5.3 `npm run lint` completes successfully.
+- [x] 5.4 `npm run build` completes successfully with required environment values.
+- [x] 5.5 Final privilege and function grants match the exclusive submission contract.
+- [x] 5.6 `git status --short` contains only expected paths.
 
 #### Manual
 
-- [ ] 5.7 Idempotency and legitimate-repeat scenarios match the selected behavior.
-- [ ] 5.8 Date and time-zone cases preserve the selected calendar day.
-- [ ] 5.9 Submission and revision races preserve accepted/current-key invariants.
-- [ ] 5.10 Feedback survives revision and re-acceptance behavior is correct.
-- [ ] 5.11 Cross-user and direct mutation attempts are denied without disclosure.
-- [ ] 5.12 Owner flow, accessibility, responsive layout, and safe messaging are recorded in `verification.md`.
+- [x] 5.7 Idempotency and legitimate-repeat scenarios match the selected behavior.
+- [x] 5.8 Date and time-zone cases preserve the selected calendar day.
+- [x] 5.9 Submission and revision races preserve accepted/current-key invariants.
+- [x] 5.10 Feedback survives revision and re-acceptance behavior is correct.
+- [x] 5.11 Cross-user and direct mutation attempts are denied without disclosure.
+- [x] 5.12 Owner flow, accessibility, responsive layout, and safe messaging are recorded in `verification.md`.
