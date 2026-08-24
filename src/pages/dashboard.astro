@@ -335,7 +335,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                     <div class="space-y-4">
                       {storedPlan.planContent.scheduledWorkouts.map((workout, workoutIndex) => (
                         <article class="rounded-lg border border-white/10 bg-white/5 p-4">
-                          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                               <p class="text-xs font-semibold text-cyan-100/70 uppercase">Workout {workoutIndex + 1}</p>
                               <h4 class="mt-1 text-base font-semibold break-words text-white">{workout.label}</h4>
@@ -345,6 +345,14 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                                 </p>
                               )}
                             </div>
+                            {storedPlan.status === "accepted" && (
+                              <a
+                                href={`/dashboard/plans/${encodeURIComponent(storedPlan.id)}/workouts/${encodeURIComponent(workout.key)}/feedback`}
+                                class="inline-flex w-fit shrink-0 rounded-lg border border-cyan-200/30 bg-cyan-300/10 px-3 py-2 text-sm font-semibold text-cyan-50 transition-colors hover:bg-cyan-300/20 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none"
+                              >
+                                Log completed workout
+                              </a>
+                            )}
                           </div>
 
                           <ol class="mt-4 space-y-3">

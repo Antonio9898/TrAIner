@@ -410,35 +410,35 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 
 #### Automated
 
-- [x] 3.1 Dynamic route exports `prerender = false` and uppercase `POST`.
-- [x] 3.2 Same-origin and authentication checks precede submission.
-- [x] 3.3 Canonical plan/workout identity comes from decoded route parameters.
-- [x] 3.4 Redirects contain only enumerated codes and encoded canonical identity.
-- [x] 3.5 `npm run lint` passes.
+- [x] 3.1 Dynamic route exports `prerender = false` and uppercase `POST`. — f835fa8
+- [x] 3.2 Same-origin and authentication checks precede submission. — f835fa8
+- [x] 3.3 Canonical plan/workout identity comes from decoded route parameters. — f835fa8
+- [x] 3.4 Redirects contain only enumerated codes and encoded canonical identity. — f835fa8
+- [x] 3.5 `npm run lint` passes. — f835fa8
 
 #### Manual
 
-- [x] 3.6 Invalid and unavailable submissions create no row and disclose no ownership.
-- [x] 3.7 URLs and logs contain no private form or database details.
-- [x] 3.8 Success and known failure messages are safe and understandable.
+- [x] 3.6 Invalid and unavailable submissions create no row and disclose no ownership. — f835fa8
+- [x] 3.7 URLs and logs contain no private form or database details. — f835fa8
+- [x] 3.8 Success and known failure messages are safe and understandable. — f835fa8
 
 ### Phase 4: Dedicated Feedback Experience
 
 #### Automated
 
-- [ ] 4.1 Accepted cards expose feedback links and draft cards do not.
-- [ ] 4.2 Dedicated page gates submission independently from history reads.
-- [ ] 4.3 Form exposes the selected fields, stable token, local date, and IANA zone.
-- [ ] 4.4 Client bounds and pending behavior match server contracts.
-- [ ] 4.5 Text remains responsive and no raw JSON is rendered.
-- [ ] 4.6 `npx astro sync`, `npm run lint`, and `npm run build` pass.
+- [x] 4.1 Accepted cards expose feedback links and draft cards do not.
+- [x] 4.2 Dedicated page gates submission independently from history reads.
+- [x] 4.3 Form exposes the selected fields, stable token, local date, and IANA zone.
+- [x] 4.4 Client bounds and pending behavior match server contracts.
+- [x] 4.5 Text remains responsive and no raw JSON is rendered.
+- [x] 4.6 `npx astro sync`, `npm run lint`, and `npm run build` pass.
 
 #### Manual
 
-- [ ] 4.7 Rating, date, notes, submit, and navigation controls are keyboard-usable.
-- [ ] 4.8 Mobile and desktop layouts keep context, validation, and history readable.
-- [ ] 4.9 Draft and removed-key pages preserve history while blocking submission.
-- [ ] 4.10 Revised same-key history explains that older entries may describe earlier content.
+- [x] 4.7 Rating, date, notes, submit, and navigation controls are keyboard-usable.
+- [x] 4.8 Mobile and desktop layouts keep context, validation, and history readable.
+- [x] 4.9 Draft and removed-key pages preserve history while blocking submission.
+- [x] 4.10 Revised same-key history explains that older entries may describe earlier content.
 
 ### Phase 5: Verification and Handoff
 
