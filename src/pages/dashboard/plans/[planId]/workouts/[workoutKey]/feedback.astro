@@ -196,7 +196,6 @@ function formatCalendarDate(value: string): string {
                       action={formAction}
                       acceptedAt={feedbackContext.plan.acceptedAt}
                       submissionToken={crypto.randomUUID()}
-                      timeZones={["UTC", ...Intl.supportedValuesOf("timeZone")]}
                     />
                   </div>
                 </section>

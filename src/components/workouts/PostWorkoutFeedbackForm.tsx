@@ -11,7 +11,6 @@ interface PostWorkoutFeedbackFormProps {
   action: string;
   acceptedAt: string;
   submissionToken: string;
-  timeZones: string[];
 }
 
 interface FieldErrors {
@@ -19,15 +18,9 @@ interface FieldErrors {
   satisfactionRating?: string;
   notes?: string;
   performedDate?: string;
-  timeZone?: string;
 }
 
-export default function PostWorkoutFeedbackForm({
-  action,
-  acceptedAt,
-  submissionToken,
-  timeZones,
-}: PostWorkoutFeedbackFormProps) {
+export default function PostWorkoutFeedbackForm({ action, acceptedAt, submissionToken }: PostWorkoutFeedbackFormProps) {
   const [notes, setNotes] = useState("");
   const { formRef, updateDateBounds } = useWorkoutFeedbackDate(acceptedAt);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -47,7 +40,6 @@ export default function PostWorkoutFeedbackForm({
     const difficulty = Number(field("difficultyRating"));
     const satisfaction = field("satisfactionRating") === "" ? null : Number(field("satisfactionRating"));
     const performedDate = field("performedDate");
-    const timeZone = field("timeZone").trim();
     const dateInput = form.elements.namedItem("performedDate");
     const acceptedDate = dateInput instanceof HTMLInputElement ? dateInput.min : "";
     const today = dateInput instanceof HTMLInputElement ? dateInput.max : "";
@@ -60,12 +52,6 @@ export default function PostWorkoutFeedbackForm({
     }
     if (field("notes").trim().length > MAX_NOTES_LENGTH) {
       next.notes = `Uwagi mogą mieć maksymalnie ${characterCountFormatter.format(MAX_NOTES_LENGTH)} znaków`;
-    }
-    try {
-      if (!timeZone) throw new Error("Time zone is required");
-      new Intl.DateTimeFormat("en-US", { timeZone }).format();
-    } catch {
-      next.timeZone = "Wybierz prawidłową strefę czasową, np. Europe/Warsaw";
     }
     if (!DATE_PATTERN.test(performedDate)) {
       next.performedDate = "Wybierz datę ukończenia treningu";
@@ -90,6 +76,7 @@ export default function PostWorkoutFeedbackForm({
   return (
     <form ref={formRef} method="POST" action={action} className="space-y-6" onSubmit={handleSubmit}>
       <input type="hidden" name="submissionToken" value={submissionToken} />
+      <input type="hidden" name="timeZone" defaultValue="UTC" />
 
       <RatingGroup
         legend="Jak trudny był trening?"
@@ -140,44 +127,6 @@ export default function PostWorkoutFeedbackForm({
         ) : (
           <p id="performedDate-hint" className="mt-1 text-xs leading-5 text-blue-100/60">
             Użyj lokalnej daty. Możesz ją zmienić, jeśli zapisujesz trening później.
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="timeZone" className="mb-1 block text-sm font-medium text-blue-100/85">
-          Twoja strefa czasowa
-        </label>
-        <input
-          id="timeZone"
-          name="timeZone"
-          type="text"
-          list="feedback-time-zones"
-          required
-          maxLength={100}
-          placeholder="Europe/Warsaw"
-          onChange={() => {
-            updateDateBounds();
-            clearError("timeZone");
-            clearError("performedDate");
-          }}
-          aria-invalid={Boolean(errors.timeZone)}
-          aria-describedby={errors.timeZone ? "timeZone-error" : "timeZone-hint"}
-          className={cn(
-            "w-full rounded-lg border bg-white/10 px-3 py-2 text-white scheme-dark transition-colors focus:ring-2 focus:outline-none",
-            errors.timeZone ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-cyan-300",
-          )}
-        />
-        <datalist id="feedback-time-zones">
-          {timeZones.map((zone) => (
-            <option key={zone} value={zone} />
-          ))}
-        </datalist>
-        {errors.timeZone ? (
-          <FieldError id="timeZone-error" message={errors.timeZone} />
-        ) : (
-          <p id="timeZone-hint" className="mt-1 text-xs leading-5 text-blue-100/60">
-            Sprawdź strefę czasową lub wybierz ją według miasta, np. Europe/Warsaw. Określa ona dostępne daty zapisu.
           </p>
         )}
       </div>

@@ -36,15 +36,14 @@ export function useWorkoutFeedbackDate(acceptedAt: string) {
     const zone = form?.elements.namedItem("timeZone");
     if (!(date instanceof HTMLInputElement) || !(zone instanceof HTMLInputElement)) return;
 
-    // Enhance native fields without overwriting input entered before hydration.
+    // Detect the zone automatically while preserving a date entered before hydration.
     try {
-      if (!zone.value) zone.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (!zone.value.trim()) return;
+      zone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       date.min = calendarDate(new Date(acceptedAt), zone.value.trim());
       date.max = calendarDate(new Date(), zone.value.trim());
       if (!date.value) date.value = date.max;
     } catch {
-      // Manual date and zone entry remains available if detection fails.
+      // Keep the UTC fallback and allow manual date entry if detection fails.
     }
   }, [acceptedAt]);
 
