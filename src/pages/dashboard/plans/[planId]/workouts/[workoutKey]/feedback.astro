@@ -192,10 +192,11 @@ function formatCalendarDate(value: string): string {
                   </p>
                   <div class="mt-5">
                     <PostWorkoutFeedbackForm
-                      client:only="react"
+                      client:load
                       action={formAction}
                       acceptedAt={feedbackContext.plan.acceptedAt}
                       submissionToken={crypto.randomUUID()}
+                      timeZones={["UTC", ...Intl.supportedValuesOf("timeZone")]}
                     />
                   </div>
                 </section>

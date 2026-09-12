@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { CalendarDays, CircleAlert, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWorkoutFeedbackDate } from "@/components/hooks/useWorkoutFeedbackDate";
 
 const MAX_NOTES_LENGTH = 2_000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -10,6 +11,7 @@ interface PostWorkoutFeedbackFormProps {
   action: string;
   acceptedAt: string;
   submissionToken: string;
+  timeZones: string[];
 }
 
 interface FieldErrors {
@@ -17,23 +19,17 @@ interface FieldErrors {
   satisfactionRating?: string;
   notes?: string;
   performedDate?: string;
+  timeZone?: string;
 }
 
-function localCalendarDate(value = new Date()): string {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-export default function PostWorkoutFeedbackForm({ action, acceptedAt, submissionToken }: PostWorkoutFeedbackFormProps) {
-  const [difficultyRating, setDifficultyRating] = useState("");
-  const [satisfactionRating, setSatisfactionRating] = useState("");
+export default function PostWorkoutFeedbackForm({
+  action,
+  acceptedAt,
+  submissionToken,
+  timeZones,
+}: PostWorkoutFeedbackFormProps) {
   const [notes, setNotes] = useState("");
-  const [performedDate, setPerformedDate] = useState(() => localCalendarDate());
-  const [timeZone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const [acceptedDate] = useState(() => localCalendarDate(new Date(acceptedAt)));
-  const [today] = useState(() => localCalendarDate());
+  const { formRef, updateDateBounds } = useWorkoutFeedbackDate(acceptedAt);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,10 +37,20 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
   }
 
-  function validate(): boolean {
+  function validate(form: HTMLFormElement): boolean {
+    const data = new FormData(form);
+    const field = (name: string) => {
+      const value = data.get(name);
+      return typeof value === "string" ? value : "";
+    };
     const next: FieldErrors = {};
-    const difficulty = Number(difficultyRating);
-    const satisfaction = satisfactionRating === "" ? null : Number(satisfactionRating);
+    const difficulty = Number(field("difficultyRating"));
+    const satisfaction = field("satisfactionRating") === "" ? null : Number(field("satisfactionRating"));
+    const performedDate = field("performedDate");
+    const timeZone = field("timeZone").trim();
+    const dateInput = form.elements.namedItem("performedDate");
+    const acceptedDate = dateInput instanceof HTMLInputElement ? dateInput.min : "";
+    const today = dateInput instanceof HTMLInputElement ? dateInput.max : "";
 
     if (!Number.isInteger(difficulty) || difficulty < 1 || difficulty > 10) {
       next.difficultyRating = "Choose a difficulty from 1 to 10";
@@ -52,8 +58,14 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
     if (satisfaction !== null && (!Number.isInteger(satisfaction) || satisfaction < 1 || satisfaction > 5)) {
       next.satisfactionRating = "Choose a satisfaction score from 1 to 5, or leave it unset";
     }
-    if (notes.trim().length > MAX_NOTES_LENGTH) {
+    if (field("notes").trim().length > MAX_NOTES_LENGTH) {
       next.notes = `Notes must be ${characterCountFormatter.format(MAX_NOTES_LENGTH)} characters or fewer`;
+    }
+    try {
+      if (!timeZone) throw new Error("Time zone is required");
+      new Intl.DateTimeFormat("en-US", { timeZone }).format();
+    } catch {
+      next.timeZone = "Choose a valid time zone, such as Europe/Warsaw";
     }
     if (!DATE_PATTERN.test(performedDate)) {
       next.performedDate = "Choose the calendar date when you completed the workout";
@@ -66,11 +78,9 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
   }
 
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate() || !timeZone) {
+    updateDateBounds();
+    if (!validate(event.currentTarget)) {
       event.preventDefault();
-      if (!timeZone) {
-        setErrors((current) => ({ ...current, performedDate: "Your browser time zone is unavailable" }));
-      }
       return;
     }
 
@@ -78,20 +88,17 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
   }
 
   return (
-    <form method="POST" action={action} className="space-y-6" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} method="POST" action={action} className="space-y-6" onSubmit={handleSubmit}>
       <input type="hidden" name="submissionToken" value={submissionToken} />
-      <input type="hidden" name="timeZone" value={timeZone} />
 
       <RatingGroup
         legend="How difficult was it?"
         hint="1 is very easy; 10 is your maximum perceived difficulty."
         name="difficultyRating"
         count={10}
-        value={difficultyRating}
         required
         error={errors.difficultyRating}
-        onChange={(value) => {
-          setDifficultyRating(value);
+        onChange={() => {
           clearError("difficultyRating");
         }}
       />
@@ -101,11 +108,9 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
         hint="Optional: 1 is very dissatisfied; 5 is very satisfied."
         name="satisfactionRating"
         count={5}
-        value={satisfactionRating}
         allowUnset
         error={errors.satisfactionRating}
-        onChange={(value) => {
-          setSatisfactionRating(value);
+        onChange={() => {
           clearError("satisfactionRating");
         }}
       />
@@ -120,11 +125,7 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
           name="performedDate"
           type="date"
           required
-          min={acceptedDate || undefined}
-          max={today || undefined}
-          value={performedDate}
-          onChange={(event) => {
-            setPerformedDate(event.target.value);
+          onChange={() => {
             clearError("performedDate");
           }}
           aria-invalid={Boolean(errors.performedDate)}
@@ -144,6 +145,44 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
       </div>
 
       <div>
+        <label htmlFor="timeZone" className="mb-1 block text-sm font-medium text-blue-100/85">
+          Your time zone
+        </label>
+        <input
+          id="timeZone"
+          name="timeZone"
+          type="text"
+          list="feedback-time-zones"
+          required
+          maxLength={100}
+          placeholder="Europe/Warsaw"
+          onChange={() => {
+            updateDateBounds();
+            clearError("timeZone");
+            clearError("performedDate");
+          }}
+          aria-invalid={Boolean(errors.timeZone)}
+          aria-describedby={errors.timeZone ? "timeZone-error" : "timeZone-hint"}
+          className={cn(
+            "w-full rounded-lg border bg-white/10 px-3 py-2 text-white scheme-dark transition-colors focus:ring-2 focus:outline-none",
+            errors.timeZone ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-cyan-300",
+          )}
+        />
+        <datalist id="feedback-time-zones">
+          {timeZones.map((zone) => (
+            <option key={zone} value={zone} />
+          ))}
+        </datalist>
+        {errors.timeZone ? (
+          <FieldError id="timeZone-error" message={errors.timeZone} />
+        ) : (
+          <p id="timeZone-hint" className="mt-1 text-xs leading-5 text-blue-100/60">
+            Check your time zone or choose one by city, such as Europe/Warsaw. It determines which dates you can log.
+          </p>
+        )}
+      </div>
+
+      <div>
         <label htmlFor="notes" className="mb-1 block text-sm font-medium text-blue-100/85">
           Notes <span className="font-normal text-blue-100/55">(optional)</span>
         </label>
@@ -151,8 +190,7 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
           id="notes"
           name="notes"
           rows={5}
-          maxLength={MAX_NOTES_LENGTH + 1}
-          value={notes}
+          maxLength={MAX_NOTES_LENGTH}
           onChange={(event) => {
             setNotes(event.target.value);
             clearError("notes");
@@ -169,15 +207,15 @@ export default function PostWorkoutFeedbackForm({ action, acceptedAt, submission
           <FieldError id="notes-error" message={errors.notes} />
         ) : (
           <p id="notes-hint" className="mt-1 text-xs text-blue-100/60">
-            {characterCountFormatter.format(notes.length)} / {characterCountFormatter.format(MAX_NOTES_LENGTH)}{" "}
-            characters
+            {notes.length > 0 ? `${characterCountFormatter.format(notes.length)} / ` : "Up to "}
+            {characterCountFormatter.format(MAX_NOTES_LENGTH)} characters
           </p>
         )}
       </div>
 
       <button
         type="submit"
-        disabled={isSubmitting || !performedDate || !timeZone}
+        disabled={isSubmitting}
         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200 focus-visible:ring-2 focus-visible:ring-cyan-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSubmitting ? (
@@ -201,11 +239,10 @@ interface RatingGroupProps {
   hint: string;
   name: string;
   count: number;
-  value: string;
   required?: boolean;
   allowUnset?: boolean;
   error?: string;
-  onChange: (value: string) => void;
+  onChange: () => void;
 }
 
 function RatingGroup({
@@ -213,7 +250,6 @@ function RatingGroup({
   hint,
   name,
   count,
-  value,
   required = false,
   allowUnset = false,
   error,
@@ -233,16 +269,7 @@ function RatingGroup({
       <div className={cn("mt-3 grid gap-2", count > 5 ? "grid-cols-5 sm:grid-cols-10" : "grid-cols-3 sm:grid-cols-6")}>
         {allowUnset && (
           <label className="col-span-2 cursor-pointer sm:col-span-1">
-            <input
-              type="radio"
-              name={name}
-              value=""
-              checked={value === ""}
-              onChange={(event) => {
-                onChange(event.target.value);
-              }}
-              className="peer sr-only"
-            />
+            <input type="radio" name={name} value="" defaultChecked onChange={onChange} className="peer sr-only" />
             <span className="flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/5 px-2 text-xs font-medium text-blue-100/80 transition-colors peer-checked:border-cyan-200 peer-checked:bg-cyan-300 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-200 peer-focus-visible:outline-none">
               Unset
             </span>
@@ -255,10 +282,7 @@ function RatingGroup({
               name={name}
               value={rating}
               required={required}
-              checked={value === rating}
-              onChange={(event) => {
-                onChange(event.target.value);
-              }}
+              onChange={onChange}
               className="peer sr-only"
             />
             <span className="flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-sm font-semibold text-white transition-colors peer-checked:border-cyan-200 peer-checked:bg-cyan-300 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-200 peer-focus-visible:outline-none">

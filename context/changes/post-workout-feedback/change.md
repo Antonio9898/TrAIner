@@ -1,9 +1,9 @@
 ---
 change_id: post-workout-feedback
 title: Post workout feedback
-status: implemented
+status: impl_reviewed
 created: 2026-08-21
-updated: 2026-08-24
+updated: 2026-09-12
 archived_at: null
 ---
 

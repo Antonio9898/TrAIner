@@ -370,6 +370,12 @@ The migration is forward-only. Normal application rollback should remove S-04 pa
 - S-03 privilege review finding: `context/archive/2026-08-12-plan-revision-and-acceptance/reviews/impl-review.md:49`
 - CI gates: `.github/workflows/ci.yml:18`
 
+## Review resolution addendum — 2026-09-12
+
+- F1: a new migration makes the existing owner-scoped acceptance/revision RPCs SECURITY DEFINER, revokes direct owner UPDATE, and restricts direct INSERT to the initial draft state with no acceptance or revision history. This enforces lifecycle transitions without claiming AI provenance of plan content.
+- F2: the feedback form is server-rendered with client:load. Date and time zone are initially blank rather than inferred from the server. Without JavaScript, the user enters the date and selects/types a time zone using native suggestions; the existing API/RPC validates both. After hydration, the hook fills missing browser-local defaults and updates date bounds, preserving values already entered. Ratings and notes also survive hydration. The browser enforces required fields and the 2,000-character notes limit, and the submit button is initially enabled.
+- Verification and decisions are recorded in reviews/impl-review.md and follow-ups/review-fixes.md. Historical Progress entries and commit references below remain unchanged.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
