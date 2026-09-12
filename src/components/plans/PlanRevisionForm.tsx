@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const MAX_REVISION_NOTE_LENGTH = 2_000;
-const characterCountFormatter = new Intl.NumberFormat("en-US");
+const characterCountFormatter = new Intl.NumberFormat("pl-PL");
 
 interface PlanRevisionFormProps {
   planId: string;
@@ -40,13 +40,13 @@ export default function PlanRevisionForm({
     const next: FieldErrors = {};
 
     if (!revisionNote.trim()) {
-      next.revisionNote = "Describe the correction you want";
+      next.revisionNote = "Opisz zmianę, której oczekujesz";
     } else if (revisionNote.trim().length > MAX_REVISION_NOTE_LENGTH) {
-      next.revisionNote = `Correction requests must be ${characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} characters or fewer`;
+      next.revisionNote = `Opis zmiany może mieć maksymalnie ${characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} znaków`;
     }
 
     if (!healthConstraints.trim()) {
-      next.healthConstraints = "Health constraints are required";
+      next.healthConstraints = "Ograniczenia zdrowotne są wymagane";
     }
 
     setErrors(next);
@@ -70,7 +70,7 @@ export default function PlanRevisionForm({
       <div>
         <label htmlFor="revisionNote" className="mb-1 flex items-center gap-2 text-sm font-medium text-blue-100/85">
           <RefreshCw className="size-4 text-white/45" />
-          What should change?
+          Co należy zmienić?
         </label>
         <textarea
           id="revisionNote"
@@ -82,7 +82,7 @@ export default function PlanRevisionForm({
           }}
           rows={5}
           maxLength={MAX_REVISION_NOTE_LENGTH + 1}
-          placeholder="For example: reduce lower-body volume and replace movements that aggravate my knee"
+          placeholder="Np. zmniejsz objętość treningu dolnej części ciała i zastąp ruchy nasilające ból kolana"
           aria-invalid={Boolean(errors.revisionNote)}
           aria-describedby={errors.revisionNote ? "revisionNote-error" : "revisionNote-hint"}
           className={cn(
@@ -95,7 +95,7 @@ export default function PlanRevisionForm({
         ) : (
           <p id="revisionNote-hint" className="mt-1 text-xs text-blue-100/60">
             {characterCountFormatter.format(revisionNote.length)} /{" "}
-            {characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} characters
+            {characterCountFormatter.format(MAX_REVISION_NOTE_LENGTH)} znaków
           </p>
         )}
       </div>
@@ -106,7 +106,7 @@ export default function PlanRevisionForm({
           className="mb-1 flex items-center gap-2 text-sm font-medium text-blue-100/85"
         >
           <HeartPulse className="size-4 text-white/45" />
-          Health constraints
+          Ograniczenia zdrowotne
         </label>
         <textarea
           id="healthConstraints"
@@ -117,7 +117,7 @@ export default function PlanRevisionForm({
             clearError("healthConstraints");
           }}
           rows={5}
-          placeholder="Describe injuries, pain, health constraints, or movement limitations that should shape the revision"
+          placeholder="Opisz urazy, ból, ograniczenia zdrowotne lub ruchowe, które powinny wpłynąć na zmianę planu"
           aria-invalid={Boolean(errors.healthConstraints)}
           aria-describedby={errors.healthConstraints ? "healthConstraints-error" : "healthConstraints-hint"}
           className={cn(
@@ -129,23 +129,23 @@ export default function PlanRevisionForm({
           <FieldError id="healthConstraints-error" message={errors.healthConstraints} />
         ) : (
           <p id="healthConstraints-hint" className="mt-1 text-xs leading-5 text-blue-100/60">
-            Update this durable context if pain, symptoms, limitations, or professional guidance changed.
+            Zaktualizuj te informacje, jeśli zmieniły się ból, objawy, ograniczenia lub zalecenia specjalisty.
           </p>
         )}
       </div>
 
       <div className="space-y-2 rounded-lg border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-50/90">
         <p>
-          Revisions still respect the constraints you provide. TrAIner does not diagnose injuries or replace a doctor,
-          physiotherapist, or medical trainer.
+          Zmiany planu nadal uwzględniają podane ograniczenia. TrAIner nie diagnozuje urazów ani nie zastępuje lekarza,
+          fizjoterapeuty lub trenera medycznego.
         </p>
-        {accepted && <p>A successful revision will reopen this accepted plan as a draft for another review.</p>}
-        <p>Earlier workout feedback stays attached and may describe content from an older version of this plan.</p>
+        {accepted && <p>Udana zmiana ponownie otworzy zaakceptowany plan jako wersję roboczą do sprawdzenia.</p>}
+        <p>Wcześniejsze opinie o treningach pozostaną zapisane i mogą dotyczyć starszej wersji planu.</p>
       </div>
 
       {isSubmitting && (
         <p role="status" className="text-sm text-blue-100/75">
-          Creating your complete replacement plan. This can take up to 90 seconds.
+          Tworzenie kompletnej, zaktualizowanej wersji planu. Może to potrwać do 90 sekund.
         </p>
       )}
 
@@ -157,12 +157,12 @@ export default function PlanRevisionForm({
         {isSubmitting ? (
           <span className="flex items-center gap-2">
             <span className="size-4 animate-spin rounded-full border-2 border-slate-950/30 border-t-slate-950" />
-            Revising plan...
+            Zmienianie planu...
           </span>
         ) : (
           <span className="flex items-center gap-2">
             <RefreshCw className="size-4" />
-            Request complete revision
+            Zastosuj poprawkę
           </span>
         )}
       </Button>

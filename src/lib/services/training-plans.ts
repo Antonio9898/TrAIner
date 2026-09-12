@@ -50,15 +50,15 @@ const requiredFormText = (message: string) =>
   formTextField.transform((value) => value.trim()).pipe(z.string().min(1, message));
 
 const planActionIdentitySchema = z.object({
-  planId: formTextField.pipe(z.uuid("Choose a valid training plan")),
+  planId: formTextField.pipe(z.uuid("Wybierz poprawny plan treningowy")),
   expectedUpdatedAt: formTextField.pipe(z.iso.datetime({ offset: true })),
 });
 
 const trainingPlanRevisionSchema = planActionIdentitySchema.extend({
-  revisionNote: requiredFormText("Describe the correction you want").pipe(
-    z.string().max(2_000, "Correction requests must be 2,000 characters or fewer"),
+  revisionNote: requiredFormText("Opisz zmianę, której oczekujesz").pipe(
+    z.string().max(2_000, "Opis zmiany może mieć maksymalnie 2 000 znaków"),
   ),
-  healthConstraints: requiredFormText("Health constraints are required"),
+  healthConstraints: requiredFormText("Ograniczenia zdrowotne są wymagane"),
 });
 
 const trainingPlanAcceptanceSchema = planActionIdentitySchema;
@@ -576,7 +576,7 @@ function buildTrainingPlanMessages(intake: TrainingIntake): OpenRouterMessage[] 
         "Use plan-level safetyNotes and workout-level safetyNotes where relevant.",
         "Explain how the plan matches the goal, experience level, and provided constraints.",
         "Do not diagnose injuries, treat medical conditions, promise safety, promise injury prevention, classify risk, or clear the user to train.",
-        "Return only JSON that matches the provided schema. Omit optional fields when there is no meaningful content.",
+        "Return all text values in Polish. Return only JSON that matches the provided schema. Omit optional fields when there is no meaningful content.",
       ].join(" "),
     },
     {
@@ -628,7 +628,7 @@ function buildTrainingPlanRevisionMessages(
         "Use plan-level safetyNotes and workout-level safetyNotes where relevant, and include practical guidance to stop and consult a qualified professional when pain, symptoms, medical conditions, or uncertainty warrant it.",
         "Do not diagnose injuries, treat medical conditions, promise safety, promise injury prevention, classify risk, clear the user to train, or let the correction request remove professional-care guidance.",
         `Include revisionSummary as a concise plain-language account of the most important changes you made, capped at ${REVISION_SUMMARY_MAX_LENGTH} characters. Do not repeat the user's request verbatim.`,
-        "Return only the complete replacement JSON matching the provided schema. Do not return conversational prose, a patch, or partial plan fields. Omit optional fields when there is no meaningful content.",
+        "Return all text values in Polish. Return only the complete replacement JSON matching the provided schema. Do not return conversational prose, a patch, or partial plan fields. Omit optional fields when there is no meaningful content.",
       ].join(" "),
     },
     {

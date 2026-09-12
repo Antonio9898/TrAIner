@@ -9,9 +9,9 @@ import type { TrainingExperienceLevel, TrainingPlan, TrainingPlanExerciseEntry, 
 const { user } = Astro.locals;
 
 const experienceLabels: Record<TrainingExperienceLevel, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
+  beginner: "Początkujący",
+  intermediate: "Średniozaawansowany",
+  advanced: "Zaawansowany",
 };
 
 let latestIntake: TrainingIntake | null = null;
@@ -29,10 +29,10 @@ if (supabase && user) {
       latestIntakeEditable = storedPlan ? false : await isTrainingIntakeEditable(supabase, user.id, latestIntake.id);
     }
   } catch {
-    loadError = "We could not load your dashboard summary.";
+    loadError = "Nie udało się wczytać podsumowania panelu.";
   }
 } else if (!supabase) {
-  loadError = "Supabase is not configured, so your intake summary cannot be loaded.";
+  loadError = "Supabase nie jest skonfigurowany, więc nie można wczytać podsumowania danych.";
 }
 
 const savedIntake = Astro.url.searchParams.get("saved") === "intake";
@@ -42,48 +42,48 @@ const planAction = Astro.url.searchParams.get("planAction") ?? (legacyGeneratedP
 const planErrorCode = Astro.url.searchParams.get("planError") ?? legacyGenerationError;
 const planActionMessages: Record<string, string> = {
   generated: storedPlan
-    ? "Plan generated. Your draft is ready below."
-    : "Plan generation finished. Refresh the dashboard if the draft is not visible.",
-  revised: "Plan revised. Review the complete replacement draft below before accepting it.",
-  accepted: "Plan accepted. This is now the plan you intend to follow.",
+    ? "Plan został wygenerowany. Szkic znajdziesz poniżej."
+    : "Generowanie planu zakończono. Odśwież panel, jeśli szkic nie jest widoczny.",
+  revised: "Plan został zmieniony. Przejrzyj kompletny szkic przed zaakceptowaniem.",
+  accepted: "Plan został zaakceptowany. To plan, który zamierzasz realizować.",
 };
 const planErrorMessages: Record<string, string> = {
-  "request-not-allowed": "We could not verify this request. Please try again from the dashboard.",
-  "supabase-not-configured": "Plan actions are unavailable because Supabase is not configured.",
-  "signin-required": "Please sign in before changing a plan.",
-  "missing-intake": "Save an intake before generating a plan.",
-  "intake-already-planned": "This intake already has a plan.",
-  "openrouter-not-configured": "Plan generation is not configured yet.",
-  "generation-timeout": "The AI did not finish within 90 seconds. Your plan was not changed. Please try again.",
-  "invalid-generation": "We could not generate a valid plan. Please try again.",
-  "invalid-request": "The plan request was invalid. Refresh the dashboard and try again.",
-  "invalid-revision": "We could not create a valid revised plan. Your current plan was not changed.",
-  "plan-conflict": "This plan changed in another tab. Refresh the dashboard and try again.",
-  "save-failed": "We could not save the plan change. Your current plan was not changed.",
+  "request-not-allowed": "Nie udało się zweryfikować żądania. Spróbuj ponownie z panelu.",
+  "supabase-not-configured": "Operacje na planie są niedostępne, ponieważ Supabase nie jest skonfigurowany.",
+  "signin-required": "Zaloguj się przed zmianą planu.",
+  "missing-intake": "Zapisz dane przed wygenerowaniem planu.",
+  "intake-already-planned": "Dla tych danych istnieje już plan.",
+  "openrouter-not-configured": "Generowanie planu nie jest jeszcze skonfigurowane.",
+  "generation-timeout": "AI nie zakończyła pracy w ciągu 90 sekund. Plan nie został zmieniony. Spróbuj ponownie.",
+  "invalid-generation": "Nie udało się wygenerować poprawnego planu. Spróbuj ponownie.",
+  "invalid-request": "Żądanie planu było niepoprawne. Odśwież panel i spróbuj ponownie.",
+  "invalid-revision": "Nie udało się utworzyć poprawionej wersji planu. Obecny plan nie został zmieniony.",
+  "plan-conflict": "Plan zmienił się w innej karcie. Odśwież panel i spróbuj ponownie.",
+  "save-failed": "Nie udało się zapisać zmiany planu. Obecny plan nie został zmieniony.",
 };
 const planError = planErrorCode
-  ? (planErrorMessages[planErrorCode] ?? "We could not complete that plan action. Please try again.")
+  ? (planErrorMessages[planErrorCode] ?? "Nie udało się wykonać tej operacji na planie. Spróbuj ponownie.")
   : planAction && !planActionMessages[planAction]
-    ? "We could not confirm that plan action. Please try again."
+    ? "Nie udało się potwierdzić tej operacji na planie. Spróbuj ponownie."
     : null;
 const planSuccess = planAction && planActionMessages[planAction] ? planActionMessages[planAction] : null;
 const updatedAt = latestIntake
-  ? new Intl.DateTimeFormat("en-US", {
+  ? new Intl.DateTimeFormat("pl-PL", {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(latestIntake.updatedAt))
   : null;
 
-const intakeLinkLabel = latestIntake ? (latestIntakeEditable ? "Edit intake" : "Start new intake") : "Start intake";
+const intakeLinkLabel = latestIntake ? (latestIntakeEditable ? "Edytuj dane" : "+ Nowy plan") : "Dodaj dane";
 
 function formatPlanDate(value: string): string {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("pl-PL", {
     dateStyle: "medium",
   }).format(new Date(value));
 }
 
 function formatPlanDateTime(value: string): string {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("pl-PL", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
@@ -93,7 +93,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
   const details: string[] = [];
 
   if (exercise.sets) {
-    details.push(`${exercise.sets} sets`);
+    details.push(`${exercise.sets} serii`);
   }
 
   if (exercise.reps) {
@@ -105,21 +105,21 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
   }
 
   if (exercise.restSeconds !== undefined) {
-    details.push(`${exercise.restSeconds}s rest`);
+    details.push(`${exercise.restSeconds} s przerwy`);
   }
 
   return details;
 }
 ---
 
-<Layout title="Dashboard">
+<Layout title="Panel główny">
   <main class="bg-cosmic min-h-screen px-4 py-8 text-white">
     <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center gap-5">
       <header
         class="flex flex-col gap-4 rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
-          <p class="text-sm text-blue-100/65">Signed in as</p>
+          <p class="text-sm text-blue-100/65">Zalogowano jako</p>
           <h1 class="mt-1 text-2xl font-semibold break-words text-white">{user?.email}</h1>
         </div>
 
@@ -135,7 +135,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
               type="submit"
               class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
             >
-              Sign out
+              Wyloguj się
             </button>
           </form>
         </div>
@@ -144,7 +144,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
       {
         savedIntake && (
           <p class="rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-50">
-            Intake saved. Your dashboard summary has been updated.
+            Dane zostały zapisane. Podsumowanie w panelu zostało zaktualizowane.
           </p>
         )
       }
@@ -184,25 +184,25 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                 <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <p class="text-sm text-blue-100/65">
-                      {storedPlan.status === "accepted" ? "Accepted plan" : "Plan under review"}
+                      {storedPlan.status === "accepted" ? "Zaakceptowany plan" : "Plan do sprawdzenia"}
                     </p>
                     <h2 class="mt-1 text-2xl font-semibold text-white">
                       {storedPlan.status === "accepted"
-                        ? "Accepted training plan"
+                        ? "Zaakceptowany plan treningowy"
                         : storedPlan.revisionCount > 0
-                          ? "Revised draft plan"
-                          : "First explained plan"}
+                          ? "Zmieniony szkic planu"
+                          : "Pierwszy plan z wyjaśnieniem"}
                     </h2>
                     <p class="mt-2 text-sm leading-6 break-words text-blue-100/75">
-                      Created {formatPlanDate(storedPlan.createdAt)} · Updated{" "}
+                      Utworzono: {formatPlanDate(storedPlan.createdAt)} · Zaktualizowano:{" "}
                       {formatPlanDateTime(storedPlan.updatedAt)}
                     </p>
                     <p class="mt-1 text-sm leading-6 break-words text-blue-100/75">
                       {storedPlan.revisionCount === 0
-                        ? "Original version"
-                        : `${storedPlan.revisionCount} complete ${storedPlan.revisionCount === 1 ? "revision" : "revisions"}`}
+                        ? "Wersja oryginalna"
+                        : `${storedPlan.revisionCount} ${storedPlan.revisionCount === 1 ? "pełna zmiana" : "pełne zmiany"}`}
                       {storedPlan.lastRevisionRequestedAt &&
-                        ` · Last revised ${formatPlanDateTime(storedPlan.lastRevisionRequestedAt)}`}
+                        ` · Ostatnia zmiana: ${formatPlanDateTime(storedPlan.lastRevisionRequestedAt)}`}
                     </p>
                   </div>
                   <p
@@ -224,8 +224,8 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                   >
                     <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
                       <span>
-                        <span class="block text-xs font-semibold text-cyan-100/70 uppercase">Review actions</span>
-                        <span class="mt-1 block text-xl font-semibold text-white">Revise or accept this plan</span>
+                        <span class="block text-xs font-semibold text-cyan-100/70 uppercase">Działania</span>
+                        <span class="mt-1 block text-xl font-semibold text-white">Zmień lub zaakceptuj plan</span>
                       </span>
                       <span
                         class="shrink-0 text-xl text-cyan-100 transition-transform group-open:rotate-180"
@@ -237,15 +237,15 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
                     <div class="mt-5">
                       <p class="mb-5 text-sm leading-6 break-words text-blue-100/75">
-                        Enter your requested correction below. Accept a draft only when it is the version you intend to
-                        follow; acceptance is not medical clearance or a safety guarantee.
+                        Poniżej opisz oczekiwaną zmianę. Zaakceptuj szkic tylko wtedy, gdy jest to wersja, którą
+                        zamierzasz realizować; akceptacja nie jest zgodą medyczną ani gwarancją bezpieczeństwa.
                       </p>
 
                       <div class="grid gap-5 xl:grid-cols-2">
                         <div class="rounded-lg border border-white/10 bg-white/5 p-4">
-                          <h3 class="text-base font-semibold text-white">Request a revision</h3>
+                          <h3 class="text-base font-semibold text-white">Poproś o zmianę</h3>
                           <p class="mt-1 text-sm leading-6 text-blue-100/70">
-                            Describe one correction and review the durable health constraints used for the replacement.
+                            Opisz jedną zmianę i sprawdź ograniczenia zdrowotne użyte przy aktualizacji planu.
                           </p>
                           <div class="mt-4">
                             <PlanRevisionForm
@@ -269,27 +269,28 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                               <input type="hidden" name="planId" value={storedPlan.id} />
                               <input type="hidden" name="expectedUpdatedAt" value={storedPlan.updatedAt} />
                               <div>
-                                <h3 class="text-base font-semibold text-white">Accept this draft</h3>
+                                <h3 class="text-base font-semibold text-white">Zaakceptuj szkic</h3>
                                 <p class="mt-1 text-sm leading-6 break-words text-blue-100/70">
-                                  Mark this reviewed version as the plan you intend to follow. You can still request a
-                                  later revision, which will reopen it as a draft.
+                                  Oznacz sprawdzoną wersję jako plan, który zamierzasz realizować. Nadal możesz później
+                                  poprosić o zmianę, która ponownie otworzy go jako szkic.
                                 </p>
                               </div>
                               <button
                                 type="submit"
                                 data-plan-submit
-                                data-loading-label="Accepting plan..."
+                                data-loading-label="Akceptowanie planu..."
                                 class="w-full rounded-lg bg-emerald-300 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-200 focus-visible:ring-2 focus-visible:ring-emerald-100 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70"
                               >
-                                Accept this plan
+                                Zaakceptuj plan
                               </button>
                             </form>
                           ) : (
                             <div>
-                              <h3 class="text-base font-semibold text-white">Plan accepted</h3>
+                              <h3 class="text-base font-semibold text-white">Plan zaakceptowany</h3>
                               <p class="mt-1 text-sm leading-6 break-words text-blue-100/70">
-                                Accepted {formatPlanDateTime(storedPlan.acceptedAt)}. This records the version you
-                                intend to follow; it does not guarantee safety or replace professional guidance.
+                                Zaakceptowano: {formatPlanDateTime(storedPlan.acceptedAt)}. To zapis wersji, którą
+                                zamierzasz realizować; nie gwarantuje bezpieczeństwa ani nie zastępuje porady
+                                specjalisty.
                               </p>
                             </div>
                           )}
@@ -300,7 +301,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
                   {storedPlan.lastRevisionNote && (
                     <section class="rounded-lg border border-cyan-200/20 bg-cyan-300/10 px-4 py-3">
-                      <p class="text-xs font-semibold text-cyan-50/75 uppercase">Latest revision request</p>
+                      <p class="text-xs font-semibold text-cyan-50/75 uppercase">Ostatnia prośba o zmianę</p>
                       <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-cyan-50/90">
                         {storedPlan.lastRevisionNote}
                       </p>
@@ -308,21 +309,21 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                   )}
                   {storedPlan.status === "draft" && storedPlan.lastRevisionSummary && (
                     <section class="rounded-lg border border-amber-300/25 bg-amber-300/10 px-4 py-3">
-                      <p class="text-xs font-semibold text-amber-50/80 uppercase">What changed</p>
+                      <p class="text-xs font-semibold text-amber-50/80 uppercase">Co się zmieniło</p>
                       <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-amber-50/90">
                         {storedPlan.lastRevisionSummary}
                       </p>
                     </section>
                   )}
                   <section class="space-y-2">
-                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Why this plan</p>
+                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Dlaczego ten plan</p>
                     <p class="text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/90">
                       {storedPlan.explanation}
                     </p>
                   </section>
 
                   <section class="space-y-2">
-                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Overview</p>
+                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Przegląd</p>
                     <p class="text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/90">
                       {storedPlan.planContent.overview}
                     </p>
@@ -330,15 +331,15 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
                   <section class="space-y-4">
                     <div>
-                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Scheduled workouts</p>
-                      <h3 class="mt-1 text-lg font-semibold text-white">This week</h3>
+                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Zaplanowane treningi</p>
+                      <h3 class="mt-1 text-lg font-semibold text-white">Ten tydzień</h3>
                     </div>
                     <div class="space-y-4">
                       {storedPlan.planContent.scheduledWorkouts.map((workout, workoutIndex) => (
                         <article class="rounded-lg border border-white/10 bg-white/5 p-4">
                           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                              <p class="text-xs font-semibold text-cyan-100/70 uppercase">Workout {workoutIndex + 1}</p>
+                              <p class="text-xs font-semibold text-cyan-100/70 uppercase">Trening {workoutIndex + 1}</p>
                               <h4 class="mt-1 text-base font-semibold break-words text-white">{workout.label}</h4>
                               {workout.focus && (
                                 <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-blue-100/75">
@@ -351,7 +352,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                                 href={`/dashboard/plans/${encodeURIComponent(storedPlan.id)}/workouts/${encodeURIComponent(workout.key)}/feedback`}
                                 class="inline-flex w-fit shrink-0 rounded-lg border border-cyan-200/30 bg-cyan-300/10 px-3 py-2 text-sm font-semibold text-cyan-50 transition-colors hover:bg-cyan-300/20 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none"
                               >
-                                Log completed workout
+                                Zapisz wykonany trening
                               </a>
                             )}
                           </div>
@@ -387,7 +388,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
                           {workout.instructions && (
                             <div class="mt-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                              <p class="text-xs font-semibold text-blue-100/50 uppercase">Instructions</p>
+                              <p class="text-xs font-semibold text-blue-100/50 uppercase">Instrukcje</p>
                               <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/85">
                                 {workout.instructions}
                               </p>
@@ -396,7 +397,9 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
                           {workout.safetyNotes && workout.safetyNotes.length > 0 && (
                             <div class="mt-4 rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2">
-                              <p class="text-xs font-semibold text-amber-50/80 uppercase">Workout safety notes</p>
+                              <p class="text-xs font-semibold text-amber-50/80 uppercase">
+                                Uwagi dotyczące bezpieczeństwa
+                              </p>
                               <ul class="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-amber-50">
                                 {workout.safetyNotes.map((note) => (
                                   <li class="break-words whitespace-pre-wrap">{note}</li>
@@ -410,23 +413,23 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                   </section>
 
                   <section class="space-y-2">
-                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Progression</p>
+                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Progresja</p>
                     <p class="text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/90">
                       {storedPlan.planContent.progressionGuidance}
                     </p>
                   </section>
 
                   <section class="rounded-lg border border-amber-300/25 bg-amber-300/10 px-4 py-3">
-                    <p class="text-xs font-semibold text-amber-50/80 uppercase">Plan safety notes</p>
+                    <p class="text-xs font-semibold text-amber-50/80 uppercase">Uwagi dotyczące bezpieczeństwa planu</p>
                     <ul class="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-amber-50">
                       {storedPlan.planContent.safetyNotes.map((note) => (
                         <li class="break-words whitespace-pre-wrap">{note}</li>
                       ))}
                     </ul>
                     <p class="mt-3 text-sm leading-6 break-words text-amber-50/90">
-                      TrAIner does not diagnose injuries or replace advice from a doctor, physiotherapist, or medical
-                      trainer. If you have pain, symptoms, a medical condition, or uncertainty about training, consult a
-                      qualified professional.
+                      TrAIner nie diagnozuje urazów ani nie zastępuje porady lekarza, fizjoterapeuty lub trenera
+                      medycznego. Jeśli odczuwasz ból, masz objawy, chorobę lub wątpliwości dotyczące treningu,
+                      skonsultuj się z wykwalifikowanym specjalistą.
                     </p>
                   </section>
                 </div>
@@ -435,8 +438,8 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
               <section class="rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
                 <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p class="text-sm text-blue-100/65">Planning intake</p>
-                    <h2 class="mt-1 text-xl font-semibold text-white">Goal and constraints</h2>
+                    <p class="text-sm text-blue-100/65">Dane do planu</p>
+                    <h2 class="mt-1 text-xl font-semibold text-white">Cel i ograniczenia</h2>
                   </div>
                   <a
                     href="/dashboard/intake"
@@ -449,21 +452,21 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                 {latestIntake ? (
                   <div class="space-y-4">
                     <div>
-                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Goal</p>
+                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Cel</p>
                       <p class="mt-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-white">
                         {latestIntake.goal}
                       </p>
                     </div>
                     <div class="grid gap-4 sm:grid-cols-2">
                       <div>
-                        <p class="text-xs font-semibold text-blue-100/50 uppercase">Experience level</p>
+                        <p class="text-xs font-semibold text-blue-100/50 uppercase">Poziom doświadczenia</p>
                         <p class="mt-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-white">
                           {experienceLabels[latestIntake.experienceLevel]}
                         </p>
                       </div>
                       {updatedAt && (
                         <div>
-                          <p class="text-xs font-semibold text-blue-100/50 uppercase">Last updated</p>
+                          <p class="text-xs font-semibold text-blue-100/50 uppercase">Ostatnia aktualizacja</p>
                           <p class="mt-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-white">
                             {updatedAt}
                           </p>
@@ -471,14 +474,14 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                       )}
                     </div>
                     <div>
-                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Health constraints</p>
+                      <p class="text-xs font-semibold text-blue-100/50 uppercase">Ograniczenia zdrowotne</p>
                       <p class="mt-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-white">
                         {latestIntake.healthConstraints}
                       </p>
                     </div>
                     {latestIntake.notes && (
                       <div>
-                        <p class="text-xs font-semibold text-blue-100/50 uppercase">Optional notes</p>
+                        <p class="text-xs font-semibold text-blue-100/50 uppercase">Dodatkowe uwagi</p>
                         <p class="mt-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-white">
                           {latestIntake.notes}
                         </p>
@@ -486,22 +489,22 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                     )}
                     <p class="rounded-lg border border-blue-200/15 bg-blue-300/10 px-3 py-2 text-sm leading-6 text-blue-50/80">
                       {latestIntakeEditable
-                        ? "This intake can still be edited before the first plan is generated."
-                        : "This intake is already associated with a plan. A new submission will start a fresh intake."}
+                        ? "Te dane można jeszcze edytować przed wygenerowaniem pierwszego planu."
+                        : "Te dane są już powiązane z planem. Nowe zgłoszenie utworzy nowy zestaw danych."}
                     </p>
                   </div>
                 ) : (
                   <div class="rounded-lg border border-dashed border-white/20 bg-white/5 px-4 py-8 text-center">
-                    <h3 class="text-lg font-semibold text-white">No intake saved yet</h3>
+                    <h3 class="text-lg font-semibold text-white">Nie zapisano jeszcze danych</h3>
                     <p class="mx-auto mt-2 max-w-xl text-sm leading-6 text-blue-100/70">
-                      Add your training goal, experience level, health constraints, and optional notes so TrAIner can
-                      prepare your first explained plan.
+                      Dodaj cel treningowy, poziom doświadczenia, ograniczenia zdrowotne i dodatkowe uwagi, aby TrAIner
+                      mógł przygotować pierwszy plan z wyjaśnieniem.
                     </p>
                     <a
                       href="/dashboard/intake"
                       class="mt-5 inline-flex rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200"
                     >
-                      Start intake
+                      Dodaj dane
                     </a>
                   </div>
                 )}
@@ -514,33 +517,33 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
           {
             storedPlan && latestIntake ? (
               <section class="rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-                <p class="text-sm text-blue-100/65">Plan source</p>
-                <h2 class="mt-1 text-xl font-semibold text-white">Latest intake</h2>
+                <p class="text-sm text-blue-100/65">Źródło planu</p>
+                <h2 class="mt-1 text-xl font-semibold text-white">Najnowsze dane</h2>
                 <div class="mt-4 space-y-4">
                   <div>
-                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Goal</p>
+                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Cel</p>
                     <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-white">{latestIntake.goal}</p>
                   </div>
                   <div>
-                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Experience</p>
+                    <p class="text-xs font-semibold text-blue-100/50 uppercase">Doświadczenie</p>
                     <p class="mt-1 text-sm leading-6 text-white">{experienceLabels[latestIntake.experienceLevel]}</p>
                   </div>
                   <p class="rounded-lg border border-blue-200/15 bg-blue-300/10 px-3 py-2 text-sm leading-6 text-blue-50/80">
-                    This intake now shapes the current {storedPlan.status} plan. Update its health constraints through
-                    the revision form so plan and source context stay aligned.
+                    Te dane kształtują obecny plan ({storedPlan.status === "accepted" ? "zaakceptowany" : "szkic"}).
+                    Aktualizuj ograniczenia zdrowotne w formularzu zmiany, aby plan i dane źródłowe pozostały spójne.
                   </p>
                   <a
                     href="/dashboard/intake"
                     class="inline-flex rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-cyan-100 transition-colors hover:bg-white/20"
                   >
-                    Start new intake
+                    + Nowy plan
                   </a>
                 </div>
               </section>
             ) : (
               <section class="rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-                <p class="text-sm text-blue-100/65">Next step</p>
-                <h2 class="mt-1 text-xl font-semibold text-white">First explained plan</h2>
+                <p class="text-sm text-blue-100/65">Następny krok</p>
+                <h2 class="mt-1 text-xl font-semibold text-white">Pierwszy plan z wyjaśnieniem</h2>
                 {latestIntake && latestIntakeEditable ? (
                   <form
                     method="POST"
@@ -549,20 +552,21 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
                     data-plan-native-form
                   >
                     <p class="text-sm leading-6 break-words text-blue-100/75">
-                      Generate a one-week draft plan matched to your saved goal, experience level, and constraints.
+                      Wygeneruj tygodniowy szkic planu dopasowany do zapisanego celu, poziomu doświadczenia i
+                      ograniczeń.
                     </p>
                     <button
                       type="submit"
                       data-plan-submit
-                      data-loading-label="Generating..."
+                      data-loading-label="Generowanie..."
                       class="w-full rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                      Generate my plan
+                      Wygeneruj plan
                     </button>
                   </form>
                 ) : (
                   <p class="mt-3 text-sm leading-6 break-words text-blue-100/75">
-                    Save an editable intake before generating your first explained plan.
+                    Zapisz edytowalne dane przed wygenerowaniem pierwszego planu z wyjaśnieniem.
                   </p>
                 )}
               </section>
@@ -570,10 +574,10 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
           }
 
           <section class="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-            <p class="text-sm font-semibold text-amber-50">Training boundary</p>
+            <p class="text-sm font-semibold text-amber-50">Granice działania aplikacji</p>
             <p class="mt-2 text-sm leading-6 break-words text-amber-50/90">
-              TrAIner can help adapt a training plan to the constraints you provide, but it does not diagnose injuries
-              or replace advice from a doctor, physiotherapist, or medical trainer.
+              TrAIner może pomóc dostosować plan do podanych ograniczeń, ale nie diagnozuje urazów ani nie zastępuje
+              porady lekarza, fizjoterapeuty lub trenera medycznego.
             </p>
           </section>
         </aside>
@@ -589,7 +593,7 @@ function formatExerciseDetails(exercise: TrainingPlanExerciseEntry): string[] {
 
       if (button instanceof HTMLButtonElement) {
         button.disabled = true;
-        button.textContent = button.dataset.loadingLabel || "Generating...";
+        button.textContent = button.dataset.loadingLabel || "Generowanie...";
       }
     });
   });

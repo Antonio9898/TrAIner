@@ -5,7 +5,7 @@ import { SubmitButton } from "@/components/auth/SubmitButton";
 import { cn } from "@/lib/utils";
 import type { TrainingExperienceLevel, TrainingIntake } from "@/types";
 
-const NO_KNOWN_CONSTRAINTS = "no known constraints";
+const NO_KNOWN_CONSTRAINTS = "Brak znanych ograniczeń";
 
 const EXPERIENCE_OPTIONS: {
   value: TrainingExperienceLevel;
@@ -14,18 +14,18 @@ const EXPERIENCE_OPTIONS: {
 }[] = [
   {
     value: "beginner",
-    label: "Beginner",
-    description: "New to structured strength training.",
+    label: "Początkujący",
+    description: "Dopiero zaczynasz regularny trening siłowy.",
   },
   {
     value: "intermediate",
-    label: "Intermediate",
-    description: "Comfortable with common lifts and weekly training.",
+    label: "Średniozaawansowany",
+    description: "Swobodnie wykonujesz popularne ćwiczenia i trenujesz co tydzień.",
   },
   {
     value: "advanced",
-    label: "Advanced",
-    description: "Experienced with progression and higher training volume.",
+    label: "Zaawansowany",
+    description: "Masz doświadczenie z progresją i większą objętością treningową.",
   },
 ];
 
@@ -56,15 +56,15 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
     const next: FieldErrors = {};
 
     if (!goal.trim()) {
-      next.goal = "Training goal is required";
+      next.goal = "Cel treningowy jest wymagany";
     }
 
     if (!EXPERIENCE_OPTIONS.some((option) => option.value === experienceLevel)) {
-      next.experienceLevel = "Choose an experience level";
+      next.experienceLevel = "Wybierz poziom doświadczenia";
     }
 
     if (!healthConstraints.trim()) {
-      next.healthConstraints = "Health constraints are required";
+      next.healthConstraints = "Ograniczenia zdrowotne są wymagane";
     }
 
     setErrors(next);
@@ -85,13 +85,13 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
     <form method="POST" action="/api/training-intakes" className="space-y-5" onSubmit={handleSubmit} noValidate>
       <TextAreaField
         id="goal"
-        label="Training goal"
+        label="Cel treningowy"
         value={goal}
         onChange={(value) => {
           setGoal(value);
           clearError("goal");
         }}
-        placeholder="Build strength for three full-body sessions per week"
+        placeholder="Zbudować siłę podczas trzech treningów całego ciała tygodniowo"
         error={errors.goal}
         icon={<Target className="size-4" />}
         rows={4}
@@ -100,7 +100,7 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
       <fieldset>
         <legend className="mb-2 flex items-center gap-2 text-sm text-blue-100/80">
           <Activity className="size-4 text-white/45" />
-          Experience level
+          Poziom doświadczenia
         </legend>
         <div className="grid gap-3 sm:grid-cols-3">
           {EXPERIENCE_OPTIONS.map((option) => (
@@ -137,20 +137,20 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
       <div>
         <TextAreaField
           id="healthConstraints"
-          label="Health constraints"
+          label="Ograniczenia zdrowotne"
           value={healthConstraints}
           onChange={(value) => {
             setHealthConstraints(value);
             clearError("healthConstraints");
           }}
-          placeholder="Do you have injuries, pain, health constraints, or movement limitations that should shape your training plan? Add anything relevant in your own words."
+          placeholder="Czy masz urazy, ból, ograniczenia zdrowotne lub ruchowe, które powinny wpłynąć na plan? Opisz je własnymi słowami."
           error={errors.healthConstraints}
           icon={<HeartPulse className="size-4" />}
           rows={5}
           hint={
             <p className="mt-2 text-xs leading-5 text-blue-100/60">
-              Examples: knee pain during squats, recovering shoulder, avoid overhead pressing, doctor told me to avoid
-              high-impact exercise.
+              Przykłady: ból kolana podczas przysiadów, powrót do sprawności barku, unikanie wyciskania nad głowę,
+              zalecenie lekarza, by unikać ćwiczeń o dużej intensywności uderzeń.
             </p>
           }
         />
@@ -164,30 +164,30 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
           }}
         >
           <Check className="size-4" />
-          No known constraints
+          Brak znanych ograniczeń
         </button>
       </div>
 
       <TextAreaField
         id="notes"
-        label="Optional notes"
+        label="Dodatkowe uwagi"
         value={notes}
         onChange={setNotes}
-        placeholder="Schedule, equipment, exercise preferences, or anything else that helps shape the plan"
+        placeholder="Harmonogram, sprzęt, preferencje ćwiczeń lub wszystko, co pomoże dopasować plan"
         icon={<FileText className="size-4" />}
         rows={4}
       />
 
       <div className="rounded-lg border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-50">
-        TrAIner can help adapt a training plan to the constraints you provide, but it does not diagnose injuries or
-        replace advice from a doctor, physiotherapist, or medical trainer. If you have pain, symptoms, a medical
-        condition, or uncertainty about training, consult a qualified professional.
+        TrAIner może pomóc dostosować plan do podanych ograniczeń, ale nie diagnozuje urazów ani nie zastępuje porady
+        lekarza, fizjoterapeuty lub trenera medycznego. Jeśli odczuwasz ból, masz objawy, chorobę lub wątpliwości
+        dotyczące treningu, skonsultuj się z wykwalifikowanym specjalistą.
       </div>
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Saving intake..." icon={<Send className="size-4" />}>
-        Save intake
+      <SubmitButton pendingText="Zapisywanie danych..." icon={<Send className="size-4" />}>
+        Zapisz dane
       </SubmitButton>
     </form>
   );

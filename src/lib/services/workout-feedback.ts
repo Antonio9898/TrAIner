@@ -55,23 +55,28 @@ const optionalFormInteger = z.preprocess((value) => {
   }
   return value;
 }, z.number().int().nullable());
-const timeZoneSchema = requiredTrimmedText("Time zone is required")
-  .pipe(z.string().max(TIME_ZONE_MAX_LENGTH, "Time zone is invalid"))
-  .refine(isIanaTimeZone, "Time zone is invalid");
+const timeZoneSchema = requiredTrimmedText("Strefa czasowa jest wymagana")
+  .pipe(z.string().max(TIME_ZONE_MAX_LENGTH, "Strefa czasowa jest nieprawidłowa"))
+  .refine(isIanaTimeZone, "Strefa czasowa jest nieprawidłowa");
 
 export const workoutFeedbackRouteIdentitySchema = z.object({
-  planId: requiredTrimmedText("Training plan is required").pipe(z.uuid("Training plan is invalid")),
-  workoutKey: requiredTrimmedText("Workout is required").pipe(
-    z.string().max(WORKOUT_KEY_MAX_LENGTH, "Workout is invalid").regex(WORKOUT_KEY_PATTERN, "Workout is invalid"),
+  planId: requiredTrimmedText("Plan treningowy jest wymagany").pipe(z.uuid("Plan treningowy jest nieprawidłowy")),
+  workoutKey: requiredTrimmedText("Trening jest wymagany").pipe(
+    z
+      .string()
+      .max(WORKOUT_KEY_MAX_LENGTH, "Trening jest nieprawidłowy")
+      .regex(WORKOUT_KEY_PATTERN, "Trening jest nieprawidłowy"),
   ),
 });
 
 export const workoutFeedbackSubmissionSchema = workoutFeedbackRouteIdentitySchema.extend({
-  submissionToken: requiredTrimmedText("Submission token is required").pipe(z.uuid("Submission token is invalid")),
+  submissionToken: requiredTrimmedText("Token wysłania jest wymagany").pipe(
+    z.uuid("Token wysłania jest nieprawidłowy"),
+  ),
   difficultyRating: formInteger.pipe(z.number().min(1).max(10)),
   satisfactionRating: optionalFormInteger.pipe(z.number().min(1).max(5).nullable()),
   notes: optionalTrimmedText.pipe(z.string().max(NOTES_MAX_LENGTH).nullable()),
-  performedDate: requiredTrimmedText("Performed date is required").pipe(z.iso.date()),
+  performedDate: requiredTrimmedText("Data wykonania jest wymagana").pipe(z.iso.date()),
   timeZone: timeZoneSchema,
 });
 

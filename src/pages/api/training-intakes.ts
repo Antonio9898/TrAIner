@@ -13,12 +13,12 @@ const INTAKE_ROUTE = "/dashboard/intake";
 export const POST: APIRoute = async (context) => {
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return redirectWithError(context, "Supabase is not configured");
+    return redirectWithError(context, "Supabase nie jest skonfigurowany");
   }
 
   const user = context.locals.user ?? (await getAuthenticatedUser(supabase));
   if (!user) {
-    return redirectWithError(context, "Please sign in to save your intake");
+    return redirectWithError(context, "Zaloguj się, aby zapisać dane");
   }
 
   let input: TrainingIntakeFormInput;
@@ -26,13 +26,13 @@ export const POST: APIRoute = async (context) => {
     const formData = await context.request.formData();
     input = parseTrainingIntakeFormData(formData);
   } catch {
-    return redirectWithError(context, "Please complete all required intake fields");
+    return redirectWithError(context, "Uzupełnij wszystkie wymagane pola");
   }
 
   try {
     await saveTrainingIntake(supabase, user.id, input);
   } catch {
-    return redirectWithError(context, "We could not save your intake. Please try again");
+    return redirectWithError(context, "Nie udało się zapisać danych. Spróbuj ponownie");
   }
 
   return context.redirect("/dashboard?saved=intake");

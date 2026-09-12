@@ -35,7 +35,7 @@ if (supabase && user && planId && workoutKey) {
 
 const isAvailable = feedbackContext && feedbackContext.state !== "unavailable";
 const canSubmit = feedbackContext?.state === "accepted-current";
-const workoutLabel = feedbackContext?.currentWorkout?.label ?? feedbackContext?.history[0]?.workoutLabel ?? "Workout";
+const workoutLabel = feedbackContext?.currentWorkout?.label ?? feedbackContext?.history[0]?.workoutLabel ?? "Trening";
 const formAction =
   planId && workoutKey
     ? `/api/training-plans/${encodeURIComponent(planId)}/workouts/${encodeURIComponent(workoutKey)}/feedback`
@@ -43,27 +43,27 @@ const formAction =
 const feedbackAction = Astro.url.searchParams.get("feedbackAction");
 const feedbackError = Astro.url.searchParams.get("feedbackError");
 const feedbackErrorMessages: Record<string, string> = {
-  "invalid-request": "We could not validate that feedback. Check the fields and try again.",
-  unavailable: "Feedback cannot be saved for this workout right now.",
-  "token-conflict": "This form was already used with different feedback. Refresh the page and try again.",
-  "save-failed": "We could not save your feedback. Your entry was not added.",
+  "invalid-request": "Nie udało się zweryfikować opinii. Sprawdź pola i spróbuj ponownie.",
+  unavailable: "Nie można teraz zapisać opinii o tym treningu.",
+  "token-conflict": "Ten formularz został już użyty z inną opinią. Odśwież stronę i spróbuj ponownie.",
+  "save-failed": "Nie udało się zapisać opinii. Wpis nie został dodany.",
 };
-const successMessage = feedbackAction === "saved" ? "Workout feedback saved." : null;
+const successMessage = feedbackAction === "saved" ? "Opinia o treningu została zapisana." : null;
 const errorMessage = feedbackError
-  ? (feedbackErrorMessages[feedbackError] ?? "We could not complete that feedback action. Please try again.")
+  ? (feedbackErrorMessages[feedbackError] ?? "Nie udało się wykonać tej operacji. Spróbuj ponownie.")
   : feedbackAction && feedbackAction !== "saved"
-    ? "We could not confirm that feedback action. Please try again."
+    ? "Nie udało się potwierdzić tej operacji. Spróbuj ponownie."
     : null;
 
 function formatCalendarDate(value: string): string {
   const calendarDate = value.slice(0, 10);
-  return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(
+  return new Intl.DateTimeFormat("pl-PL", { dateStyle: "medium", timeZone: "UTC" }).format(
     new Date(`${calendarDate}T00:00:00.000Z`),
   );
 }
 ---
 
-<Layout title={`${workoutLabel} feedback`}>
+<Layout title={`Opinia: ${workoutLabel}`}>
   <main class="bg-cosmic min-h-screen px-4 py-8 text-white">
     <div class="mx-auto w-full max-w-5xl space-y-5">
       <header class="rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
@@ -71,15 +71,15 @@ function formatCalendarDate(value: string): string {
           href="/dashboard"
           class="inline-flex rounded-md text-sm font-semibold text-cyan-100 transition-colors hover:text-cyan-50 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none"
         >
-          ← Back to dashboard
+          ← Wróć do panelu
         </a>
-        <p class="mt-5 text-sm text-blue-100/65">Post-workout feedback</p>
+        <p class="mt-5 text-sm text-blue-100/65">Opinia po treningu</p>
         <h1 class="mt-1 text-2xl font-semibold break-words text-white sm:text-3xl">{workoutLabel}</h1>
         {
           isAvailable && feedbackContext && (
             <p class="mt-2 text-sm leading-6 break-words text-blue-100/75">
-              {feedbackContext.plan.status === "accepted" ? "Accepted training plan" : "Plan under review"} · Recent
-              entries for this workout
+              {feedbackContext.plan.status === "accepted" ? "Zaakceptowany plan treningowy" : "Plan do sprawdzenia"} ·
+              Ostatnie wpisy dotyczące tego treningu
             </p>
           )
         }
@@ -107,12 +107,12 @@ function formatCalendarDate(value: string): string {
       {
         !isAvailable || !feedbackContext ? (
           <section class="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-            <h2 class="text-xl font-semibold text-amber-50">Feedback unavailable</h2>
+            <h2 class="text-xl font-semibold text-amber-50">Opinia jest niedostępna</h2>
             <p class="mt-2 text-sm leading-6 text-amber-50/90">
-              We could not find feedback you can view for this workout. Return to the dashboard and open a current
-              accepted workout.
+              Nie znaleźliśmy opinii, które możesz wyświetlić dla tego treningu. Wróć do panelu i otwórz aktualny,
+              zaakceptowany trening.
             </p>
-            {loadFailed && <span class="sr-only">The feedback context could not be loaded.</span>}
+            {loadFailed && <span class="sr-only">Nie udało się wczytać danych opinii.</span>}
           </section>
         ) : (
           <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]">
@@ -120,9 +120,9 @@ function formatCalendarDate(value: string): string {
               id="feedback-history"
               class="min-w-0 rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6"
             >
-              <p class="text-sm text-blue-100/65">Append-only record</p>
-              <h2 class="mt-1 text-xl font-semibold text-white">Recent feedback</h2>
-              <p class="mt-2 text-sm leading-6 text-blue-100/70">Up to the 50 newest entries are shown.</p>
+              <p class="text-sm text-blue-100/65">Historia tylko do odczytu</p>
+              <h2 class="mt-1 text-xl font-semibold text-white">Ostatnie opinie</h2>
+              <p class="mt-2 text-sm leading-6 text-blue-100/70">Wyświetlamy maksymalnie 50 najnowszych wpisów.</p>
 
               {feedbackContext.history.length > 0 ? (
                 <ol class="mt-5 space-y-4">
@@ -130,9 +130,9 @@ function formatCalendarDate(value: string): string {
                     <li class="min-w-0 rounded-lg border border-white/10 bg-slate-950/20 p-4">
                       <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div class="min-w-0">
-                          <p class="text-xs font-semibold text-cyan-100/70 uppercase">Completed workout</p>
+                          <p class="text-xs font-semibold text-cyan-100/70 uppercase">Wykonany trening</p>
                           <h3 class="mt-1 font-semibold break-words text-white">
-                            {entry.workoutLabel ?? "Previous workout"}
+                            {entry.workoutLabel ?? "Poprzedni trening"}
                           </h3>
                         </div>
                         <time
@@ -144,19 +144,19 @@ function formatCalendarDate(value: string): string {
                       </div>
                       <dl class="mt-4 grid gap-3 sm:grid-cols-2">
                         <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                          <dt class="text-xs font-semibold text-blue-100/55 uppercase">Difficulty</dt>
+                          <dt class="text-xs font-semibold text-blue-100/55 uppercase">Trudność</dt>
                           <dd class="mt-1 text-sm text-white">{entry.difficultyRating} / 10</dd>
                         </div>
                         {entry.satisfactionRating !== null && (
                           <div class="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                            <dt class="text-xs font-semibold text-blue-100/55 uppercase">Satisfaction</dt>
+                            <dt class="text-xs font-semibold text-blue-100/55 uppercase">Zadowolenie</dt>
                             <dd class="mt-1 text-sm text-white">{entry.satisfactionRating} / 5</dd>
                           </div>
                         )}
                       </dl>
                       {entry.notes && (
                         <div class="mt-3">
-                          <p class="text-xs font-semibold text-blue-100/55 uppercase">Notes</p>
+                          <p class="text-xs font-semibold text-blue-100/55 uppercase">Uwagi</p>
                           <p class="mt-1 text-sm leading-6 break-words whitespace-pre-wrap text-blue-50/90">
                             {entry.notes}
                           </p>
@@ -167,17 +167,17 @@ function formatCalendarDate(value: string): string {
                 </ol>
               ) : (
                 <div class="mt-5 rounded-lg border border-dashed border-white/20 bg-white/5 px-4 py-8 text-center">
-                  <h3 class="font-semibold text-white">No feedback yet</h3>
+                  <h3 class="font-semibold text-white">Brak opinii</h3>
                   <p class="mt-2 text-sm leading-6 text-blue-100/70">
-                    Your completed-workout entries will appear here newest first.
+                    Wpisy dotyczące wykonanych treningów pojawią się tutaj w kolejności od najnowszego.
                   </p>
                 </div>
               )}
 
               {feedbackContext.currentWorkout && feedbackContext.history.length > 0 && (
                 <p class="mt-5 rounded-lg border border-blue-200/20 bg-blue-300/10 px-4 py-3 text-sm leading-6 text-blue-50/85">
-                  This plan may have been revised since earlier entries were recorded. Older feedback can describe an
-                  earlier version of this workout, even when the workout key stayed the same.
+                  Plan mógł zostać zmieniony od czasu zapisania wcześniejszych wpisów. Starsze opinie mogą dotyczyć
+                  poprzedniej wersji treningu, nawet jeśli jego klucz pozostał taki sam.
                 </p>
               )}
             </section>
@@ -185,10 +185,10 @@ function formatCalendarDate(value: string): string {
             <aside class="min-w-0 space-y-5">
               {canSubmit && feedbackContext.plan.status === "accepted" && feedbackContext.currentWorkout ? (
                 <section class="rounded-lg border border-cyan-200/20 bg-white/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-                  <p class="text-sm text-cyan-100/70">Completed this workout?</p>
-                  <h2 class="mt-1 text-xl font-semibold break-words text-white">Log how it went</h2>
+                  <p class="text-sm text-cyan-100/70">Wykonano ten trening?</p>
+                  <h2 class="mt-1 text-xl font-semibold break-words text-white">Zapisz, jak poszło</h2>
                   <p class="mt-2 text-sm leading-6 text-blue-100/70">
-                    Difficulty is required. Satisfaction and notes are optional.
+                    Ocena trudności jest wymagana. Zadowolenie i uwagi są opcjonalne.
                   </p>
                   <div class="mt-5">
                     <PostWorkoutFeedbackForm
@@ -202,11 +202,11 @@ function formatCalendarDate(value: string): string {
                 </section>
               ) : (
                 <section class="rounded-lg border border-amber-300/30 bg-amber-300/10 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
-                  <h2 class="text-lg font-semibold text-amber-50">History is read-only</h2>
+                  <h2 class="text-lg font-semibold text-amber-50">Historia jest tylko do odczytu</h2>
                   <p class="mt-2 text-sm leading-6 text-amber-50/90">
                     {feedbackContext.state === "draft-current"
-                      ? "This plan is under review. Accept the current draft before logging another completed workout."
-                      : "This workout is no longer in the current plan. Its earlier feedback is preserved, but new entries are unavailable."}
+                      ? "Plan jest do sprawdzenia. Zaakceptuj bieżący szkic przed zapisaniem kolejnego wykonanego treningu."
+                      : "Ten trening nie należy już do aktualnego planu. Wcześniejsze opinie są zachowane, ale nowe wpisy są niedostępne."}
                   </p>
                 </section>
               )}

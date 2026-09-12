@@ -2,7 +2,7 @@ import type { createClient } from "@/lib/supabase";
 import type { TrainingExperienceLevel, TrainingIntake } from "@/types";
 import { z } from "zod";
 
-export const NO_KNOWN_CONSTRAINTS = "no known constraints";
+export const NO_KNOWN_CONSTRAINTS = "Brak znanych ograniczeń";
 export const TRAINING_EXPERIENCE_LEVELS = ["beginner", "intermediate", "advanced"] as const;
 
 type SupabaseSsrClient = NonNullable<ReturnType<typeof createClient>>;
@@ -30,12 +30,12 @@ const requiredTrimmedText = (message: string) =>
   formTextField.transform((value) => value.trim()).pipe(z.string().min(1, message));
 
 export const trainingIntakeFormSchema = z.object({
-  goal: requiredTrimmedText("Training goal is required"),
+  goal: requiredTrimmedText("Cel treningowy jest wymagany"),
   experienceLevel: z.preprocess(
     (value) => (typeof value === "string" ? value : ""),
-    z.enum(TRAINING_EXPERIENCE_LEVELS, { message: "Choose a valid experience level" }),
+    z.enum(TRAINING_EXPERIENCE_LEVELS, { message: "Wybierz prawidłowy poziom doświadczenia" }),
   ),
-  healthConstraints: requiredTrimmedText("Health constraints are required"),
+  healthConstraints: requiredTrimmedText("Ograniczenia zdrowotne są wymagane"),
   notes: formTextField.transform((value) => {
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : null;
@@ -59,7 +59,10 @@ export function mapTrainingIntakeRow(row: TrainingIntakeRow): TrainingIntake {
     userId: row.user_id,
     goal: row.goal,
     experienceLevel: row.experience_level,
-    healthConstraints: row.health_constraints,
+    healthConstraints:
+      row.health_constraints.trim().toLowerCase() === "no known constraints"
+        ? NO_KNOWN_CONSTRAINTS
+        : row.health_constraints,
     notes: row.notes,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
