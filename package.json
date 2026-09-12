@@ -55,9 +55,6 @@
     "typescript-eslint": "^8.59.2",
     "wrangler": "^4.95.0"
   },
-  "overrides": {
-    "vite": "^7.3.2"
-  },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
       "eslint --fix"

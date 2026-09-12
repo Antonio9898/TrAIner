@@ -19,7 +19,8 @@ export default defineConfig({
       SUPABASE_URL: envField.string({ context: "server", access: "secret", optional: true }),
       SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret" }),
-      OPENROUTER_MODEL: envField.string({ context: "server", access: "public" }),
+      // Read the model from Worker bindings at runtime, like the API key.
+      OPENROUTER_MODEL: envField.string({ context: "server", access: "secret" }),
       OPENROUTER_HTTP_REFERER: envField.string({ context: "server", access: "public", optional: true }),
     },
   },
