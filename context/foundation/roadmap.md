@@ -2,7 +2,7 @@
 project: TrAIner
 version: 2
 status: active
-updated: 2026-08-21
+updated: 2026-09-12
 main_goal: speed
 top_blocker: capacity
 ---
@@ -30,7 +30,7 @@ TrAIner ma pomoc osobie trenujacej lub zaczynajacej trening silowy ulozyc plan p
 | S-01 | goal-and-constraints-intake | user can log in, enter a training goal, training level, and health constraints | F-01, F-02 | US-01, FR-001, FR-002, FR-003 | implemented |
 | S-02 | first-explained-training-plan | user can receive the first explained training plan matched to goal, level, and constraints | F-01, F-02, S-01 | US-01, FR-004, FR-008 | implemented |
 | S-03 | plan-revision-and-acceptance | user can request corrections and accept the final training plan | F-02, S-02 | US-01, FR-005, FR-006, FR-008 | done |
-| S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | in-progress |
+| S-04 | post-workout-feedback | user can submit simple post-workout feedback so the app can track progress | F-01, S-03 | US-01, FR-007 | implemented |
 
 ## Streams
 
@@ -46,7 +46,7 @@ Navigation aid - groups items that share a Prerequisites chain. Canonical orderi
 What's already in place in the codebase (auto-researched). Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Frontend:** present - server-rendered app shell, auth forms, goal-and-constraints intake, and first-plan generation and display are present (`src/pages/dashboard.astro`, `src/pages/dashboard/intake.astro`).
-- **Backend / API:** partial - auth, training intake, and first-plan generation endpoints exist; plan revision, acceptance, and workout feedback endpoints remain (`src/pages/api/training-intakes.ts`, `src/pages/api/training-plans/generate.ts`).
+- **Backend / API:** present for the planned MVP - auth, training intake, first-plan generation, revision, acceptance, and workout feedback endpoints exist (`src/pages/api/training-intakes.ts`, `src/pages/api/training-plans/generate.ts`).
 - **Data:** present for the planned MVP - private training intake, plan revision/acceptance fields, and workout feedback tables exist with RLS (`supabase/migrations/20260602233915_create_planning_contract.sql`).
 - **Auth:** present - cookie-based session client, protected-route middleware, auth pages, and sign-in/sign-up/sign-out routes are present (`src/lib/supabase.ts`, `src/middleware.ts`, `src/pages/auth/signin.astro`).
 - **Deploy / infra:** present - production build target, deploy config, and CI build checks are present (`astro.config.mjs`, `wrangler.jsonc`, `.github/workflows/ci.yml`).
@@ -132,7 +132,7 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Feedback jest czescia pelnego MVP, ale powinien wejsc dopiero po zaakceptowanym planie, bo inaczej produkt zbiera sygnaly bez jasnego planu odniesienia.
-- **Status:** in-progress
+- **Status:** implemented
 
 ## Backlog Handoff
 
@@ -142,8 +142,8 @@ What's already in place in the codebase (auto-researched). Foundations below ass
 | F-02 | training-safety-boundaries | Define training safety and no-diagnosis boundaries | no | Implemented; keep these boundaries in force for revisions. |
 | S-01 | goal-and-constraints-intake | Build goal and constraints intake | no | Implemented; authenticated users can save and edit intake before plan generation. |
 | S-02 | first-explained-training-plan | Build the first explained training plan | no | Implemented; the north-star flow is present. |
-| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | yes | Recommended next move; all prerequisites are implemented. |
-| S-04 | post-workout-feedback | Build post-workout feedback | no | Wait for accepted plan flow from S-03. |
+| S-03 | plan-revision-and-acceptance | Build plan revision and acceptance | no | Implemented and archived; accepted-plan flow is available to S-04. |
+| S-04 | post-workout-feedback | Build post-workout feedback | no | Implemented and review approved; verification and resolved findings are recorded in the change folder. |
 
 ## Open Roadmap Questions
 
@@ -161,3 +161,5 @@ Brak otwartych pytan roadmapowych. PRD wskazuje: "Brak otwartych pytan."
 - **S-01: Goal and constraints intake** - implemented 2026-06-03 (`context/changes/goal-and-constraints-intake/change.md`).
 - **S-02: First explained training plan** - implemented 2026-06-18 (`context/changes/first-explained-training-plan/change.md`).
 - **S-03: user can request corrections and accept the final training plan.** — Archived 2026-08-21 → `context/archive/2026-08-12-plan-revision-and-acceptance/`. Lesson: —.
+
+- **S-04: Post-workout feedback** - implemented and review approved; both review findings resolved 2026-09-12 (`context/changes/post-workout-feedback/reviews/impl-review.md`, `context/changes/post-workout-feedback/follow-ups/review-fixes.md`). Production deployment of the lifecycle-boundary migration is not recorded as complete.
