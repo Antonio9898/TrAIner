@@ -1,5 +1,5 @@
 import type { APIContext, APIRoute } from "astro";
-import { OpenRouterConfigurationError, OpenRouterGenerationError } from "@/lib/openrouter";
+import { OpenRouterConfigurationError, OpenRouterGenerationError, OpenRouterTimeoutError } from "@/lib/openrouter";
 import { isSameOriginRequest } from "@/lib/request-security";
 import {
   parseTrainingPlanRevisionFormData,
@@ -22,6 +22,7 @@ type RevisionErrorCode =
   | "signin-required"
   | "invalid-request"
   | "openrouter-not-configured"
+  | "generation-timeout"
   | "invalid-revision"
   | "plan-conflict"
   | "save-failed";
@@ -79,6 +80,10 @@ function mapRevisionError(error: unknown): RevisionErrorCode {
 
   if (error instanceof OpenRouterConfigurationError) {
     return "openrouter-not-configured";
+  }
+
+  if (error instanceof OpenRouterTimeoutError) {
+    return "generation-timeout";
   }
 
   if (error instanceof OpenRouterGenerationError || error instanceof TrainingPlanGenerationValidationError) {

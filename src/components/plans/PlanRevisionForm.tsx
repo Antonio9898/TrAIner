@@ -143,6 +143,12 @@ export default function PlanRevisionForm({
         <p>Earlier workout feedback stays attached and may describe content from an older version of this plan.</p>
       </div>
 
+      {isSubmitting && (
+        <p role="status" className="text-sm text-blue-100/75">
+          Creating your complete replacement plan. This can take up to 90 seconds.
+        </p>
+      )}
+
       <Button
         type="submit"
         disabled={isSubmitting}

@@ -2,6 +2,7 @@ import { OPENROUTER_API_KEY, OPENROUTER_HTTP_REFERER, OPENROUTER_MODEL } from "a
 
 const OPENROUTER_CHAT_COMPLETIONS_URL = "https://openrouter.ai/api/v1/chat/completions";
 const OPENROUTER_APP_TITLE = "TrAIner";
+const OPENROUTER_TIMEOUT_MS = 90_000;
 
 export interface OpenRouterMessage {
   role: "system" | "user" | "assistant";
@@ -24,6 +25,7 @@ interface OpenRouterChatCompletionRequest {
 
 interface OpenRouterChatCompletionResponse {
   choices?: {
+    finish_reason?: string;
     message?: {
       content?: string | null;
     };
@@ -48,6 +50,13 @@ export class OpenRouterGenerationError extends Error {
   }
 }
 
+export class OpenRouterTimeoutError extends OpenRouterGenerationError {
+  constructor() {
+    super("OpenRouter generation timed out");
+    this.name = "OpenRouterTimeoutError";
+  }
+}
+
 export async function createOpenRouterChatCompletion({
   messages,
   responseFormat,
@@ -59,35 +68,56 @@ export async function createOpenRouterChatCompletion({
   const model = getRequiredEnvValue(OPENROUTER_MODEL);
   const referer = getOptionalEnvValue(OPENROUTER_HTTP_REFERER);
 
-  const response = await fetch(OPENROUTER_CHAT_COMPLETIONS_URL, {
-    method: "POST",
-    headers: buildOpenRouterHeaders(apiKey, referer),
-    body: JSON.stringify({
-      model,
-      messages,
-      response_format: {
-        type: "json_schema",
-        json_schema: responseFormat,
-      },
-      stream: false,
-      user: userId,
-      ...(temperature === undefined ? {} : { temperature }),
-      ...(maxTokens === undefined ? {} : { max_tokens: maxTokens }),
-    }),
-  });
-
-  if (!response.ok) {
-    throw new OpenRouterGenerationError();
-  }
-
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, OPENROUTER_TIMEOUT_MS);
   let payload: OpenRouterChatCompletionResponse;
   try {
+    const response = await fetch(OPENROUTER_CHAT_COMPLETIONS_URL, {
+      method: "POST",
+      signal: controller.signal,
+      headers: buildOpenRouterHeaders(apiKey, referer),
+      body: JSON.stringify({
+        model,
+        messages,
+        response_format: {
+          type: "json_schema",
+          json_schema: responseFormat,
+        },
+        stream: false,
+        user: userId,
+        ...(temperature === undefined ? {} : { temperature }),
+        ...(maxTokens === undefined ? {} : { max_tokens: maxTokens }),
+      }),
+    });
+
+    if (!response.ok) {
+      // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
+      console.warn("OpenRouter HTTP failure", { status: response.status });
+      throw new OpenRouterGenerationError();
+    }
+
     payload = (await response.json()) as OpenRouterChatCompletionResponse;
-  } catch {
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new OpenRouterTimeoutError();
+    }
+    if (error instanceof OpenRouterGenerationError) {
+      throw error;
+    }
     throw new OpenRouterGenerationError();
+  } finally {
+    // Keep the deadline active until the response body has been consumed.
+    clearTimeout(timeout);
   }
 
   const choice = payload.choices?.[0];
+  if (choice?.finish_reason === "length") {
+    // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
+    console.warn("OpenRouter output limit reached", { model, maxTokens });
+    throw new OpenRouterGenerationError("OpenRouter output was truncated");
+  }
   if (choice?.error) {
     throw new OpenRouterGenerationError();
   }

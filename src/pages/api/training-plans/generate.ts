@@ -1,5 +1,5 @@
 import type { APIContext, APIRoute } from "astro";
-import { OpenRouterConfigurationError, OpenRouterGenerationError } from "@/lib/openrouter";
+import { OpenRouterConfigurationError, OpenRouterGenerationError, OpenRouterTimeoutError } from "@/lib/openrouter";
 import { isSameOriginRequest } from "@/lib/request-security";
 import { isTrainingIntakeEditable, readLatestTrainingIntake } from "@/lib/services/training-intakes";
 import {
@@ -21,6 +21,7 @@ type GenerationErrorCode =
   | "missing-intake"
   | "intake-already-planned"
   | "openrouter-not-configured"
+  | "generation-timeout"
   | "invalid-generation"
   | "save-failed";
 
@@ -83,6 +84,10 @@ async function getAuthenticatedUser(supabase: NonNullable<ReturnType<typeof crea
 function mapGenerationError(error: unknown): GenerationErrorCode {
   if (error instanceof OpenRouterConfigurationError) {
     return "openrouter-not-configured";
+  }
+
+  if (error instanceof OpenRouterTimeoutError) {
+    return "generation-timeout";
   }
 
   if (error instanceof OpenRouterGenerationError || error instanceof TrainingPlanGenerationValidationError) {

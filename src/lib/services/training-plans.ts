@@ -458,7 +458,8 @@ export async function reviseTrainingPlan(
     responseFormat: TRAINING_PLAN_REVISION_RESPONSE_FORMAT,
     userId,
     temperature: 0.3,
-    maxTokens: 3000,
+    // A full translated replacement can exceed the first-draft output budget.
+    maxTokens: 8000,
   });
   const generatedPlan = parseGeneratedTrainingPlanRevisionPayload(assistantContent);
 
@@ -536,11 +537,17 @@ function parseGeneratedPayload<T>(content: string, schema: z.ZodType<T>): T {
   try {
     payload = JSON.parse(content);
   } catch {
+    // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
+    console.warn("Training plan response is not valid JSON", { contentLength: content.length });
     throw new TrainingPlanGenerationValidationError();
   }
 
   const result = schema.safeParse(payload);
   if (!result.success) {
+    // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
+    console.warn("Training plan response failed validation", {
+      issues: result.error.issues.map((issue) => ({ code: issue.code, path: issue.path })),
+    });
     throw new TrainingPlanGenerationValidationError();
   }
 
