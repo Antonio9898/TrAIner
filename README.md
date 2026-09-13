@@ -12,6 +12,15 @@ Po `npm install` zainstaluj przeglądarkę: `npx playwright install chromium`.
 - `npm run test:e2e -- tests/e2e/seed.spec.ts` — uruchom tylko pierwszy test.
 - `npm run test:e2e:report` — otwórz raport ostatniego uruchomienia.
 
+### Test planu w CI
+
+Workflow [Training plan E2E](.github/workflows/e2e.yml) uruchamia się przy każdym pushu na `main`.
+Wykonuje `npm run test:e2e:plan`: logowanie → generowanie → poprawka → akceptacja i ponowny odczyt planu.
+Runner uruchamia lokalny Supabase z migracjami oraz mock HTTP dostawcy LLM; nie wymaga sekretów produkcyjnych.
+Raport Playwright i ślady nieudanych prób są dostępne w artefakcie `training-plan-playwright` przez 7 dni.
+
+### Konfiguracja lokalna
+
 Playwright sam uruchamia aplikację na `http://127.0.0.1:4322` i zamyka ją po testach.
 Jeśli serwer już działa pod tym adresem, lokalnie korzysta z niego ponownie.
 Konfiguracja: `playwright.config.ts`. Testy: `tests/e2e/`.

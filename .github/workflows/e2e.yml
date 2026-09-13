@@ -1,0 +1,61 @@
+name: Training plan E2E
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  training-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Browser and Linux dependencies, as recommended by https://playwright.dev/docs/ci.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local Supabase with migrations
+        run: >-
+          npx supabase start
+          --exclude realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+          > "$RUNNER_TEMP/supabase-start.log"
+      - name: Configure app for the local test database
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from "node:child_process";
+          import { writeFileSync } from "node:fs";
+
+          const local = JSON.parse(execFileSync("node_modules/.bin/supabase", ["status", "-o", "json"], {
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "pipe"],
+          }));
+          if (local.API_URL !== "http://127.0.0.1:54321" || !local.ANON_KEY) {
+            throw new Error("Local Supabase is not ready");
+          }
+          writeFileSync(".dev.vars", [
+            `SUPABASE_URL=${local.API_URL}`,
+            `SUPABASE_KEY=${local.ANON_KEY}`,
+            "OPENROUTER_API_KEY=e2e-dummy-key",
+            "OPENROUTER_MODEL=e2e-model",
+            "",
+          ].join("\n"), { mode: 0o600, flag: "wx" });
+          NODE
+      - name: Run login, generation, revision and acceptance E2E
+        run: npm run test:e2e:plan
+      - name: Upload Playwright report and failure traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-plan-playwright
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
