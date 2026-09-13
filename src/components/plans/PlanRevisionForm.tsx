@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { CircleAlert, HeartPulse, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { usePlanOperation } from "@/components/hooks/usePlanOperation";
+import PlanOperationStatus from "@/components/plans/PlanOperationStatus";
 
 const MAX_REVISION_NOTE_LENGTH = 2_000;
 const characterCountFormatter = new Intl.NumberFormat("pl-PL");
@@ -30,7 +32,8 @@ export default function PlanRevisionForm({
   const [revisionNote, setRevisionNote] = useState("");
   const [healthConstraints, setHealthConstraints] = useState(initialHealthConstraints);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const operation = usePlanOperation({ kind: "revise", planId, expectedUpdatedAt });
+  const isSubmitting = operation.isPending;
 
   function clearError(field: keyof FieldErrors) {
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
@@ -54,12 +57,12 @@ export default function PlanRevisionForm({
   }
 
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
-      event.preventDefault();
+    event.preventDefault();
+    if (!operation.canSubmit || !validate()) {
       return;
     }
 
-    setIsSubmitting(true);
+    void operation.submit(new FormData(event.currentTarget));
   }
 
   return (
@@ -80,6 +83,7 @@ export default function PlanRevisionForm({
             setRevisionNote(event.target.value);
             clearError("revisionNote");
           }}
+          readOnly={isSubmitting}
           rows={5}
           maxLength={MAX_REVISION_NOTE_LENGTH + 1}
           placeholder="Np. zmniejsz objętość treningu dolnej części ciała i zastąp ruchy nasilające ból kolana"
@@ -116,6 +120,7 @@ export default function PlanRevisionForm({
             setHealthConstraints(event.target.value);
             clearError("healthConstraints");
           }}
+          readOnly={isSubmitting}
           rows={5}
           placeholder="Opisz urazy, ból, ograniczenia zdrowotne lub ruchowe, które powinny wpłynąć na zmianę planu"
           aria-invalid={Boolean(errors.healthConstraints)}
@@ -143,15 +148,11 @@ export default function PlanRevisionForm({
         <p>Wcześniejsze opinie o treningach pozostaną zapisane i mogą dotyczyć starszej wersji planu.</p>
       </div>
 
-      {isSubmitting && (
-        <p role="status" className="text-sm text-blue-100/75">
-          Tworzenie kompletnej, zaktualizowanej wersji planu. Może to potrwać do 90 sekund.
-        </p>
-      )}
+      <PlanOperationStatus state={operation.state} checkCurrent={operation.checkCurrent} />
 
       <Button
         type="submit"
-        disabled={isSubmitting}
+        disabled={!operation.canSubmit}
         className="w-full rounded-lg bg-cyan-300 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-cyan-200"
       >
         {isSubmitting ? (

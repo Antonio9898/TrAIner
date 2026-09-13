@@ -260,13 +260,13 @@ Bez migracji bazy i nowych sekretów. Wymagane istniejące migracje planów/RPC 
 
 #### Automated
 
-- [ ] 2.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`.
+- [x] 2.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`.
 
 #### Manual
 
-- [ ] 2.2 Oba formularze kończą oczekiwanie po osiągnięciu 90 s w aktywnej karcie, pokazują dostępny komunikat i zachowują pola poprawki.
-- [ ] 2.3 Unknown wymaga udanego odczytu przed ponowieniem; zmieniona wersja nie otrzymuje automatycznie starej poprawki, a awaria odczytu nie odblokowuje POST.
-- [ ] 2.4 Sukces jest widoczny bez nawigacji; wielokrotny submit, późna odpowiedź, powrót z historii i natywny fallback nie powodują regresji akceptacji.
+- [x] 2.2 Oba formularze kończą oczekiwanie po osiągnięciu 90 s w aktywnej karcie, pokazują dostępny komunikat i zachowują pola poprawki.
+- [x] 2.3 Unknown wymaga udanego odczytu przed ponowieniem; zmieniona wersja nie otrzymuje automatycznie starej poprawki, a awaria odczytu nie odblokowuje POST.
+- [x] 2.4 Sukces jest widoczny bez nawigacji; wielokrotny submit, późna odpowiedź, powrót z historii i natywny fallback nie powodują regresji akceptacji.
 
 ### Phase 3: Weryfikacja obu przepływów
 

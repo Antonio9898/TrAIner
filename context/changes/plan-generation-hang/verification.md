@@ -75,3 +75,53 @@ Chrome, osobna karta kopii lokalnej:
 - Nie wykonano deploymentu ani odbioru wersji produkcyjnej.
 - Tymczasowe skrypty diagnostyczne są poza repozytorium; nie dodano runnera ani stałego zestawu testów. Docelowe testy powinny mockować granicę transportu AI i używać rzeczywistej lokalnej bazy do RLS, RPC oraz unikalności.
 - Lokalne syntetyczne dane zachowano. Nie resetowano ani nie usuwano istniejących danych lokalnych.
+
+## Odbiór fazy 2 — formularze i odzyskiwanie
+
+Data: 2026-09-13. Codex wykonał odbiór na polecenie użytkownika „do manual verification for me”. Baza kodu: `75189ac` plus robocza implementacja fazy 2, w tym poprawka historii opisana poniżej.
+
+### Środowisko i metoda
+
+- Przeglądarka Codex In-app Browser (Chromium), sterowanie przez CUA, rzeczywiste formularze React/Astro. Sprawdzono także DOM, role dostępności, fokus i widok komunikatu sukcesu.
+- Izolowana kopia `/private/tmp/trainer-phase1-aTAygN`, Astro/workerd na `127.0.0.1:4324`, proxy transportu UI na `127.0.0.1:4325`, proxy zależności na `127.0.0.1:54330` i rzeczywisty lokalny Supabase na `127.0.0.1:54321`. Uruchomiono istniejące zatrzymane kontenery bazy, auth, REST i Kong, bez resetowania danych.
+- Nowe syntetyczne konto i trzy ankiety. AI zwracało kontrolowany syntetyczny plan; w tym odbiorze nie wywoływano rzeczywistego dostawcy ani produkcji. Zapisy insert/RPC i odczyty kontrolne wykonywała rzeczywista lokalna baza.
+- Porównanie `src/` z kopią: jedyna różnica poza identyczną implementacją to adres OpenRouter kierujący do lokalnego proxy. Nie skracano timerów ani nie zastępowano logiki hooka. Proxy przekazywało cookies i mapowało lokalny Origin do portu aplikacji.
+- Opóźnienia mierzono zegarem ściennym. Czas od przyjęcia HTTP przez lokalne proxy do obserwacji zmiany DOM obejmuje planowanie zadań JS i narzut obserwacji; nie jest ścisłym SLA renderowania przeglądarki.
+
+### Wyniki
+
+| Scenariusz | Wynik / dowód |
+| --- | --- |
+| Generowanie bez odpowiedzi HTTP | Po około 91 s (90,987 s od przyjęcia przez proxy do obserwacji DOM) ostrzeżenie unknown, role=alert, fokus na komunikacie, brak spinnera; POST zablokowany. |
+| Sprawdzenie bez odpowiedzi | Po 15,002 s ostrzeżenie o nieudanym sprawdzeniu, ponowny odczyt dostępny, POST nadal zablokowany. |
+| Generowanie: brak planu po udanym odczycie | Ręczny retry odblokowany; komunikat nie zapewnia, że poprzednia próba się zakończyła. |
+| Generowanie: sukces po ręcznym retry | Komunikat zapisu i link w tej samej stronie bez nawigacji; submit wyłączony; w bazie jeden draft. |
+| Poprawka: zapis zakończony, body odpowiedzi zatrzymane na 95 s | Ostrzeżenie unknown po 90,007 s; oba pola zachowane i ponownie edytowalne; fokus na role=alert; przycisk wysyłania zablokowany. Baza potwierdziła revision_count +1 mimo unknown. |
+| Późne zakończenie body poprawki | Po ponad 95 s nadal unknown; późna odpowiedź nie zmieniła stanu na saved. |
+| Zamrożenie edycji w pending | Oba textarea miały readOnly=true, submit disabled; po błędzie readOnly=false, identyczna treść. |
+| Wygaśnięta sesja podczas odczytu | Kontrolowane 401 daje link logowania w nowej karcie; tekst zachowany, POST zablokowany, wymagane ponowne sprawdzenie. |
+| Poprawka: zmieniona wersja | Udany rzeczywisty odczyt wykrył nową wersję; stara poprawka pozostała zablokowana. Link otworzył osobną kartę z aktualnym planem; w starej pozostał wpisany tekst. |
+| Poprawka: niezmieniona wersja | Po HTML zamiast JSON udany rzeczywisty odczyt pozwolił ręcznie ponowić z pierwotną wersją; retry zapisał dokładnie jedną rewizję. |
+| HTML, niepełny DTO sukcesu, przekierowanie 303 | HTML sprawdzono w poprawce; niepełny JSON i redirect w generowaniu. Każdy wynik był unknown; brak automatycznej nawigacji i ponowienia. |
+| Podwójny submit | Dblclick w poprawce i generowaniu dał po jednym POST w proxy; podwójne kliknięcie udanej poprawki zwiększyło revision_count o 1. |
+| Potwierdzony błąd przed zapisem | Niepoprawna odpowiedź dostawcy w generowaniu dała komunikat błędu przy formularzu i dostępny ręczny retry, bez obowiązku odczytu. |
+| Utrata odpowiedzi generowania po zapisie | Zerwano transport po rzeczywistym zapisie; UI pokazało unknown. Późniejszy odczyt znalazł plan, udostępnił link i nie odblokował POST. |
+| Zawieszenie/wznowienie karty | Przez CDP zamrożono kartę z pending na 101,352 s. Po przywróceniu stanu active od razu ostrzeżenie, pola zachowane, POST zablokowany. To test cyklu życia karty, nie fizycznego uśpienia komputera. |
+| Powrót z historii | Wykryto i poprawiono lukę rehydratacji opisanej niżej. Końcowy rzeczywisty back/forward z nową wersją hooka wymaga odczytu i blokuje wysłanie. |
+| Obsługa klawiatury | Enter uruchamia sprawdzenie i późniejsze wysłanie poprawki; końcowy zapis potwierdzony w UI i bazie. |
+| Natywny fallback bez JS | Lokalny proxy dodał CSP script-src 'none'. Generowanie zakończyło się przekierowaniem z planAction=generated; poprawka z planAction=revised i zmianą accepted → draft; treść i licznik potwierdzone w panelu. |
+| Akceptacja | Po interaktywnej poprawce odczytano aktualny panel i zaakceptowano draft. Widoczny komunikat, status ACCEPTED i linki zapisu treningów. |
+
+### Znaleziony i poprawiony problem
+
+Powrót z historii nie zawsze przywraca żywy dokument przez BFCache. Przeglądarka może ponownie hydratować HTML; wtedy zdarzenie pageshow wystąpi przed inicjalizacją hooka. Początkowy kod pozostawiał formularz idle i odblokowany. Hook teraz dodatkowo odczytuje `PerformanceNavigationTiming.type` podczas montowania i dla `back_forward` wymaga sprawdzenia planu.
+
+Pierwszy retest był niemiarodajny: dev server nadal serwował starą wersję modułu, a brak przekazywania WebSocket przez proxy powodował automatyczne przeładowania. Dodano przekazywanie WebSocket w tymczasowym proxy, zrestartowano izolowany dev server, potwierdzono obecność poprawki w serwowanym module i ponowiono nawigację. Końcowy formularz po powrocie pokazał unknown i zablokowany submit. Po udanym odczycie i ręcznym wysłaniu klawiaturą zapis działał poprawnie.
+
+### Zakres potwierdzenia i ograniczenia
+
+- Odbiór dotyczy fazy 2; nie zamyka pełnej macierzy awarii dostawcy, prywatności i współbieżności fazy 3. Nie dodano runnera ani stałych testów do repozytorium.
+- Nie przeprowadzono fizycznego usypiania urządzenia, testu z czytnikiem ekranu ani odbioru produkcyjnego. Role status/alert, fokus i klawiaturę sprawdzono w DOM i przeglądarce.
+- Powrót z historii w badanej przeglądarce odtwarzał dokument z ponowną hydratacją; rzeczywistego przywrócenia BFCache nie wymuszano. Pola są zachowywane w istniejącym formularzu; pełne przeładowanie dokumentu nadal może je utracić zgodnie z granicą planu.
+- Timery działają według rzeczywistego czasu JS; niewielkie opóźnienie planowania/obserwacji nie oznacza, że oczekiwanie trwa do zakończenia transportu. Nie zmieniano nominalnych limitów 90 s i 15 s.
+- Nie wykonano deploymentu. Syntetyczne dane pozostawiono w lokalnej bazie.
