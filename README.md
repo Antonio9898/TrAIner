@@ -14,10 +14,8 @@ Po `npm install` zainstaluj przeglądarkę: `npx playwright install chromium`.
 
 ### Test planu w CI
 
-Workflow [Training plan E2E](.github/workflows/e2e.yml) uruchamia się przy pushu na `main`, jeśli zmieniono
-kod aplikacji (`src/`, `public/`), bazę (`supabase/`), testy E2E, zależności, konfigurację runtime/testów
-lub sam workflow. Zmiany wyłącznie w README, `context/`, instrukcjach agentów czy dokumentacji testów nie uruchamiają E2E.
-Filtr sprawdza zmiany całego pusha, który może zawierać kilka commitów.
+Workflow [Training plan E2E](.github/workflows/e2e.yml) uruchamia się wyłącznie ręcznie
+przez GitHub Actions → Training plan E2E → Run workflow. Push nie uruchamia testu.
 Wykonuje `npm run test:e2e:plan`: logowanie → generowanie → poprawka → akceptacja i ponowny odczyt planu.
 Runner uruchamia lokalny Supabase z migracjami oraz mock HTTP dostawcy LLM; nie wymaga sekretów produkcyjnych.
 Raport Playwright i ślady nieudanych prób są dostępne w artefakcie `training-plan-playwright` przez 7 dni.
