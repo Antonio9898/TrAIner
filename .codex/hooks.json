@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^apply_patch$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/codex-check.mjs\" lint",
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/codex-check.mjs\" typecheck",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
