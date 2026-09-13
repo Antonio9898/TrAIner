@@ -260,23 +260,23 @@ Bez migracji bazy i nowych sekretów. Wymagane istniejące migracje planów/RPC 
 
 #### Automated
 
-- [x] 2.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`.
+- [x] 2.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`. — c977c53
 
 #### Manual
 
-- [x] 2.2 Oba formularze kończą oczekiwanie po osiągnięciu 90 s w aktywnej karcie, pokazują dostępny komunikat i zachowują pola poprawki.
-- [x] 2.3 Unknown wymaga udanego odczytu przed ponowieniem; zmieniona wersja nie otrzymuje automatycznie starej poprawki, a awaria odczytu nie odblokowuje POST.
-- [x] 2.4 Sukces jest widoczny bez nawigacji; wielokrotny submit, późna odpowiedź, powrót z historii i natywny fallback nie powodują regresji akceptacji.
+- [x] 2.2 Oba formularze kończą oczekiwanie po osiągnięciu 90 s w aktywnej karcie, pokazują dostępny komunikat i zachowują pola poprawki. — c977c53
+- [x] 2.3 Unknown wymaga udanego odczytu przed ponowieniem; zmieniona wersja nie otrzymuje automatycznie starej poprawki, a awaria odczytu nie odblokowuje POST. — c977c53
+- [x] 2.4 Sukces jest widoczny bez nawigacji; wielokrotny submit, późna odpowiedź, powrót z historii i natywny fallback nie powodują regresji akceptacji. — c977c53
 
 ### Phase 3: Weryfikacja obu przepływów
 
 #### Automated
 
-- [ ] 3.1 Końcowe kontrole przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`, `git diff --check`.
-- [ ] 3.2 Dokument odbioru istnieje: `test -s context/changes/plan-generation-hang/verification.md`.
+- [x] 3.1 Końcowe kontrole przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`, `git diff --check`.
+- [x] 3.2 Dokument odbioru istnieje: `test -s context/changes/plan-generation-hang/verification.md`.
 
 #### Manual
 
-- [ ] 3.3 Macierz awarii obu przepływów ma zapisane wyniki, czasy i obserwacje bazy; brak fałszywych zapewnień o rollbacku.
-- [ ] 3.4 Równoległa lub spóźniona poprawka z tym samym tokenem zapisuje najwyżej jedną rewizję, a generowanie dla jednego intake nie tworzy duplikatów.
-- [ ] 3.5 Happy path poprawki i generowania oraz akceptacja nadal działają; ograniczenia weryfikacji produkcyjnej są jawnie zapisane.
+- [x] 3.3 Macierz awarii obu przepływów ma zapisane wyniki, czasy i obserwacje bazy; brak fałszywych zapewnień o rollbacku.
+- [x] 3.4 Równoległa lub spóźniona poprawka z tym samym tokenem zapisuje najwyżej jedną rewizję, a generowanie dla jednego intake nie tworzy duplikatów.
+- [x] 3.5 Happy path poprawki i generowania oraz akceptacja nadal działają; ograniczenia weryfikacji produkcyjnej są jawnie zapisane.
