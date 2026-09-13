@@ -272,11 +272,11 @@ Bez migracji bazy i nowych sekretów. Wymagane istniejące migracje planów/RPC 
 
 #### Automated
 
-- [x] 3.1 Końcowe kontrole przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`, `git diff --check`.
-- [x] 3.2 Dokument odbioru istnieje: `test -s context/changes/plan-generation-hang/verification.md`.
+- [x] 3.1 Końcowe kontrole przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`, `git diff --check`. — 7a8de8a
+- [x] 3.2 Dokument odbioru istnieje: `test -s context/changes/plan-generation-hang/verification.md`. — 7a8de8a
 
 #### Manual
 
-- [x] 3.3 Macierz awarii obu przepływów ma zapisane wyniki, czasy i obserwacje bazy; brak fałszywych zapewnień o rollbacku.
-- [x] 3.4 Równoległa lub spóźniona poprawka z tym samym tokenem zapisuje najwyżej jedną rewizję, a generowanie dla jednego intake nie tworzy duplikatów.
-- [x] 3.5 Happy path poprawki i generowania oraz akceptacja nadal działają; ograniczenia weryfikacji produkcyjnej są jawnie zapisane.
+- [x] 3.3 Macierz awarii obu przepływów ma zapisane wyniki, czasy i obserwacje bazy; brak fałszywych zapewnień o rollbacku. — 7a8de8a
+- [x] 3.4 Równoległa lub spóźniona poprawka z tym samym tokenem zapisuje najwyżej jedną rewizję, a generowanie dla jednego intake nie tworzy duplikatów. — 7a8de8a
+- [x] 3.5 Happy path poprawki i generowania oraz akceptacja nadal działają; ograniczenia weryfikacji produkcyjnej są jawnie zapisane. — 7a8de8a

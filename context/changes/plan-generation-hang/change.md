@@ -1,7 +1,7 @@
 ---
 change_id: plan-generation-hang
 title: Generowanie i poprawka planu zawieszają się bez komunikatu
-status: implementing
+status: implemented
 created: 2026-09-12
 updated: 2026-09-13
 archived_at: null
