@@ -1,4 +1,5 @@
 import { OPENROUTER_API_KEY, OPENROUTER_HTTP_REFERER, OPENROUTER_MODEL } from "astro:env/server";
+import type { PlanOperation } from "@/lib/plan-operation";
 
 const OPENROUTER_CHAT_COMPLETIONS_URL = "https://openrouter.ai/api/v1/chat/completions";
 const OPENROUTER_APP_TITLE = "TrAIner";
@@ -21,6 +22,7 @@ interface OpenRouterChatCompletionRequest {
   userId: string;
   temperature?: number;
   maxTokens?: number;
+  operation?: PlanOperation;
 }
 
 interface OpenRouterChatCompletionResponse {
@@ -50,6 +52,13 @@ export class OpenRouterGenerationError extends Error {
   }
 }
 
+export class OpenRouterDependencyError extends Error {
+  constructor() {
+    super("OpenRouter is unavailable");
+    this.name = "OpenRouterDependencyError";
+  }
+}
+
 export class OpenRouterTimeoutError extends OpenRouterGenerationError {
   constructor() {
     super("OpenRouter generation timed out");
@@ -57,26 +66,37 @@ export class OpenRouterTimeoutError extends OpenRouterGenerationError {
   }
 }
 
-export async function createOpenRouterChatCompletion({
-  messages,
-  responseFormat,
-  userId,
-  temperature,
-  maxTokens,
-}: OpenRouterChatCompletionRequest): Promise<string> {
-  const apiKey = getRequiredEnvValue(OPENROUTER_API_KEY);
-  const model = getRequiredEnvValue(OPENROUTER_MODEL);
-  const referer = getOptionalEnvValue(OPENROUTER_HTTP_REFERER);
-
+export async function createOpenRouterChatCompletion(request: OpenRouterChatCompletionRequest): Promise<string> {
+  if (request.operation) {
+    return request.operation.run("ai", (signal) => requestChatCompletion(request, signal), 70_000, 10_000);
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
   }, OPENROUTER_TIMEOUT_MS);
-  let payload: OpenRouterChatCompletionResponse;
+  try {
+    return await requestChatCompletion(request, controller.signal);
+  } catch (error) {
+    if (controller.signal.aborted) throw new OpenRouterTimeoutError();
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function requestChatCompletion(
+  { messages, responseFormat, userId, temperature, maxTokens }: OpenRouterChatCompletionRequest,
+  signal: AbortSignal,
+): Promise<string> {
+  const apiKey = getRequiredEnvValue(OPENROUTER_API_KEY);
+  const model = getRequiredEnvValue(OPENROUTER_MODEL);
+  const referer = getOptionalEnvValue(OPENROUTER_HTTP_REFERER);
+
+  let payload: OpenRouterChatCompletionResponse | null;
   try {
     const response = await fetch(OPENROUTER_CHAT_COMPLETIONS_URL, {
       method: "POST",
-      signal: controller.signal,
+      signal,
       headers: buildOpenRouterHeaders(apiKey, referer),
       body: JSON.stringify({
         model,
@@ -95,24 +115,24 @@ export async function createOpenRouterChatCompletion({
     if (!response.ok) {
       // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
       console.warn("OpenRouter HTTP failure", { status: response.status });
-      throw new OpenRouterGenerationError();
+      throw new OpenRouterDependencyError();
     }
 
-    payload = (await response.json()) as OpenRouterChatCompletionResponse;
-  } catch (error) {
-    if (controller.signal.aborted) {
-      throw new OpenRouterTimeoutError();
-    }
-    if (error instanceof OpenRouterGenerationError) {
+    try {
+      payload = (await response.json()) as OpenRouterChatCompletionResponse | null;
+    } catch (error) {
+      if (error instanceof SyntaxError) throw new OpenRouterGenerationError();
       throw error;
     }
-    throw new OpenRouterGenerationError();
-  } finally {
-    // Keep the deadline active until the response body has been consumed.
-    clearTimeout(timeout);
+  } catch (error) {
+    if (signal.aborted) throw signal.reason;
+    if (error instanceof OpenRouterGenerationError || error instanceof OpenRouterDependencyError) {
+      throw error;
+    }
+    throw new OpenRouterDependencyError();
   }
 
-  const choice = payload.choices?.[0];
+  const choice = payload?.choices?.[0];
   if (choice?.finish_reason === "length") {
     // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
     console.warn("OpenRouter output limit reached", { model, maxTokens });
@@ -123,7 +143,7 @@ export async function createOpenRouterChatCompletion({
   }
 
   const content = choice?.message?.content;
-  if (!content) {
+  if (typeof content !== "string" || !content) {
     throw new OpenRouterGenerationError();
   }
 

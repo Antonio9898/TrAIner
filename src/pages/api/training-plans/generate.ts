@@ -1,102 +1,71 @@
-import type { APIContext, APIRoute } from "astro";
-import { OpenRouterConfigurationError, OpenRouterGenerationError, OpenRouterTimeoutError } from "@/lib/openrouter";
+import type { APIRoute } from "astro";
+import { z } from "zod";
 import { isSameOriginRequest } from "@/lib/request-security";
-import { isTrainingIntakeEditable, readLatestTrainingIntake } from "@/lib/services/training-intakes";
 import {
-  generateDraftTrainingPlanForIntake,
-  TrainingPlanGenerationValidationError,
-  TrainingPlanPersistenceError,
-} from "@/lib/services/training-plans";
-import { createClient } from "@/lib/supabase";
-import type { TrainingIntake } from "@/types";
+  isTrainingIntakeEditable,
+  readLatestTrainingIntake,
+  readTrainingIntake,
+} from "@/lib/services/training-intakes";
+import { generateDraftTrainingPlanForIntake, readTrainingPlanForIntake } from "@/lib/services/training-plans";
+import {
+  PlanOperationError,
+  planErrorResponse,
+  planFailureResponse,
+  planSavedResponse,
+  wantsPlanJson,
+} from "@/lib/plan-operation";
 
 export const prerender = false;
 
-const DASHBOARD_ROUTE = "/dashboard";
-
-type GenerationErrorCode =
-  | "request-not-allowed"
-  | "supabase-not-configured"
-  | "signin-required"
-  | "missing-intake"
-  | "intake-already-planned"
-  | "openrouter-not-configured"
-  | "generation-timeout"
-  | "invalid-generation"
-  | "save-failed";
-
 export const POST: APIRoute = async (context) => {
-  if (!isSameOriginRequest(context.request)) {
-    return redirectWithError(context, "request-not-allowed");
-  }
-
-  const supabase = createClient(context.request.headers, context.cookies);
-  if (!supabase) {
-    return redirectWithError(context, "supabase-not-configured");
-  }
-
-  const user = context.locals.user ?? (await getAuthenticatedUser(supabase));
-  if (!user) {
-    return redirectWithError(context, "signin-required");
-  }
-
-  let latestIntake: TrainingIntake | null = null;
-  let latestIntakeEditable = false;
+  if (!isSameOriginRequest(context.request)) return planErrorResponse(context, "request-not-allowed");
+  const { planSupabase: supabase, planOperation: operation, user } = context.locals;
+  if (!supabase || !operation) return planErrorResponse(context, "dependency-unavailable");
+  if (!user) return planErrorResponse(context, "signin-required");
 
   try {
-    latestIntake = await readLatestTrainingIntake(supabase, user.id);
-    latestIntakeEditable = latestIntake ? await isTrainingIntakeEditable(supabase, user.id, latestIntake.id) : false;
-  } catch {
-    return redirectWithError(context, "save-failed");
-  }
+    let intakeId: string | undefined;
+    const contentType = context.request.headers.get("Content-Type") ?? "";
+    if (
+      wantsPlanJson(context.request) ||
+      /^(multipart\/form-data|application\/x-www-form-urlencoded)(;|$)/i.test(contentType)
+    ) {
+      let formData: FormData;
+      try {
+        formData = await operation.run("read", () => context.request.formData());
+      } catch (error) {
+        if (error instanceof PlanOperationError) throw error;
+        throw new PlanOperationError("invalid-request");
+      }
+      const value = formData.get("intakeId");
+      if (value !== null || wantsPlanJson(context.request)) {
+        const parsed = z.uuid().safeParse(value);
+        if (!parsed.success || formData.getAll("intakeId").length !== 1) {
+          return planErrorResponse(context, "invalid-request");
+        }
+        intakeId = parsed.data;
+      }
+    }
 
-  if (!latestIntake) {
-    return redirectWithError(context, "missing-intake");
-  }
+    const intake = await operation.run("read", () =>
+      intakeId ? readTrainingIntake(supabase, user.id, intakeId) : readLatestTrainingIntake(supabase, user.id),
+    );
+    operation.assertActive();
+    if (!intake) return planErrorResponse(context, "missing-intake");
 
-  if (!latestIntakeEditable) {
-    return redirectWithError(context, "intake-already-planned");
-  }
-
-  try {
-    await generateDraftTrainingPlanForIntake(supabase, user.id, latestIntake);
+    // Explicit identity makes retries idempotent even if a newer intake was created.
+    if (intakeId) {
+      const existingPlan = await readTrainingPlanForIntake(supabase, user.id, intake.id, operation);
+      if (existingPlan) return planSavedResponse(context, existingPlan, "generated");
+    }
+    if (!(await operation.run("read", () => isTrainingIntakeEditable(supabase, user.id, intake.id)))) {
+      // Re-read through the service to resolve a concurrent insert for this intake.
+      if (!intakeId) return planErrorResponse(context, "intake-already-planned");
+    }
+    operation.assertActive();
+    const plan = await generateDraftTrainingPlanForIntake(supabase, user.id, intake, operation);
+    return planSavedResponse(context, plan, "generated");
   } catch (error) {
-    return redirectWithError(context, mapGenerationError(error));
+    return planFailureResponse(context, error);
   }
-
-  return context.redirect(`${DASHBOARD_ROUTE}?planAction=generated`);
 };
-
-function redirectWithError(context: APIContext, code: GenerationErrorCode) {
-  return context.redirect(`${DASHBOARD_ROUTE}?planError=${code}`);
-}
-
-async function getAuthenticatedUser(supabase: NonNullable<ReturnType<typeof createClient>>) {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error) return null;
-  return user;
-}
-
-function mapGenerationError(error: unknown): GenerationErrorCode {
-  if (error instanceof OpenRouterConfigurationError) {
-    return "openrouter-not-configured";
-  }
-
-  if (error instanceof OpenRouterTimeoutError) {
-    return "generation-timeout";
-  }
-
-  if (error instanceof OpenRouterGenerationError || error instanceof TrainingPlanGenerationValidationError) {
-    return "invalid-generation";
-  }
-
-  if (error instanceof TrainingPlanPersistenceError) {
-    return "save-failed";
-  }
-
-  return "invalid-generation";
-}

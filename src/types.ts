@@ -9,6 +9,41 @@ export type TrainingExperienceLevel = "beginner" | "intermediate" | "advanced";
 
 export type TrainingPlanStatus = "draft" | "accepted";
 
+export type PlanOperationErrorCode =
+  | "invalid-request"
+  | "missing-intake"
+  | "signin-required"
+  | "request-not-allowed"
+  | "plan-conflict"
+  | "intake-already-planned"
+  | "operation-timeout"
+  | "invalid-generation"
+  | "invalid-revision"
+  | "dependency-unavailable"
+  | "supabase-not-configured"
+  | "openrouter-not-configured";
+
+export interface PlanOperationErrorResponse {
+  outcome: "not-saved" | "unknown";
+  code: PlanOperationErrorCode;
+  requestId?: string;
+}
+
+export type PlanOperationResponse =
+  | PlanOperationErrorResponse
+  | {
+      outcome: "saved";
+      planId: string;
+      intakeId: string;
+      updatedAt: string;
+      requestId: string;
+    };
+
+export interface CurrentTrainingPlanResponse {
+  plan: { id: string; intakeId: string; updatedAt: string; revisionCount: number; status: TrainingPlanStatus } | null;
+  requestId: string;
+}
+
 export interface TrainingPlanExerciseEntry {
   name: string;
   sets?: number;

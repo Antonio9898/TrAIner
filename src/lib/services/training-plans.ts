@@ -1,6 +1,7 @@
 import { createOpenRouterChatCompletion, type OpenRouterJsonSchema, type OpenRouterMessage } from "@/lib/openrouter";
 import { readTrainingIntake } from "@/lib/services/training-intakes";
 import type { createClient } from "@/lib/supabase";
+import type { PlanOperation } from "@/lib/plan-operation";
 import type {
   JsonObject,
   JsonValue,
@@ -336,7 +337,11 @@ export async function readTrainingPlanForIntake(
   supabase: SupabaseSsrClient,
   userId: string,
   intakeId: string,
+  operation?: PlanOperation,
 ): Promise<TrainingPlan | null> {
+  if (operation) {
+    return operation.run("read", () => readTrainingPlanForIntake(supabase, userId, intakeId));
+  }
   const { data, error } = await supabase
     .from("training_plans")
     .select(TRAINING_PLAN_COLUMNS)
@@ -357,7 +362,11 @@ export async function readTrainingPlan(
   supabase: SupabaseSsrClient,
   userId: string,
   planId: string,
+  operation?: PlanOperation,
 ): Promise<TrainingPlan | null> {
+  if (operation) {
+    return operation.run("read", () => readTrainingPlan(supabase, userId, planId));
+  }
   const { data, error } = await supabase
     .from("training_plans")
     .select(TRAINING_PLAN_COLUMNS)
@@ -378,12 +387,13 @@ export async function generateDraftTrainingPlanForIntake(
   supabase: SupabaseSsrClient,
   userId: string,
   intake: TrainingIntake,
+  operation?: PlanOperation,
 ): Promise<TrainingPlan> {
   if (intake.userId !== userId) {
     throw new TrainingPlanPersistenceError();
   }
 
-  const existingPlan = await readTrainingPlanForIntake(supabase, userId, intake.id);
+  const existingPlan = await readTrainingPlanForIntake(supabase, userId, intake.id, operation);
   if (existingPlan) {
     return existingPlan;
   }
@@ -394,8 +404,11 @@ export async function generateDraftTrainingPlanForIntake(
     userId,
     temperature: 0.3,
     maxTokens: 3000,
+    operation,
   });
   const generatedPlan = parseGeneratedTrainingPlanPayload(assistantContent);
+
+  operation?.assertActive();
 
   const { data, error } = await supabase
     .from("training_plans")
@@ -413,7 +426,9 @@ export async function generateDraftTrainingPlanForIntake(
 
   if (error) {
     if (isUniqueConstraintError(error)) {
-      const conflictedPlan = await readTrainingPlanForIntake(supabase, userId, intake.id);
+      // The database explicitly rejected this insert; an existing plan can resolve the retry.
+      if (operation) operation.writeStarted = false;
+      const conflictedPlan = await readTrainingPlanForIntake(supabase, userId, intake.id, operation);
       if (conflictedPlan) {
         return conflictedPlan;
       }
@@ -429,9 +444,10 @@ export async function reviseTrainingPlan(
   supabase: SupabaseSsrClient,
   userId: string,
   input: TrainingPlanRevisionInput,
+  operation?: PlanOperation,
 ): Promise<TrainingPlan> {
   const validatedInput = parsePlanActionInput(trainingPlanRevisionSchema, input);
-  const currentPlan = await readTrainingPlan(supabase, userId, validatedInput.planId);
+  const currentPlan = await readTrainingPlan(supabase, userId, validatedInput.planId, operation);
 
   if (currentPlan?.updatedAt !== validatedInput.expectedUpdatedAt) {
     throw new TrainingPlanConflictError();
@@ -439,8 +455,11 @@ export async function reviseTrainingPlan(
 
   let intake: TrainingIntake | null;
   try {
-    intake = await readTrainingIntake(supabase, userId, currentPlan.intakeId);
+    intake = operation
+      ? await operation.run("read", () => readTrainingIntake(supabase, userId, currentPlan.intakeId))
+      : await readTrainingIntake(supabase, userId, currentPlan.intakeId);
   } catch {
+    operation?.assertActive();
     throw new TrainingPlanPersistenceError();
   }
 
@@ -460,8 +479,11 @@ export async function reviseTrainingPlan(
     temperature: 0.3,
     // A full translated replacement can exceed the first-draft output budget.
     maxTokens: 8000,
+    operation,
   });
   const generatedPlan = parseGeneratedTrainingPlanRevisionPayload(assistantContent);
+
+  operation?.assertActive();
 
   const { data, error } = (await supabase
     .rpc("revise_training_plan", {
@@ -484,6 +506,8 @@ export async function reviseTrainingPlan(
 
   const revisedRow = data?.[0];
   if (!revisedRow) {
+    // An empty RPC result confirms its version/ownership guard prevented a write.
+    if (operation && Array.isArray(data) && data.length === 0) operation.writeStarted = false;
     throw new TrainingPlanConflictError();
   }
 
@@ -546,7 +570,8 @@ function parseGeneratedPayload<T>(content: string, schema: z.ZodType<T>): T {
   if (!result.success) {
     // eslint-disable-next-line no-console -- Log failure metadata only; never prompts or model output.
     console.warn("Training plan response failed validation", {
-      issues: result.error.issues.map((issue) => ({ code: issue.code, path: issue.path })),
+      // Metadata keys can be model/user supplied, so do not log validation paths.
+      issueCodes: result.error.issues.map((issue) => issue.code),
     });
     throw new TrainingPlanGenerationValidationError();
   }

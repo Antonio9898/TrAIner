@@ -54,12 +54,16 @@ const planErrorMessages: Record<string, string> = {
   "missing-intake": "Zapisz dane przed wygenerowaniem planu.",
   "intake-already-planned": "Dla tych danych istnieje już plan.",
   "openrouter-not-configured": "Generowanie planu nie jest jeszcze skonfigurowane.",
-  "generation-timeout": "AI nie zakończyła pracy w ciągu 90 sekund. Plan nie został zmieniony. Spróbuj ponownie.",
+  "generation-timeout": "Przekroczono czas oczekiwania na AI. Spróbuj ponownie.",
+  "operation-timeout": "Przekroczono czas oczekiwania. Ta próba nie rozpoczęła zapisu planu. Spróbuj ponownie.",
+  "dependency-unavailable": "Usługa jest chwilowo niedostępna. Spróbuj ponownie później.",
+  "outcome-unknown":
+    "Nie udało się potwierdzić wyniku. Plan mógł zostać zapisany. Sprawdź aktualny plan przed ponowieniem.",
   "invalid-generation": "Nie udało się wygenerować poprawnego planu. Spróbuj ponownie.",
   "invalid-request": "Żądanie planu było niepoprawne. Odśwież panel i spróbuj ponownie.",
   "invalid-revision": "Nie udało się utworzyć poprawionej wersji planu. Obecny plan nie został zmieniony.",
   "plan-conflict": "Plan zmienił się w innej karcie. Odśwież panel i spróbuj ponownie.",
-  "save-failed": "Nie udało się zapisać zmiany planu. Obecny plan nie został zmieniony.",
+  "save-failed": "Nie udało się potwierdzić zapisu zmiany. Sprawdź aktualny plan przed ponowieniem.",
 };
 const planError = planErrorCode
   ? (planErrorMessages[planErrorCode] ?? "Nie udało się wykonać tej operacji na planie. Spróbuj ponownie.")
