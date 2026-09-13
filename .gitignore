@@ -8,6 +8,9 @@ node_modules/
 dist/
 .wrangler/
 .playwright-cli/
+playwright-report/
+test-results/
+playwright/.auth/
 
 # logs
 npm-debug.log*
@@ -19,6 +22,7 @@ pnpm-debug.log*
 .dev.vars
 .env
 .env.local
+.env.playwright
 
 # macOS-specific files
 .DS_Store
