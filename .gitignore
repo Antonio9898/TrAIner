@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+.agents/
 
 # generated application and runtime state
 .astro/
