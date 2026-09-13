@@ -7,6 +7,7 @@ node_modules/
 .astro/
 dist/
 .wrangler/
+.playwright-cli/
 
 # logs
 npm-debug.log*
