@@ -248,13 +248,13 @@ Bez migracji bazy i nowych sekretów. Wymagane istniejące migracje planów/RPC 
 
 #### Automated
 
-- [x] 1.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`.
+- [x] 1.1 Kontrole statyczne i build przechodzą: `npx astro sync`, `npx astro check`, `npm run lint`, `npm run build`. — 067c883
 
 #### Manual
 
-- [x] 1.2 JSON i fallback zachowują auth, Origin i walidację; JSON nie przekierowuje, a kontrolowane błędy mają poprawny status i outcome.
-- [x] 1.3 Opóźnienie przed zapisem kończy operację bez rozpoczęcia zapisu; utrata odpowiedzi po wysłaniu zapisu daje unknown, z korelacją etapów bez danych użytkownika.
-- [x] 1.4 Sprawdzenie planu jest ograniczone czasowo, nie wywołuje AI i nie ujawnia cudzych danych.
+- [x] 1.2 JSON i fallback zachowują auth, Origin i walidację; JSON nie przekierowuje, a kontrolowane błędy mają poprawny status i outcome. — 067c883
+- [x] 1.3 Opóźnienie przed zapisem kończy operację bez rozpoczęcia zapisu; utrata odpowiedzi po wysłaniu zapisu daje unknown, z korelacją etapów bez danych użytkownika. — 067c883
+- [x] 1.4 Sprawdzenie planu jest ograniczone czasowo, nie wywołuje AI i nie ujawnia cudzych danych. — 067c883
 
 ### Phase 2: Formularze i odzyskiwanie po błędzie
 
