@@ -3,6 +3,25 @@ name: Training plan E2E
 on:
   push:
     branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "supabase/**"
+      - "tests/e2e/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".npmrc"
+      - ".nvmrc"
+      - "astro.config.*"
+      - "tsconfig*.json"
+      - "wrangler.*"
+      - "playwright*.config.*"
+      - ".github/workflows/e2e.yml"
+      # Documentation and agent instructions do not affect this scenario.
+      - "!tests/e2e/**/*.md"
+      - "!supabase/**/*.md"
+      - "!**/AGENTS.md"
+      - "!**/CLAUDE.md"
 
 permissions:
   contents: read
