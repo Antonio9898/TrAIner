@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import type { CurrentTrainingPlanResponse, PlanOperationErrorCode, PlanOperationResponse } from "@/types";
+import type { PlanOperationErrorCode, PlanOperationResponse } from "@/types";
 
 type Target = { kind: "generate"; intakeId: string } | { kind: "revise"; planId: string; expectedUpdatedAt: string };
 type Phase = "idle" | "pending" | "saved" | "error" | "unknown" | "checking" | "checked";
@@ -9,6 +9,7 @@ interface OperationState {
   message?: string;
   canRetry?: boolean;
   showPlan?: boolean;
+  showDashboard?: boolean;
   signinRequired?: boolean;
   requestId?: string;
 }
@@ -50,6 +51,7 @@ const savedSchema = z.object({
   requestId: z.uuid(),
 });
 const currentSchema = z.object({
+  generationState: z.enum(["ready", "planned", "stale", "missing"]).optional(),
   plan: z
     .object({
       id: z.uuid(),
@@ -199,6 +201,15 @@ export function usePlanOperation(target: Target) {
           showPlan: true,
         });
       } else {
+        if (result.outcome === "not-saved" && ["stale-intake", "missing-intake"].includes(result.code)) {
+          finish(attempt, {
+            phase: "checked",
+            message: errorMessages[result.code],
+            showDashboard: true,
+            requestId: result.requestId,
+          });
+          return;
+        }
         const needsCheck =
           result.outcome === "unknown" || result.code === "plan-conflict" || result.code === "intake-already-planned";
         finish(attempt, {
@@ -241,18 +252,33 @@ export function usePlanOperation(target: Target) {
         });
         return;
       }
-      const result: CurrentTrainingPlanResponse = currentSchema.parse(body);
+      const result = currentSchema.parse(body);
       const plan = result.plan;
       if (plan && (target.kind === "generate" ? plan.intakeId !== target.intakeId : plan.id !== target.planId)) {
         throw new Error("Unexpected plan");
       }
-      if (target.kind === "generate" && plan) {
+      if (target.kind === "generate") {
+        // Older servers cannot establish that a missing plan is safe to retry.
+        if (!result.generationState) throw new Error("Missing generation state");
+        const generationState = result.generationState;
+        if ((generationState === "ready" && plan) || (generationState === "planned" && !plan)) {
+          throw new Error("Inconsistent generation state");
+        }
         finish(attempt, {
           phase: "checked",
-          showPlan: true,
-          message: "Dla tych danych istnieje już plan. Otwórz panel, aby go przejrzeć.",
+          canRetry: generationState === "ready",
+          showPlan: generationState === "planned",
+          showDashboard: generationState === "stale" || generationState === "missing",
+          message:
+            generationState === "stale"
+              ? errorMessages["stale-intake"]
+              : generationState === "missing"
+                ? errorMessages["missing-intake"]
+                : generationState === "planned"
+                  ? "Dla tych danych istnieje już plan. Otwórz panel, aby go przejrzeć."
+                  : "Nie znaleziono jeszcze planu. Poprzednia próba może nadal się kończyć. Możesz ręcznie ponowić tę próbę.",
         });
-      } else if (target.kind === "revise" && plan?.updatedAt !== target.expectedUpdatedAt) {
+      } else if (plan?.updatedAt !== target.expectedUpdatedAt) {
         finish(attempt, {
           phase: "checked",
           showPlan: true,
@@ -264,7 +290,8 @@ export function usePlanOperation(target: Target) {
         finish(attempt, {
           phase: "checked",
           canRetry: true,
-          message: `${target.kind === "generate" ? "Nie znaleziono jeszcze planu." : "Wersja planu nie zmieniła się."} Poprzednia próba może nadal się kończyć. Możesz ręcznie ponowić tę próbę.`,
+          message:
+            "Wersja planu nie zmieniła się. Poprzednia próba może nadal się kończyć. Możesz ręcznie ponowić tę próbę.",
         });
       }
     } catch {

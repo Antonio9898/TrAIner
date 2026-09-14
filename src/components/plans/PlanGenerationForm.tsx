@@ -16,6 +16,10 @@ export default function PlanGenerationForm({ intakeId }: { intakeId: string }) {
         Wygeneruj tygodniowy szkic planu dopasowany do zapisanego celu, poziomu doświadczenia i ograniczeń.
       </p>
       <PlanOperationStatus state={operation.state} checkCurrent={operation.checkCurrent} />
+      <p className="text-sm leading-6 break-words text-blue-100/75">
+        Poprzednie plany i powiązane opinie po treningach (feedback) są trwale usuwane przy zapisie ankiety. Nieudane
+        generowanie nowego planu nie przywróci usuniętych danych.
+      </p>
       <Button
         type="submit"
         disabled={!operation.canSubmit}

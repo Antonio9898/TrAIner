@@ -272,23 +272,23 @@ Odebranie bezpośrednich uprawnień nie jest zgodne ze starą wersją aplikacji.
 
 #### Automated
 
-- [x] 2.1 Zarejestrowany RED testu zastąpienia potwierdza pozostawienie starego planu i feedbacku przed implementacją.
-- [x] 2.2 `npm run test:retention -- replacement.spec.ts concurrency.spec.ts` przechodzi, włącznie z rollbackiem, izolacją i kontrolowanymi przeplotami.
-- [x] 2.3 Nowa migracja stosuje się lokalnie przez `npx supabase migration up --local`; istniejące historyczne plany i feedback pozostają do nowego skutecznego utworzenia planu.
-- [x] 2.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą.
+- [x] 2.1 Zarejestrowany RED testu zastąpienia potwierdza pozostawienie starego planu i feedbacku przed implementacją. — c7b7181
+- [x] 2.2 `npm run test:retention -- replacement.spec.ts concurrency.spec.ts` przechodzi, włącznie z rollbackiem, izolacją i kontrolowanymi przeplotami. — c7b7181
+- [x] 2.3 Nowa migracja stosuje się lokalnie przez `npx supabase migration up --local`; istniejące historyczne plany i feedback pozostają do nowego skutecznego utworzenia planu. — c7b7181
+- [x] 2.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą. — c7b7181
 
 #### Manual
 
-- [x] 2.5 Przegląd migracji potwierdza wspólną kolejność blokad, uprawnienia RPC i brak czyszczenia historii podczas wdrażania schematu.
+- [x] 2.5 Przegląd migracji potwierdza wspólną kolejność blokad, uprawnienia RPC i brak czyszczenia historii podczas wdrażania schematu. — c7b7181
 
 ### Phase 3: API i interfejs w TDD
 
 #### Automated
 
-- [ ] 3.1 RED → GREEN testów `npm run test:retention -- recovery.spec.ts` obejmuje starą kartę oraz utratę odpowiedzi po commit i rollbacku.
-- [ ] 3.2 `npm run test:retention` przechodzi w całości.
-- [ ] 3.3 `npm run test:e2e:plan` przechodzi dla istniejącej podróży generowanie → korekta → akceptacja.
-- [ ] 3.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą dla końcowego stanu.
+- [x] 3.1 RED → GREEN testów `npm run test:retention -- recovery.spec.ts` obejmuje starą kartę oraz utratę odpowiedzi po commit i rollbacku.
+- [x] 3.2 `npm run test:retention` przechodzi w całości.
+- [x] 3.3 `npm run test:e2e:plan` przechodzi dla istniejącej podróży generowanie → korekta → akceptacja.
+- [x] 3.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą dla końcowego stanu.
 
 #### Manual
 

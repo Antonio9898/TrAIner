@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { planErrorResponse, planFailureResponse, planJson } from "@/lib/plan-operation";
-import type { CurrentTrainingPlanResponse } from "@/types";
+import type { CurrentGenerationResponse, CurrentTrainingPlanResponse } from "@/types";
+import { isCurrentTrainingIntake, readTrainingIntake } from "@/lib/services/training-intakes";
 
 export const prerender = false;
 
@@ -46,6 +47,19 @@ export const GET: APIRoute = async (context) => {
         : null,
       requestId: operation.requestId,
     };
+    if ("intakeId" in target) {
+      const intake = await readTrainingIntake(supabase, user.id, target.intakeId);
+      const generationState = !intake
+        ? "missing"
+        : !(await isCurrentTrainingIntake(supabase, user.id, intake))
+          ? "stale"
+          : row
+            ? "planned"
+            : "ready";
+      operation.assertActive();
+      operation.resultCode = "checked";
+      return planJson({ ...body, generationState } satisfies CurrentGenerationResponse);
+    }
     operation.resultCode = "checked";
     return planJson(body);
   } catch (error) {

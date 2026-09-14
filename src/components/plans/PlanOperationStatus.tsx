@@ -40,14 +40,15 @@ export default function PlanOperationStatus({ state, checkCurrent }: Props) {
           Sprawdź aktualny plan
         </Button>
       )}
-      {state.showPlan && (
+      {(state.showPlan === true || state.showDashboard === true) && (
         <a
           href="/dashboard"
           target="_blank"
           rel="noopener noreferrer"
           className="block rounded text-sm font-semibold text-cyan-100 underline focus-visible:ring-2 focus-visible:ring-cyan-200"
         >
-          Zobacz aktualny plan <span className="font-normal">(nowa karta)</span>
+          {state.showDashboard ? "Otwórz aktualny panel" : "Zobacz aktualny plan"}{" "}
+          <span className="font-normal">(nowa karta)</span>
         </a>
       )}
       {state.signinRequired && (

@@ -321,7 +321,7 @@ for (const planB of [false, true]) {
   });
 }
 
-test("a changed intake during AI rejects the old token without replacing history", async ({ user, local }) => {
+test("a saved intake during AI retires history and rejects the old generation token", async ({ user, local }) => {
   await withSqlSession(local.DB_URL, "admin", async (sql) => {
     const intakes = await seedHistory(sql, user.id);
     const gate = await armGate(user.id, { kind: "ai", mode: "success" });
@@ -339,7 +339,7 @@ test("a changed intake during AI rejects the old token without replacing history
     const response = await pending;
     expect(response.status()).toBe(409);
     expect(await response.json()).toMatchObject({ outcome: "not-saved", code: "stale-intake" });
-    expect(await sql.query("select id from public.training_plans where user_id=$1", [user.id])).toHaveLength(2);
+    expect(await sql.query("select id from public.training_plans where user_id=$1", [user.id])).toHaveLength(0);
   });
 });
 

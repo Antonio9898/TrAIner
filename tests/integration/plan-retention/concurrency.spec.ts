@@ -44,8 +44,8 @@ test("two replacements of the same intake commit one identical plan", async ({ u
 });
 
 for (const action of ["revise", "accept", "feedback"] as const) {
-  for (const first of ["action", "replace"] as const) {
-    test(`${action} and replacement remain consistent when ${first} commits first`, async ({ user, local }) => {
+  for (const first of ["action", "save"] as const) {
+    test(`${action} and intake deletion remain consistent when ${first} commits first`, async ({ user, local }) => {
       await withSqlSession(local.DB_URL, "admin", async (observer) => {
         await withSqlSession(local.DB_URL, { userId: user.id }, async (setup) => {
           const [oldIntake] = await save(setup);
@@ -61,7 +61,6 @@ for (const action of ["revise", "accept", "feedback"] as const) {
             "select updated_at::text as token from public.training_plans where id=$1",
             [planId],
           );
-          const [newIntake] = await save(setup);
           await setup.query("commit");
           const runAction = (sql: SqlSession) => {
             if (action === "revise")
@@ -81,8 +80,8 @@ for (const action of ["revise", "accept", "feedback"] as const) {
           await withSqlSession(local.DB_URL, { userId: user.id }, async (holder) => {
             await withSqlSession(local.DB_URL, { userId: user.id }, async (waiter) => {
               if (first === "action") expect(await runAction(holder)).toHaveLength(1);
-              else expect((await replace(holder, newIntake))[0].outcome).toBe("created");
-              const pending = (first === "action" ? replace(waiter, newIntake) : runAction(waiter)).then(
+              else expect(await save(holder)).toHaveLength(1);
+              const pending = (first === "action" ? save(waiter) : runAction(waiter)).then(
                 (rows) => ({ rows }),
                 (error: unknown) => ({ error }),
               );
@@ -92,14 +91,14 @@ for (const action of ["revise", "accept", "feedback"] as const) {
                 await holder.query("commit");
               }
               const result = await pending;
-              if (first === "action") expect(result).toMatchObject({ rows: [{ outcome: "created" }] });
+              if (first === "action") expect(result).toMatchObject({ rows: [{ id: expect.any(String) }] });
               else expect(result).toEqual({ rows: [] });
               await waiter.query("commit");
             });
           });
           expect(
             await observer.query("select intake_id from public.training_plans where user_id=$1", [user.id]),
-          ).toEqual([{ intake_id: newIntake.id }]);
+          ).toEqual([]);
           expect(
             await observer.query("select id from public.workout_feedback where user_id=$1", [user.id]),
           ).toHaveLength(0);
@@ -137,7 +136,7 @@ for (const first of ["save", "replace"] as const) {
             await waiter.query("commit");
             expect(
               await observer.query("select id from public.training_plans where user_id=$1", [user.id]),
-            ).toHaveLength(first === "save" ? 0 : 1);
+            ).toHaveLength(0);
           });
         });
       });

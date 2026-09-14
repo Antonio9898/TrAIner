@@ -45,6 +45,10 @@ export interface CurrentTrainingPlanResponse {
   requestId: string;
 }
 
+export interface CurrentGenerationResponse extends CurrentTrainingPlanResponse {
+  generationState: "ready" | "planned" | "stale" | "missing";
+}
+
 export interface TrainingPlanExerciseEntry {
   name: string;
   sets?: number;

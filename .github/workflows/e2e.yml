@@ -46,6 +46,8 @@ jobs:
             "",
           ].join("\n"), { mode: 0o600, flag: "wx" });
           NODE
+      - name: Run plan retention regressions
+        run: npm run test:retention
       - name: Run login, generation, revision and acceptance E2E
         run: npm run test:e2e:plan
       - name: Upload Playwright report and failure traces
