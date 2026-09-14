@@ -1,7 +1,8 @@
 ---
 import GoalAndConstraintsForm from "@/components/intake/GoalAndConstraintsForm";
 import Layout from "@/layouts/Layout.astro";
-import { readLatestEditableTrainingIntake } from "@/lib/services/training-intakes";
+import { readLatestTrainingIntake } from "@/lib/services/training-intakes";
+import { readTrainingPlanForIntake } from "@/lib/services/training-plans";
 import { createClient } from "@/lib/supabase";
 import type { TrainingIntake } from "@/types";
 
@@ -9,14 +10,19 @@ const { user } = Astro.locals;
 
 let latestEditableIntake: TrainingIntake | null = null;
 let loadError: string | null = null;
+let hasActivePlan = false;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 if (supabase && user) {
   try {
-    latestEditableIntake = await readLatestEditableTrainingIntake(supabase, user.id);
+    const latestIntake = await readLatestTrainingIntake(supabase, user.id);
+    if (latestIntake) {
+      hasActivePlan = (await readTrainingPlanForIntake(supabase, user.id, latestIntake.id)) !== null;
+      latestEditableIntake = hasActivePlan ? null : latestIntake;
+    }
   } catch {
-    loadError = "Nie udało się wczytać bieżących danych. Nadal możesz wysłać formularz.";
+    loadError = "Nie udało się wczytać bieżących danych. Odśwież stronę, aby spróbować ponownie.";
   }
 }
 
@@ -42,7 +48,20 @@ const serverError = safeQueryError ?? loadError;
           </p>
         </div>
 
-        <GoalAndConstraintsForm initialIntake={latestEditableIntake} serverError={serverError} client:load />
+        {
+          loadError ? (
+            <p role="alert" class="text-sm text-rose-200">
+              {loadError}
+            </p>
+          ) : (
+            <GoalAndConstraintsForm
+              initialIntake={latestEditableIntake}
+              serverError={serverError}
+              hasActivePlan={hasActivePlan}
+              client:load
+            />
+          )
+        }
       </section>
     </div>
   </main>

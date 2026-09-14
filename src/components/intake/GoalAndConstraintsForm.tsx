@@ -32,6 +32,7 @@ const EXPERIENCE_OPTIONS: {
 ];
 
 interface GoalAndConstraintsFormProps {
+  hasActivePlan: boolean;
   initialIntake?: TrainingIntake | null;
   serverError?: string | null;
 }
@@ -45,7 +46,11 @@ interface FieldErrors {
 const fieldBase =
   "w-full rounded-lg border bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:outline-none focus:ring-2";
 
-export default function GoalAndConstraintsForm({ initialIntake, serverError }: GoalAndConstraintsFormProps) {
+export default function GoalAndConstraintsForm({
+  initialIntake,
+  serverError,
+  hasActivePlan,
+}: GoalAndConstraintsFormProps) {
   const [goal, setGoal] = useState(initialIntake?.goal ?? "");
   const [experienceLevel, setExperienceLevel] = useState<TrainingExperienceLevel | "">(
     initialIntake?.experienceLevel ?? "",
@@ -94,7 +99,7 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
       return;
     }
 
-    if (!confirmedRef.current) {
+    if (hasActivePlan && !confirmedRef.current) {
       event.preventDefault();
       confirmationRef.current?.showModal();
       cancelRef.current?.focus();
@@ -217,76 +222,80 @@ export default function GoalAndConstraintsForm({ initialIntake, serverError }: G
 
       <ServerError message={serverError} />
 
-      <p className="rounded-lg border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-50">
-        {RETENTION_WARNING}
-      </p>
+      {hasActivePlan && (
+        <p className="rounded-lg border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-50">
+          {RETENTION_WARNING}
+        </p>
+      )}
 
       <SubmitButton pendingText="Zapisywanie danych..." icon={<Send className="size-4" />}>
         Zapisz dane
       </SubmitButton>
 
-      <dialog
-        ref={confirmationRef}
-        aria-labelledby="retention-dialog-title"
-        aria-describedby="retention-dialog-description"
-        className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-3xl border border-white/15 bg-slate-950 p-0 text-white shadow-2xl shadow-black/50 backdrop:bg-slate-950/75 backdrop:backdrop-blur-sm"
-        onCancel={(event) => {
-          if (submittingRef.current) event.preventDefault();
-        }}
-      >
-        <div className="relative overflow-hidden p-6 sm:p-8">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-24 -right-20 size-64 rounded-full bg-rose-500/10 blur-3xl"
-          />
-          <button
-            type="button"
-            aria-label="Zamknij ostrzeżenie"
-            disabled={submitting}
-            onClick={() => confirmationRef.current?.close()}
-            className="absolute top-4 right-4 rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
-          >
-            <X aria-hidden="true" className="size-5" />
-          </button>
-          <div className="mb-6 flex size-14 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-400/10 text-rose-300">
-            <Trash2 aria-hidden="true" className="size-6" />
-          </div>
-          <p className="mb-2 text-xs font-semibold tracking-widest text-rose-300 uppercase">Zanim zapiszesz</p>
-          <h2 id="retention-dialog-title" className="pr-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Nowa ankieta zastąpi Twój plan
-          </h2>
-          <p id="retention-dialog-description" className="mt-4 text-sm leading-7 text-slate-300">
-            Zapisanie ankiety trwale usunie wszystkie poprzednie plany i powiązane z nimi opinie po treningach
-            (feedback). Twoje ankiety pozostaną zapisane.
-          </p>
-          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/5 p-4 text-sm leading-6 text-amber-100">
-            <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-amber-300" />
-            <p>Tej operacji nie można cofnąć. Błąd generowania nowego planu nie przywróci usuniętych danych.</p>
-          </div>
-          <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
+      {hasActivePlan && (
+        <dialog
+          ref={confirmationRef}
+          aria-labelledby="retention-dialog-title"
+          aria-describedby="retention-dialog-description"
+          className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-3xl border border-white/15 bg-slate-950 p-0 text-white shadow-2xl shadow-black/50 backdrop:bg-slate-950/75 backdrop:backdrop-blur-sm"
+          onCancel={(event) => {
+            if (submittingRef.current) event.preventDefault();
+          }}
+        >
+          <div className="relative overflow-hidden p-6 sm:p-8">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -top-24 -right-20 size-64 rounded-full bg-rose-500/10 blur-3xl"
+            />
             <button
-              ref={cancelRef}
               type="button"
+              aria-label="Zamknij ostrzeżenie"
               disabled={submitting}
               onClick={() => confirmationRef.current?.close()}
-              className="min-h-12 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
+              className="absolute top-4 right-4 rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
             >
-              Anuluj
+              <X aria-hidden="true" className="size-5" />
             </button>
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={() => {
-                confirmedRef.current = true;
-                formRef.current?.requestSubmit();
-              }}
-              className="min-h-12 flex-1 rounded-xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-950/30 transition hover:bg-rose-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300 disabled:cursor-wait disabled:opacity-60"
-            >
-              {submitting ? "Zapisywanie ankiety…" : "Zapisz ankietę i usuń plany"}
-            </button>
+            <div className="mb-6 flex size-14 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-400/10 text-rose-300">
+              <Trash2 aria-hidden="true" className="size-6" />
+            </div>
+            <p className="mb-2 text-xs font-semibold tracking-widest text-rose-300 uppercase">Zanim zapiszesz</p>
+            <h2 id="retention-dialog-title" className="pr-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+              Nowa ankieta zastąpi Twój plan
+            </h2>
+            <p id="retention-dialog-description" className="mt-4 text-sm leading-7 text-slate-300">
+              Zapisanie ankiety trwale usunie wszystkie poprzednie plany i powiązane z nimi opinie po treningach
+              (feedback). Twoje ankiety pozostaną zapisane.
+            </p>
+            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/5 p-4 text-sm leading-6 text-amber-100">
+              <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-amber-300" />
+              <p>Tej operacji nie można cofnąć. Błąd generowania nowego planu nie przywróci usuniętych danych.</p>
+            </div>
+            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                ref={cancelRef}
+                type="button"
+                disabled={submitting}
+                onClick={() => confirmationRef.current?.close()}
+                className="min-h-12 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => {
+                  confirmedRef.current = true;
+                  formRef.current?.requestSubmit();
+                }}
+                className="min-h-12 flex-1 rounded-xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-950/30 transition hover:bg-rose-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300 disabled:cursor-wait disabled:opacity-60"
+              >
+                {submitting ? "Zapisywanie ankiety…" : "Zapisz ankietę i usuń plany"}
+              </button>
+            </div>
           </div>
-        </div>
-      </dialog>
+        </dialog>
+      )}
     </form>
   );
 }

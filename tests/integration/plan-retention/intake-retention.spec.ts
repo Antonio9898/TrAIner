@@ -3,6 +3,26 @@ import { test, expect, armGate } from "./support/fixtures";
 import { withSqlSession } from "./support/sql";
 import { planPayload } from "./support/payload";
 
+test("saving an intake without a plan creates then updates the intake", async ({ user, local }) => {
+  for (const goal of ["First goal", "Updated goal"]) {
+    const response = await user.api.post("/api/training-intakes", {
+      form: { goal, experienceLevel: "beginner", healthConstraints: "Test", notes: "" },
+      maxRedirects: 0,
+    });
+    expect(response.headers().location).toBe("/dashboard?saved=intake");
+    await withSqlSession(local.DB_URL, "admin", async (sql) => {
+      const intakes = await sql.query<{ goal: string }>("select goal from public.training_intakes where user_id=$1", [
+        user.id,
+      ]);
+      expect(intakes).toEqual([{ goal }]);
+      expect(await sql.query("select id from public.training_plans where user_id=$1", [user.id])).toHaveLength(0);
+    });
+    const page = await user.api.get("/dashboard/intake");
+    expect(page.ok()).toBe(true);
+    expect(await page.text()).not.toContain("Nowa ankieta zastąpi Twój plan");
+  }
+});
+
 for (const rollback of [false, true]) {
   test(`saving intake ${rollback ? "rolls back together with deletion failure" : "removes old plan and feedback before AI"}`, async ({
     user,
