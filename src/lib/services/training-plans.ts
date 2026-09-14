@@ -1,7 +1,8 @@
 import { createOpenRouterChatCompletion, type OpenRouterJsonSchema, type OpenRouterMessage } from "@/lib/openrouter";
-import { readTrainingIntake } from "@/lib/services/training-intakes";
+import { isCurrentTrainingIntake, readTrainingIntake } from "@/lib/services/training-intakes";
 import type { createClient } from "@/lib/supabase";
 import type { PlanOperation } from "@/lib/plan-operation";
+import { PlanOperationError } from "@/lib/plan-operation";
 import type {
   JsonObject,
   JsonValue,
@@ -70,7 +71,6 @@ export type TrainingPlanAcceptanceInput = z.infer<typeof trainingPlanAcceptanceS
 const TRAINING_PLAN_COLUMNS =
   "id,user_id,intake_id,status,plan_content,explanation,notes,revision_count,last_revision_requested_at,last_revision_note,last_revision_summary,accepted_at,created_at,updated_at";
 
-const UNIQUE_VIOLATION_CODE = "23505";
 const REVISION_SUMMARY_MAX_LENGTH = 600;
 const WORKOUT_KEY_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -393,6 +393,11 @@ export async function generateDraftTrainingPlanForIntake(
     throw new TrainingPlanPersistenceError();
   }
 
+  const checkCurrent = () => isCurrentTrainingIntake(supabase, userId, intake);
+  if (!(operation ? await operation.run("read", checkCurrent) : await checkCurrent())) {
+    throw new PlanOperationError("stale-intake");
+  }
+
   const existingPlan = await readTrainingPlanForIntake(supabase, userId, intake.id, operation);
   if (existingPlan) {
     return existingPlan;
@@ -410,34 +415,31 @@ export async function generateDraftTrainingPlanForIntake(
 
   operation?.assertActive();
 
-  const { data, error } = await supabase
-    .from("training_plans")
-    .insert({
-      user_id: userId,
-      intake_id: intake.id,
-      status: "draft",
-      plan_content: generatedPlan.planContent,
-      explanation: generatedPlan.explanation,
-      notes: null,
+  const { data, error } = (await supabase
+    .rpc("replace_training_plan", {
+      p_intake_id: intake.id,
+      p_expected_intake_updated_at: intake.updatedAt,
+      p_plan_content: generatedPlan.planContent,
+      p_explanation: generatedPlan.explanation,
     })
-    .select(TRAINING_PLAN_COLUMNS)
-    .single()
-    .overrideTypes<TrainingPlanRow, { merge: false }>();
+    .overrideTypes<{ outcome: string; plan: TrainingPlanRow | null }[], { merge: false }>()) as {
+    data: { outcome: string; plan: TrainingPlanRow | null }[] | null;
+    error: SupabaseErrorLike | null;
+  };
 
   if (error) {
-    if (isUniqueConstraintError(error)) {
-      // The database explicitly rejected this insert; an existing plan can resolve the retry.
-      if (operation) operation.writeStarted = false;
-      const conflictedPlan = await readTrainingPlanForIntake(supabase, userId, intake.id, operation);
-      if (conflictedPlan) {
-        return conflictedPlan;
-      }
-    }
-
     throw new TrainingPlanPersistenceError(`Failed to create training plan: ${error.message}`);
   }
 
-  return mapTrainingPlanRow(data);
+  const result = data?.[0];
+  if (result && ["stale", "missing"].includes(result.outcome) && result.plan === null) {
+    if (operation) operation.writeStarted = false;
+    throw new PlanOperationError(result.outcome === "stale" ? "stale-intake" : "missing-intake");
+  }
+  if (!result?.plan || !["created", "existing"].includes(result.outcome)) {
+    throw new TrainingPlanPersistenceError();
+  }
+  return mapTrainingPlanRow(result.plan);
 }
 
 export async function reviseTrainingPlan(
@@ -688,8 +690,4 @@ function mapPersistedTrainingPlan(row: TrainingPlanRow): TrainingPlan {
 
     throw new TrainingPlanPersistenceError();
   }
-}
-
-function isUniqueConstraintError(error: SupabaseErrorLike): boolean {
-  return error.code === UNIQUE_VIOLATION_CODE;
 }

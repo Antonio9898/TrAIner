@@ -77,6 +77,19 @@ export async function readLatestTrainingIntake(
   return row ? mapTrainingIntakeRow(row) : null;
 }
 
+export async function isCurrentTrainingIntake(
+  supabase: SupabaseSsrClient,
+  userId: string,
+  intake: TrainingIntake,
+): Promise<boolean> {
+  const rows = await readLatestTrainingIntakeRows(supabase, userId);
+  return rows[0]?.id === intake.id && rows[0].updated_at === intake.updatedAt && !hasLatestTimestampTie(rows);
+}
+
+function hasLatestTimestampTie(rows: TrainingIntakeRow[]): boolean {
+  return rows.length > 1 && rows[0].created_at === rows[1].created_at && rows[0].updated_at === rows[1].updated_at;
+}
+
 export async function readTrainingIntake(
   supabase: SupabaseSsrClient,
   userId: string,
@@ -122,61 +135,47 @@ export async function saveTrainingIntake(
   userId: string,
   input: TrainingIntakeFormInput,
 ): Promise<TrainingIntake> {
-  const latest = await readLatestTrainingIntakeRow(supabase, userId);
-  const payload = {
-    goal: input.goal,
-    experience_level: input.experienceLevel,
-    health_constraints: input.healthConstraints,
-    notes: input.notes,
+  const { data, error } = (await supabase
+    .rpc("save_training_intake", {
+      p_goal: input.goal,
+      p_experience_level: input.experienceLevel,
+      p_health_constraints: input.healthConstraints,
+      p_notes: input.notes,
+    })
+    .overrideTypes<TrainingIntakeRow[], { merge: false }>()) as {
+    data: TrainingIntakeRow[] | null;
+    error: { message: string } | null;
   };
-
-  if (latest && (await isTrainingIntakeEditable(supabase, userId, latest.id))) {
-    const { data, error } = await supabase
-      .from("training_intakes")
-      .update(payload)
-      .eq("user_id", userId)
-      .eq("id", latest.id)
-      .select(INTAKE_COLUMNS)
-      .single()
-      .overrideTypes<TrainingIntakeRow, { merge: false }>();
-
-    if (error) {
-      throw new Error(`Failed to update training intake: ${error.message}`);
-    }
-    return mapTrainingIntakeRow(data);
+  const row = data?.[0];
+  if (error || row?.user_id !== userId) {
+    throw new Error("Failed to save training intake");
   }
-
-  const { data, error } = await supabase
-    .from("training_intakes")
-    .insert({ ...payload, user_id: userId })
-    .select(INTAKE_COLUMNS)
-    .single()
-    .overrideTypes<TrainingIntakeRow, { merge: false }>();
-
-  if (error) {
-    throw new Error(`Failed to create training intake: ${error.message}`);
-  }
-  return mapTrainingIntakeRow(data);
+  return mapTrainingIntakeRow(row);
 }
 
 async function readLatestTrainingIntakeRow(
   supabase: SupabaseSsrClient,
   userId: string,
 ): Promise<TrainingIntakeRow | null> {
+  const rows = await readLatestTrainingIntakeRows(supabase, userId);
+  return hasLatestTimestampTie(rows) ? null : (rows[0] ?? null);
+}
+
+async function readLatestTrainingIntakeRows(supabase: SupabaseSsrClient, userId: string): Promise<TrainingIntakeRow[]> {
   const { data, error } = await supabase
     .from("training_intakes")
     .select(INTAKE_COLUMNS)
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .order("updated_at", { ascending: false })
-    .limit(1)
+    .limit(2)
     .overrideTypes<TrainingIntakeRow[], { merge: false }>();
 
   if (error) {
     throw new Error(`Failed to read latest training intake: ${error.message}`);
   }
 
-  return data.length > 0 ? data[0] : null;
+  return data;
 }
 
 async function hasTrainingPlanForIntake(

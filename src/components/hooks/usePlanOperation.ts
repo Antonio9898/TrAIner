@@ -22,6 +22,7 @@ interface Attempt {
 const errorMessages: Record<PlanOperationErrorCode, string> = {
   "invalid-request": "Sprawdź wpisane dane. Jeśli błąd się powtarza, otwórz aktualny panel.",
   "missing-intake": "Nie znaleziono danych do planu. Otwórz panel i sprawdź ankietę.",
+  "stale-intake": "Te dane są już nieaktualne. Otwórz aktualny panel, aby kontynuować.",
   "signin-required": "Sesja wygasła. Zaloguj się w nowej karcie, aby zachować wpisane pola.",
   "request-not-allowed": "Nie udało się zweryfikować żądania. Otwórz aktualny panel.",
   "plan-conflict": "Wersja planu jest nieaktualna. Sprawdź aktualny plan przed dalszą zmianą.",

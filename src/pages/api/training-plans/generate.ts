@@ -1,12 +1,8 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { isSameOriginRequest } from "@/lib/request-security";
-import {
-  isTrainingIntakeEditable,
-  readLatestTrainingIntake,
-  readTrainingIntake,
-} from "@/lib/services/training-intakes";
-import { generateDraftTrainingPlanForIntake, readTrainingPlanForIntake } from "@/lib/services/training-plans";
+import { readLatestTrainingIntake, readTrainingIntake } from "@/lib/services/training-intakes";
+import { generateDraftTrainingPlanForIntake } from "@/lib/services/training-plans";
 import {
   PlanOperationError,
   planErrorResponse,
@@ -53,15 +49,6 @@ export const POST: APIRoute = async (context) => {
     operation.assertActive();
     if (!intake) return planErrorResponse(context, "missing-intake");
 
-    // Explicit identity makes retries idempotent even if a newer intake was created.
-    if (intakeId) {
-      const existingPlan = await readTrainingPlanForIntake(supabase, user.id, intake.id, operation);
-      if (existingPlan) return planSavedResponse(context, existingPlan, "generated");
-    }
-    if (!(await operation.run("read", () => isTrainingIntakeEditable(supabase, user.id, intake.id)))) {
-      // Re-read through the service to resolve a concurrent insert for this intake.
-      if (!intakeId) return planErrorResponse(context, "intake-already-planned");
-    }
     operation.assertActive();
     const plan = await generateDraftTrainingPlanForIntake(supabase, user.id, intake, operation);
     return planSavedResponse(context, plan, "generated");

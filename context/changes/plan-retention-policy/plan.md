@@ -261,25 +261,25 @@ Odebranie bezpośrednich uprawnień nie jest zgodne ze starą wersją aplikacji.
 
 #### Automated
 
-- [x] 1.1 `npm run test:retention -- harness.spec.ts` przechodzi na dotychczasowym kodzie i odmawia pracy z nielokalną bazą.
-- [x] 1.2 `npm run lint` oraz `npm run typecheck` przechodzą po dodaniu infrastruktury.
+- [x] 1.1 `npm run test:retention -- harness.spec.ts` przechodzi na dotychczasowym kodzie i odmawia pracy z nielokalną bazą. — 4bde972
+- [x] 1.2 `npm run lint` oraz `npm run typecheck` przechodzą po dodaniu infrastruktury. — 4bde972
 
 #### Manual
 
-- [x] 1.3 Przegląd potwierdza, że fixture sprzątają tylko własne dane, a infrastruktura nie zmienia zachowania aplikacji produkcyjnej.
+- [x] 1.3 Przegląd potwierdza, że fixture sprzątają tylko własne dane, a infrastruktura nie zmienia zachowania aplikacji produkcyjnej. — 4bde972
 
 ### Phase 2: Bezpieczne zastępowanie planu w TDD
 
 #### Automated
 
-- [ ] 2.1 Zarejestrowany RED testu zastąpienia potwierdza pozostawienie starego planu i feedbacku przed implementacją.
-- [ ] 2.2 `npm run test:retention -- replacement.spec.ts concurrency.spec.ts` przechodzi, włącznie z rollbackiem, izolacją i kontrolowanymi przeplotami.
-- [ ] 2.3 Nowa migracja stosuje się lokalnie przez `npx supabase migration up --local`; istniejące historyczne plany i feedback pozostają do nowego skutecznego utworzenia planu.
-- [ ] 2.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą.
+- [x] 2.1 Zarejestrowany RED testu zastąpienia potwierdza pozostawienie starego planu i feedbacku przed implementacją.
+- [x] 2.2 `npm run test:retention -- replacement.spec.ts concurrency.spec.ts` przechodzi, włącznie z rollbackiem, izolacją i kontrolowanymi przeplotami.
+- [x] 2.3 Nowa migracja stosuje się lokalnie przez `npx supabase migration up --local`; istniejące historyczne plany i feedback pozostają do nowego skutecznego utworzenia planu.
+- [x] 2.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą.
 
 #### Manual
 
-- [ ] 2.5 Przegląd migracji potwierdza wspólną kolejność blokad, uprawnienia RPC i brak czyszczenia historii podczas wdrażania schematu.
+- [x] 2.5 Przegląd migracji potwierdza wspólną kolejność blokad, uprawnienia RPC i brak czyszczenia historii podczas wdrażania schematu.
 
 ### Phase 3: API i interfejs w TDD
 

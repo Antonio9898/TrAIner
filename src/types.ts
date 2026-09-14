@@ -12,6 +12,7 @@ export type TrainingPlanStatus = "draft" | "accepted";
 export type PlanOperationErrorCode =
   | "invalid-request"
   | "missing-intake"
+  | "stale-intake"
   | "signin-required"
   | "request-not-allowed"
   | "plan-conflict"

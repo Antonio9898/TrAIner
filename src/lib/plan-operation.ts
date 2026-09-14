@@ -171,6 +171,7 @@ export function wantsPlanJson(request: Request): boolean {
 const errorStatus: Record<PlanOperationErrorCode, number> = {
   "invalid-request": 400,
   "missing-intake": 400,
+  "stale-intake": 409,
   "signin-required": 401,
   "request-not-allowed": 403,
   "plan-conflict": 409,

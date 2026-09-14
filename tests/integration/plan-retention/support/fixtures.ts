@@ -107,7 +107,7 @@ export async function withTestUser<T>(local: LocalEnvironment, work: (user: Test
     const deleted = await admin.auth.admin.deleteUser(id);
     expect(
       Boolean(deleted.error) || cleanup.some((result) => result.status === "rejected"),
-      "Retention fixture cleanup failed",
+      `Retention fixture cleanup failed (auth status: ${deleted.error?.status ?? "ok"}; control/dispose: ${cleanup.map((result) => result.status).join(",")})`,
     ).toBe(false);
   }
 }
