@@ -1,5 +1,7 @@
 # Frame Brief: Usuwanie poprzednich planów i feedbacku
 
+> Historyczny zapis framingu. Decyzja końcowa użytkownika z 2026-09-14: plany i feedback znikają już przy skutecznym zapisie ankiety, nawet gdy późniejsze generowanie zawiedzie; przed zapisem wyświetlany jest stylowany modal potwierdzenia. Ta decyzja zastępuje opisany niżej pierwotny moment retencji przy utworzeniu planu. Aktualny kontrakt: [plan.md](plan.md) i [plan-brief.md](plan-brief.md).
+
 ## Reported Observation
 
 „przy dodawaniu nowego planu, poprzedni nie jest usuwany”

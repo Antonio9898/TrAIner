@@ -2,11 +2,15 @@
 
 ## Overview
 
-Po pomyślnym utworzeniu nowego planu dla użytkownika poprzednie plany tego użytkownika i ich feedback mają fizycznie zniknąć z bazy.
+Po pomyślnym zapisaniu ankiety poprzednie plany użytkownika i ich feedback fizycznie znikają z bazy. Przed zapisem formularz wyświetla stylowany modal potwierdzenia.
 
-Zastąpienie następuje przy zapisie szkicu, bez oczekiwania na akceptację. Nieudane generowanie lub wycofana transakcja pozostawiają dotychczasowe dane. Realizacja: przygotowanie infrastruktury testowej, następnie `/10x-tdd` w cyklu RED → GREEN → REFACTOR.
+Usunięcie następuje w tej samej transakcji co zapis ankiety, przed generowaniem szkicu. Wycofanie transakcji zachowuje poprzednie dane; późniejszy błąd AI nie odtwarza usuniętych planów. Realizacja: przygotowanie infrastruktury testowej, następnie `/10x-tdd` w cyklu RED → GREEN → REFACTOR.
+
+Aktualizacja zakresu z 2026-09-14: użytkownik zatwierdził retencję przy zapisie ankiety i modal, zastępując pierwotną decyzję o retencji przy zapisie szkicu. Faza 2 opisuje historyczny etap implementacji; faza 3 zawiera zmianę reguły. Tytuły w Progress pozostają niezmienione dla zachowania historii workflow.
 
 ## Current State Analysis
+
+Poniższa analiza opisuje stan przed rozpoczęciem implementacji.
 
 **Reported Observation:** „przy dodawaniu nowego planu, poprzedni nie jest usuwany”. Użytkownik widzi rekordy w bazie, dotyczące różnych `intake_id`, i chce usunięcia również feedbacku.
 
@@ -32,12 +36,12 @@ Nie zgłoszono błędnego wyboru planu w interfejsie. Nie sprawdzano żywej bazy
 
 ## Desired End State
 
-- Nowy plan zapisuje się razem z usunięciem wszystkich innych planów właściciela i ich feedbacku w jednej transakcji.
-- Po takim zapisie użytkownik ma jeden plan. Wcześniejsze rekordy istniejące przed wdrożeniem pozostają do następnego skutecznego utworzenia nowego planu.
+- Zapis ankiety i usunięcie wszystkich planów właściciela z feedbackiem stanowią jedną transakcję.
+- Po zapisie ankiety użytkownik nie ma planu, dopóki nie wygeneruje nowego szkicu. Wdrożenie migracji samo nie usuwa historii. RPC generowania zachowuje dodatkowo atomowe zastępowanie historii, która pozostała sprzed wdrożenia.
 - Zapis nowszej ankiety B blokuje wynik generowania A, również gdy B nie ma jeszcze planu lub jego generowanie się nie udało.
 - Ponowienie ze starej karty nie odtwarza A. Użytkownik dostaje komunikat i odnośnik do aktualnego panelu.
 - Ponowienie dla aktualnej ankiety z istniejącym planem zwraca ten sam plan, bez nadpisania, usuwania feedbacku ani porządkowania historycznych danych.
-- Stała informacja przy przycisku generowania uprzedza o fizycznym usuwaniu poprzednich planów i feedbacku.
+- Stała informacja w formularzu ankiety i stylowany modal przed wysłaniem uprzedzają o trwałym usunięciu planów i feedbacku, również przy późniejszym błędzie AI. Anulowanie zachowuje wpisane dane. Tekst przy generowaniu wyjaśnia, że usunięcie nastąpiło przy zapisie ankiety.
 - Potwierdzony brak zapisu i niepewny wynik po utracie odpowiedzi pozostają odrębnymi stanami.
 
 ## What We're NOT Doing
@@ -46,14 +50,14 @@ Nie zgłoszono błędnego wyboru planu w interfejsie. Nie sprawdzano żywej bazy
 - Historia wersji, kosz, przywracanie usuniętych planów lub feedbacku.
 - Przywracanie dawnych założeń ze starej karty; wymaga nowej ankiety.
 - Oczekiwanie na akceptację planu przed usunięciem poprzednich danych.
-- Nowy modal potwierdzenia, zmiana promptów AI, przebudowa dashboardu lub historii feedbacku.
+- Zmiana promptów AI, przebudowa dashboardu lub historii feedbacku.
 - Nowe testy przeglądarkowe w tej zmianie; istniejący test podróży pozostaje kontrolą regresji, a nowe testy automatyczne obejmują bazę i API.
 - Wdrożenie produkcyjne w ramach przygotowania lub wykonania lokalnego planu; instrukcja wdrożenia jest częścią handoffu.
 - Zmiany w `context/archive/`.
 
 ## Implementation Approach
 
-Przenieść zastępowanie planu oraz zapis ankiety do uwierzytelnionych RPC. Operacje korzystają z tej samej transakcyjnej blokady użytkownika, a aktualność ankiety sprawdzają ponownie po jej uzyskaniu. Wywołanie AI pozostaje poza transakcją. Usunięcie planów korzysta z istniejącej kaskady feedbacku.
+Przenieść zastępowanie planu oraz zapis ankiety do uwierzytelnionych RPC. Operacje korzystają z tej samej transakcyjnej blokady użytkownika, a aktualność ankiety sprawdzają ponownie po jej uzyskaniu. Zapis ankiety usuwa wszystkie plany właściciela w tej samej transakcji. Wywołanie AI pozostaje poza transakcją. Usunięcie planów korzysta z istniejącej kaskady feedbacku.
 
 Wykorzystać zainstalowany runner Playwright do testów API bez przeglądarki. Dodać osobną konfigurację oraz klienta `pg` do kontrolowanych testów transakcji. Testy wykonują operacje biznesowe jako użytkownik; uprawnienia administracyjne służą wyłącznie przygotowaniu izolowanych danych, obserwacji i sprzątaniu.
 
@@ -112,6 +116,8 @@ Przygotować działające testy bazy i API bez zmiany zachowania produkcyjnego.
 
 ### Overview
 
+Historyczny etap zakończony w `c7b7181`; docelowy moment usuwania został następnie zmieniony w fazie 3. Punkt 2.3 w Progress dokumentuje wynik tej wcześniejszej fazy.
+
 Najpierw test regresji przez istniejący endpoint: nowy plan powstaje, ale stary plan i feedback nadal istnieją. RED ma wynikać z tej różnicy zachowania, nie z brakującego importu lub niedziałającej bazy. Następnie wdrożyć transakcyjną retencję i jej podłączenie do serwisów.
 
 ### Changes Required
@@ -165,7 +171,9 @@ RPC używają `SECURITY DEFINER`, pustego `search_path`, kwalifikowanych nazw i 
 
 ### Overview
 
-Uzupełnić odczyt po niepewnym zapisie i zachowanie starej karty, następnie dodać zaakceptowaną informację przy generowaniu.
+Uzupełnić odczyt po niepewnym zapisie i zachowanie starej karty, przenieść retencję do zapisu ankiety i dodać stylowany modal potwierdzenia.
+
+Interpretacja niezmienionego tytułu Progress 3.5 po decyzji użytkownika: zweryfikować ostrzeżenie i modal przy zapisie ankiety na telefonie i desktopie, anulowanie bez zapisu oraz usunięcie planów i feedbacku przy skutecznym zapisie ankiety. Użytkownik zaakceptował testy manualne 3.5–3.7 dnia 2026-09-14.
 
 ### Changes Required
 
@@ -179,15 +187,21 @@ Uzupełnić odczyt po niepewnym zapisie i zachowanie starej karty, następnie do
 
 #### 2. Stara karta i ostrzeżenie o retencji
 
-**File:** `src/components/hooks/usePlanOperation.ts`, `src/components/plans/PlanGenerationForm.tsx`, `src/components/plans/PlanOperationStatus.tsx`, `src/pages/dashboard.astro`.
+**File:** `src/components/hooks/usePlanOperation.ts`, `src/components/intake/GoalAndConstraintsForm.tsx`, `src/components/plans/PlanGenerationForm.tsx`, `src/components/plans/PlanOperationStatus.tsx`, `src/pages/dashboard.astro`.
 
-**Intent:** Zablokować nieaktualne ponowienie i wyjaśnić użytkownikowi dalszą drogę oraz skutek generowania.
+**Intent:** Zablokować nieaktualne ponowienie i uprzedzić o skutku zapisania ankiety.
 
 **Contract:** `stale-intake` z potwierdzonym `not-saved` prowadzi do stanu bez możliwości submit, z tekstem: „Te dane są już nieaktualne. Otwórz aktualny panel, aby kontynuować.” i istniejącym odnośnikiem do `/dashboard`. Taki sam rezultat daje `generationState: stale`; `missing` również nie pozwala ponawiać. `ready` pozwala tylko na ręczne ponowienie, `planned` kieruje do panelu. Starsza odpowiedź bez nowego pola nie odblokowuje ponowienia. Niepewny wynik nadal wymaga sprawdzenia i nigdy nie zapewnia, że stare dane ocalały.
 
-Stała informacja przy przycisku: „Po zapisaniu nowego planu poprzednie plany i wszystkie powiązane z nimi opinie po treningach (feedback) zostaną trwale usunięte. Jeśli nowy plan nie zostanie zapisany, dotychczasowe dane pozostaną.” Tekst jest widoczny również bez JavaScript i nie wymaga dodatkowego potwierdzenia. Dodać bezpieczny komunikat `stale-intake` dla natywnego redirectu dashboardu. Brak nowego planu B oznacza przejście do aktualnego panelu z ankietą B, bez obietnicy istnienia planu B.
+Stała informacja przy zapisie ankiety ostrzega o trwałym usunięciu wszystkich poprzednich planów i feedbacku, również jeśli późniejsze generowanie zawiedzie. Tekst jest widoczny bez JavaScript. Po walidacji interaktywny formularz otwiera stylowany `<dialog>` z przyciskami „Anuluj” i „Zapisz ankietę i usuń plany”. Anuluj, Escape i krzyżyk zamykają modal bez wysłania formularza. Początkowy fokus trafia na Anuluj; potwierdzenie dopuszcza pojedynczy zapis. Przy generowaniu widnieje zgodne objaśnienie retencji przy zapisie ankiety. Dodać bezpieczny komunikat `stale-intake` dla natywnego redirectu dashboardu. Brak nowego planu B oznacza przejście do aktualnego panelu z ankietą B, bez obietnicy istnienia planu B.
 
-#### 3. Weryfikacja i handoff
+#### 3. Retencja przy zapisie ankiety
+
+**File:** `supabase/migrations/20260914170000_retire_plans_on_intake_save.sql`, `tests/integration/plan-retention/intake-retention.spec.ts`, `tests/integration/plan-retention/concurrency.spec.ts`, `tests/integration/plan-retention/replacement.spec.ts`.
+
+**Contract:** Rozszerzyć `save_training_intake` o DELETE wszystkich planów właściciela po zapisie ankiety, przed końcem tej samej transakcji. Zachować blokadę właściciela, walidację, kaskadę feedbacku i historyczne ankiety. Błąd DELETE wycofuje również zapis ankiety. Błąd późniejszego generowania nie odtwarza usuniętych danych. Nowa migracja jest forward-only i nie wykonuje czyszczenia przy instalacji. Test-first wykazać usuwanie przed AI i rollback; przeploty korekty, akceptacji oraz feedbacku weryfikować względem zapisu ankiety.
+
+#### 4. Weryfikacja i handoff
 
 **File:** `.github/workflows/e2e.yml`, `context/changes/plan-retention-policy/plan.md`.
 
@@ -206,7 +220,7 @@ Stała informacja przy przycisku: „Po zapisaniu nowego planu poprzednie plany 
 
 #### Manual Verification
 
-- Ostrzeżenie jest widoczne przy generowaniu na telefonie i desktopie; nowy plan usuwa stare plany i ich feedback, pozostawiając ankiety.
+- Ostrzeżenie i modal są widoczne przy zapisie ankiety na telefonie i desktopie; anulowanie zachowuje formularz, a skuteczny zapis usuwa stare plany i feedback, pozostawiając ankiety.
 - Stara karta blokuje ponowienie i prowadzi do aktualnego panelu; sprawdzenie po niepewnym zapisie nie odblokowuje starszej ankiety.
 - Akcje korekty, akceptacji i feedbacku dla usuniętego planu kończą się istniejącym komunikatem konfliktu lub niedostępności, bez odtworzenia danych.
 
@@ -216,17 +230,17 @@ Stała informacja przy przycisku: „Po zapisaniu nowego planu poprzednie plany 
 
 ### Testy integracyjne bazy i API
 
-1. Dwa historyczne plany użytkownika z feedbackiem; nowa ankieta i skuteczne generowanie: pozostaje wyłącznie nowy szkic, znika cały stary feedback, pozostają wszystkie ankiety i dane drugiego użytkownika.
-2. Błąd AI, niepoprawna odpowiedź AI i błąd SQL: stare rekordy pozostają identyczne. Test rollbacku wymusza błąd usuwania po INSERT, aby wykazać brak częściowego zastąpienia; izolowany mechanizm testowy jest usuwany w `finally`.
+1. Skuteczny zapis ankiety usuwa plany i feedback przed AI; późniejszy błąd AI nie odtwarza danych. Dodatkowo generowanie dla historii sprzed wdrożenia pozostawia wyłącznie nowy szkic, zachowując ankiety i dane drugiego użytkownika.
+2. Błąd zapisu ankiety lub DELETE wycofuje całą transakcję, zachowując ankietę, plany i feedback. Błąd AI lub SQL generowania nie zmienia stanu zastanego po zapisie ankiety; nie przywraca już usuniętych danych. Test rollbacku wymusza błąd usuwania po INSERT, aby wykazać brak częściowego zastąpienia; izolowany mechanizm testowy jest usuwany w `finally`.
 3. Dwie próby tej samej ankiety: jeden rekord i ten sam zwracany identyfikator. Ponowienie po akceptacji lub dodaniu feedbacku niczego nie resetuje.
 4. A oczekuje na AI, zapis B kończy się, następnie kończy się A: wynik A jest odrzucony zarówno z gotowym planem B, jak i bez niego.
 5. Ten sam identyfikator ankiety, ale zmiana danych podczas AI: stary token zostaje odrzucony; ponowienie odczytuje aktualne dane.
 6. Zapis ankiety i zastąpienie planu w obu kolejnościach uzyskania blokady: spójny wynik odpowiada kolejności commit, bez przerwy między sprawdzeniem aktualności a zapisem.
-7. Zastąpienie współbieżne z korektą, akceptacją i feedbackiem: poprawny commit albo kontrolowany konflikt, brak osieroconego feedbacku i odtworzenia usuniętego planu. Bramki lub obserwacja blokad zastępują przypadkowe opóźnienia.
+7. Zapis ankiety z usuwaniem planów współbieżny z korektą, akceptacją i feedbackiem: poprawny commit albo kontrolowany konflikt, brak osieroconego feedbacku i odtworzenia usuniętego planu. Bramki lub obserwacja blokad zastępują przypadkowe opóźnienia.
 8. Po B ponowienie A zwraca konflikt, nie wywołuje AI i nie zmienia B. Przypadek historycznego A nadal istniejącego przed pierwszym zastąpieniem również nie omija sprawdzenia aktualności.
 9. Odebrana odpowiedź RPC po commit: API zgłasza niepewność; sprawdzenie odnajduje plan lub wykrywa nieaktualną ankietę. Utrata odpowiedzi nie powoduje automatycznego ponowienia.
 10. Brak/obca ankieta, anonimowy klient, sfałszowany właściciel oraz próby bezpośrednich zapisów nie obchodzą granicy RPC i nie ujawniają cudzych rekordów.
-11. Migracja nie usuwa istniejących planów. Samo zwrócenie istniejącego planu nie uruchamia retencji. Pełny remis historycznych znaczników czasu blokuje destrukcyjne generowanie; kolejne zapisanie danych tworzy jednoznacznie nowszą ankietę.
+11. Żadna z obu migracji retencji nie usuwa istniejących planów podczas instalacji. Samo zwrócenie istniejącego planu nie uruchamia retencji. Pełny remis historycznych znaczników czasu blokuje destrukcyjne generowanie; kolejne zapisanie danych tworzy jednoznacznie nowszą ankietę.
 
 ### Testy jednostkowe i UI
 
@@ -238,7 +252,7 @@ Blokada obejmuje krótkie operacje SQL jednego użytkownika, nigdy oczekiwanie n
 
 ## Migration Notes
 
-Nowa migracja jest forward-only; istniejące migracje pozostają niezmienione. Na lokalnej bazie stosować migracje bez resetowania danych. Weryfikacja od zera może użyć wyłącznie osobnego, przeznaczonego do testów środowiska.
+Migracje `20260914150000_enforce_plan_retention.sql` i `20260914170000_retire_plans_on_intake_save.sql` są forward-only i muszą zostać zastosowane w tej kolejności; wcześniejsze migracje pozostają niezmienione. Na lokalnej bazie stosować migracje bez resetowania danych. Weryfikacja od zera może użyć wyłącznie osobnego, przeznaczonego do testów środowiska.
 
 Odebranie bezpośrednich uprawnień nie jest zgodne ze starą wersją aplikacji. Wydanie wymaga krótkiego wstrzymania mutacji, zakończenia trwających generowań, zastosowania migracji, wdrożenia kompletnej aplikacji z fazy 3 oraz smoke testu przed wznowieniem zapisów. Nie wdrażać części planu niezależnie. Rollback kodu wymaga skoordynowanego przywrócenia poprzednich uprawnień; nie przywraca danych już usuniętych przez udane zastąpienie. Ten plan nie wykonuje zdalnych migracji ani deploymentu.
 
@@ -285,13 +299,13 @@ Odebranie bezpośrednich uprawnień nie jest zgodne ze starą wersją aplikacji.
 
 #### Automated
 
-- [x] 3.1 RED → GREEN testów `npm run test:retention -- recovery.spec.ts` obejmuje starą kartę oraz utratę odpowiedzi po commit i rollbacku.
-- [x] 3.2 `npm run test:retention` przechodzi w całości.
-- [x] 3.3 `npm run test:e2e:plan` przechodzi dla istniejącej podróży generowanie → korekta → akceptacja.
-- [x] 3.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą dla końcowego stanu.
+- [x] 3.1 RED → GREEN testów `npm run test:retention -- recovery.spec.ts` obejmuje starą kartę oraz utratę odpowiedzi po commit i rollbacku. — e6b90df
+- [x] 3.2 `npm run test:retention` przechodzi w całości. — e6b90df
+- [x] 3.3 `npm run test:e2e:plan` przechodzi dla istniejącej podróży generowanie → korekta → akceptacja. — e6b90df
+- [x] 3.4 `npm run lint`, `npm run typecheck` i `npm run build` przechodzą dla końcowego stanu. — e6b90df
 
 #### Manual
 
-- [ ] 3.5 Ostrzeżenie jest widoczne przy generowaniu na telefonie i desktopie; nowy plan usuwa stare plany i ich feedback, pozostawiając ankiety.
-- [ ] 3.6 Stara karta blokuje ponowienie i prowadzi do aktualnego panelu; sprawdzenie po niepewnym zapisie nie odblokowuje starszej ankiety.
-- [ ] 3.7 Akcje korekty, akceptacji i feedbacku dla usuniętego planu kończą się istniejącym komunikatem konfliktu lub niedostępności, bez odtworzenia danych.
+- [x] 3.5 Ostrzeżenie jest widoczne przy generowaniu na telefonie i desktopie; nowy plan usuwa stare plany i ich feedback, pozostawiając ankiety. — e6b90df
+- [x] 3.6 Stara karta blokuje ponowienie i prowadzi do aktualnego panelu; sprawdzenie po niepewnym zapisie nie odblokowuje starszej ankiety. — e6b90df
+- [x] 3.7 Akcje korekty, akceptacji i feedbacku dla usuniętego planu kończą się istniejącym komunikatem konfliktu lub niedostępności, bez odtworzenia danych. — e6b90df
