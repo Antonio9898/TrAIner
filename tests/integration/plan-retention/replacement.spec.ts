@@ -12,13 +12,15 @@ async function snapshot(sql: SqlSession, userId: string) {
   ];
 }
 
-test("applying the migration preserves every historical row", async ({ user, local }) => {
+test("applying both retention migrations preserves every historical row", async ({ user, local }) => {
   await withSqlSession(local.DB_URL, "admin", async (sql) => {
     await seedHistory(sql, user.id);
     const before = await snapshot(sql, user.id);
     await sql.query("begin");
     try {
       await sql.query(readFileSync("supabase/migrations/20260914150000_enforce_plan_retention.sql", "utf8"));
+      expect(await snapshot(sql, user.id)).toEqual(before);
+      await sql.query(readFileSync("supabase/migrations/20260914170000_retire_plans_on_intake_save.sql", "utf8"));
       expect(await snapshot(sql, user.id)).toEqual(before);
     } finally {
       await sql.query("rollback");
